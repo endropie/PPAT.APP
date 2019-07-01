@@ -1,0 +1,43 @@
+// app from-page css
+@import 'app.styl'
+.form
+  .q-btn
+    margin-left: 5px
+    margin-right: 5px
+
+.q-select.q-if-disabled .q-if-control {
+    visibility: hidden;
+}
+.q-if-has-content .q-if-control + .q-if-control {
+    display: none;
+}
+
+.q-field-content
+  .field-loading
+    font-size 25px
+    position relative
+    float right
+    top -30px
+    
+  .field-loading.left
+    float left !important
+    top -30px
+    left -28px
+  
+  .field-loading.right
+    float right !important
+    
+    
+
+
+// FORM INPUT STYLE CUSTOMIZE
+.q-if.q-dense .q-if-inner,
+.q-if-inverted.q-dense .q-if-inner,
+.q-if-inverted-light.q-dense .q-if-inner 
+  font-size: 13px
+.q-if.q-dense .q-if-inner 
+  min-height: 18px
+.q-if-inverted.q-dense .q-if-inner,
+.q-if-inverted-light.q-dense .q-if-inner 
+  margin-top: 2px
+  margin-bottom: 2px
