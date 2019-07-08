@@ -85,14 +85,7 @@ export default {
   created () {
     // this.SHOW = false
     // this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => {
-          this.SHOW = true
-          // console.log('this.SHOW', this.SHOW)
-        }, 500);
-      }
-    )
+    this.INDEX.load()
   },
   computed: {
     MAPINGKEY() {

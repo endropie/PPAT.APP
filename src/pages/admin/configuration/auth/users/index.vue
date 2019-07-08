@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="page-index"  v-if="SHOW">
-    <q-pull-to-refresh :handler="TABLE.refresh" inline>
+    <q-pull-to-refresh @refresh="TABLE.refresh" inline>
       <q-table  
         ref="table" 
         class="table-index" 

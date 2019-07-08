@@ -42,7 +42,7 @@
         </q-page>
       </q-page-container>
     </q-layout>
-    <q-card >
+    <q-card style="max-width:100vh">
       <q-card-section class="row bg-primary text-white q-pa-sm content-center">
         <slot name="header">
           <slot name="icon">
@@ -62,9 +62,12 @@
       <q-separator />
 
       <q-card-section 
-        style="min-height:20vh;min-width:50vw;max-height:90vh" 
-        class="scroll">
+        
+        class="">
+        <q-scroll-area style="height:20vh;max-height:50vw;" >
+
         <slot />
+        </q-scroll-area>
       </q-card-section>
 
       <q-separator />

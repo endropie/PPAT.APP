@@ -165,6 +165,7 @@
                   v-model="propItem.row.unit_id" 
                   outlined dense hide-bottom-space color="blue-grey-5"
                   :options="ItemUnitOptions[propItem.row.__index]" 
+                  map-options
                   @input="(val)=> { setUnitReference(propItem.row.__index, val) }"
                   :dark="LAYOUT.isDark"
                   :error="errors.has(`pre_delivery_items.${propItem.row.__index}.unit_id`)" 

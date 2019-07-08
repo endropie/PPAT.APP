@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="page-index">
-    <q-pull-to-refresh :handler="TABLE.refresh" inline>
+    <q-pull-to-refresh @refresh="TABLE.refresh" inline>
       <q-table ref="table" class="table-index" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"

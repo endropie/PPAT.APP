@@ -14,63 +14,82 @@
       </form-header>
   </q-card-section>
     <q-card-section>
-      <div class="row q-gutter-sm q-gutter-x-md">
+      <div class="row q-col-gutter-sm q-col-gutter-x-md">
         <!-- COLUMN::Base Document -->
-        <q-field class="col-12 " label="Transaction mode" label-width="3" :error="errors.has('transaction')" :error-message="errors.first('transaction')">
-          <div class="row no-wrap">
-            <q-option-group class="col" name="transaction" type="radio" v-model="rsForm.transaction" color="secondary" inline
+        <q-field class="col-12" 
+          label="Transaction mode" 
+          borderless
+          :error="errors.has('transaction')" 
+          :error-message="errors.first('transaction')">
+          <template slot="control">
+            
+            <q-option-group class="col" name="transaction" type="radio" 
+              v-model="rsForm.transaction" 
+              inline color="secondary" 
               :options="[
                 { label: 'REGULER', value: 'REGULER' },
                 { label: 'RETURN', value: 'RETURN' }
               ]"
               v-validate="'required'"/> 
-          </div>
+
+          </template>
         </q-field>
         <!-- COLUMN::1st customer Identitity -->
         <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-sm q-mb-md">
-            <q-field class="col-12" :error="errors.has('number')" :error-message="errors.first('number')">
-              <div class="row justify no-wrap">
-                <q-input class="col" name="number" stack-label label="No Transaction" v-model="rsForm.number" readonly
+          <div class="column">
+            <q-input name="number" 
+              stack-label label="No Transaction" 
+              v-model="rsForm.number" 
+              readonly
+              v-validate="$route.meta.mode == 'edit' ? 'required':''"
+              :error="errors.has('number')" :error-message="errors.first('number')"
+            >
+              <template slot="after">
+                <q-input class="col col-auto" name="numrev" 
+                  stack-label label="Revision" 
+                  v-model="rsForm.numrev" readonly 
+                  hide-bottom-space style="width:70px"
                   v-validate="$route.meta.mode == 'edit' ? 'required':''"
+                  :error="errors.has('numrev')"
                 />
-                <q-input class="col col-auto" name="number" stack-label label="Revision" v-model="rsForm.numrev" readonly 
-                  align="center" style="width:70px"
-                  v-validate="$route.meta.mode == 'edit' ? 'required':''"
-                />
-              </div>
-            </q-field>
-            <q-field class="col-12" :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-              <q-select name="customer_id" v-model="rsForm.customer_id" :label="$tc('general.customer')" readonly v-validate="'required'"
-                :options="CustomerOptions" 
-                @input="setCustomerReference"
-                ></q-select>
+                
+              </template>
+            </q-input>
+
+            <select-filter name="customer_id" class="col-12" 
+              v-model="rsForm.customer_id" 
+              :label="$tc('general.customer')" readonly 
+              :options="CustomerOptions" 
+              @input="setCustomerReference"
+              v-validate="'required'"
+              :error="errors.has('customer_id')" :error-message="errors.first('customer_id')"
+              >
+            
               <q-tooltip :disable="!IssetIncomeItems" :offset="[0, 10]">To change, Please clear Delivery items first!</q-tooltip>
-            </q-field>
-            <q-field class="col-12 q-pt-lg" :error="errors.has(`request_order_id`)" :error-message="errors.first(`request_order_id`)"
-              label="Request Order [PO]" label-width="12">
-              <q-select :name="`request_order_id`" v-model="rsForm.request_order_id" readonly
-                v-validate="'required'" 
-                :options="RequestOrderOptions" 
-                @input="setRequestOrderReference"
-              />
+            </select-filter>
+            
+            <select-filter :name="`request_order_id`" class="col-12 q-pt-lg"
+              label="Request Order [PO]"
+              v-model="rsForm.request_order_id" 
+              readonly hide-dropdown-icon
+              v-validate="'required'" 
+              :options="RequestOrderOptions" 
+              @input="setRequestOrderReference"
+              :error="errors.has(`request_order_id`)" 
+              :error-message="errors.first(`request_order_id`)"
+            >
               <q-tooltip :disable="IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
               <q-spinner-mat class="field-loading" color="primary" v-if="SHEET['request_orders'].loading"  />
-            </q-field>
+            </select-filter>
           </div>
         </div>
         <!-- COLUMN::2nd Transaction details -->
         <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-sm">
-            <q-field class="col-12" >
-              <q-input name="customer_name" stack-label label="Name" v-model="rsForm.customer_name" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12" >
-              <q-input name="customer_phone" stack-label label="phone" v-model="rsForm.customer_phone" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12" >
-              <q-input name="customer_address" stack-label label="Address" v-model="rsForm.customer_address"  type="textarea" rows="2" />
-            </q-field>
+          <div class="column">
+            <q-input name="customer_name" stack-label label="Name" v-model="rsForm.customer_name" v-validate="'required'"/>
+            <q-input name="customer_phone" stack-label label="phone" v-model="rsForm.customer_phone" v-validate="'required'"/>
+            <q-input name="customer_address" stack-label label="Address" v-model="rsForm.customer_address"  type="textarea" rows="2" />
+            
           </div>
         </div>
         <!-- COLUMN::3th Part items lists -->
@@ -139,7 +158,7 @@
         </div>
         <!-- COLUMN::4th Description -->
         <div class="col-12">
-          <div class="row q-gutter-x-lg q-mb-md">
+          <div class="row q-col-gutter-x-lg q-mb-md">
             <q-field class="col-12" :error="errors.has(`operator_id`)" :error-message="errors.first(`operator_id`)">
               <q-select name="operator_id"  stack-label label="Operator" v-model="rsForm.operator_id" :options="OperatorOptions" v-validate="'required'"/>
             </q-field>

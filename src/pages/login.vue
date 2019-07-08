@@ -139,8 +139,8 @@ export default {
           }, 800);
         })
         .catch(error => { 
-          this.$app.response.error(error.response, 'test')
-          
+          // this.$app.response.error(error.response, 'test')
+          console.warn('ERROR->', error.response || error)
         })
         .finally(()=>{
           setTimeout(() => {

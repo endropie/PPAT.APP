@@ -1,6 +1,7 @@
+import _ from 'lodash'
 
-export const setPageDrawer = (state, val) => {
-  state.PAGE.drawer = val
+export const SET_DATA = (state, { name, data }) => {
+  _.set(state, name, data)
 }
 
 export const setPageShow = (state, val) => {

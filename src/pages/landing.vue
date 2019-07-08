@@ -1,7 +1,5 @@
 <template>
   <div class="index-page bg-grey-2 window-height window-width column items-center no-wrap">
-    store:{{$store.getters['admin/CONFIG'].general.baseURL}} <br/>
-    axios:{{$axios.defaults.baseURL}}
     <div class="banner bg-primary flex flex-center">
       PPA
     </div>
@@ -42,7 +40,17 @@
 
         <privacy-policy ref="privacy" />
         <modal ref="modal" >
-          <div class="column">
+          <template slot="footer" >
+            <div class="row justify-around text-light full-width">
+              <span>
+                store:{{$store.getters['admin/CONFIG'].general.baseURL}} <br/>
+              </span>
+              <span>
+                axios:{{$axios.defaults.baseURL}}
+              </span>
+            </div>
+          </template>
+          <div class="column" style="min-width:300px">
             <q-select 
               label="Host API"
               v-model="baseURL"
@@ -82,19 +90,20 @@ export default {
     }
   },
   mounted() {
-    console.warn('Modal -> ')
+    // console.warn('Modal -> ')
   },
   computed: {
-    BASEURL: {
-      get() {
-        return this.$store.state.admin.CONFIG.general.baseURL
-      },
-      set(v) {
-        this.loadingSeturl = true
-        const newURL = this.$store.commit('admin/setBaseURL', v)
-        console.warn('new', newURL)
-        this.loadingSeturl = false
-      }
+    BASEURL() {
+      return this.$store.state.admin.CONFIG.general.baseURL
+      // get() {
+        
+      // },
+      // set(v) {
+      //   this.loadingSeturl = true
+      //   const newURL = this.$store.commit('admin/setBaseURL', v)
+      //   console.warn('new', newURL)
+      //   this.loadingSeturl = false
+      // }
     }
   },
   methods: {

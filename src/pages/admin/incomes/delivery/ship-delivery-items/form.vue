@@ -9,18 +9,21 @@
       </form-header>
     </q-card-section>
     <q-card-section>
-      <div class="row q-gutter-sm q-gutter-x-md">
+      <div class="column q-gutter-sm q-gutter-x-md">
         <!-- COLUMN::1st customer Identitity -->
-        <q-field class="col-12" :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-          <q-select name="customer_id" v-model="rsForm.customer_id" stack-label :label="$tc('general.customer')"  v-validate="'required'"
-            :options="CustomerOptions" filter clearable
-            @input="setCustomerReference"
-          />
-        </q-field>
+        <select-filter class="" name="customer_id" 
+          v-model="rsForm.customer_id" 
+          stack-label :label="$tc('general.customer')" 
+          :options="CustomerOptions" clearable
+          @input="setCustomerReference" 
+          v-validate="'required'"
+          :error="errors.has('customer_id')" :error-message="errors.first('customer_id')"
+        />
         <!-- COLUMN::2th Part items lists -->
-        <div class="col-12 q-my-md full-width-100">
-          <span class="hidden">{{ MaxMount }}</span> 
-          <q-table ref="table" :data="rsForm.ship_delivery_items" dense hide-bottom class="d-grid no-shadow"
+        <div class="">
+          <q-table class="d-grid no-shadow"
+            dense hide-bottom 
+            :data="rsForm.ship_delivery_items"
             :rows-per-page-options ="[0]"
             :columns="[
               { name: 'prefix', label: '',  align: 'left'},
@@ -30,37 +33,40 @@
             ]"
             :pagination="{ rowsPerPage: 0}"
             >
-            <template slot="body" slot-scope="propItem">
-              <q-tr :propItem="propItem">
+            <template v-slot:body="propItem">
+              <q-tr >
                 <q-td key="prefix" style="width:50px">
                   <!-- <q-btn dense  @click="removeItem(propItem.row.__index)" icon="delete" color="blue-grey-5"/> -->
                 </q-td>
                 <q-td key="item_id" width="50%" >
-                  <q-field style="min-width:150px" :error="errors.has(`ship_delivery_items.${propItem.row.__index}.item_id`)">
-                    <q-select :name="`ship_delivery_items.${propItem.row.__index}.item_id`" v-model="propItem.row.item_id"	inverted color="blue-grey-5" 
+                    <select-filter :name="`ship_delivery_items.${propItem.row.__index}.item_id`" 
+                      v-model="propItem.row.item_id"	
+                      outlined dense color="blue-grey-5" style="min-width:150px"
                       v-validate="'required'" 
-                      :options="ItemOptions" filter
-                      readonly
-                    />
-                    <q-tooltip :disable="IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
-                  </q-field>
+                      :options="ItemOptions" readonly
+                      :error="errors.has(`ship_delivery_items.${propItem.row.__index}.item_id`)">
+
+                      <q-tooltip :disable="IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
+                    </select-filter>
                 </q-td>
                 <q-td key="quantity" width="25%">
-                    <q-field  style="min-width:120px" :error="errors.has(`ship_delivery_items.${propItem.row.__index}.quantity`)" >
-                      <q-input :name="`ship_delivery_items.${propItem.row.__index}.quantity`" v-model="propItem.row.quantity" type="number" align="center" inverted color="blue-grey-5"
-                        :suffix="propItem.row.item_id ? `&nbsp;/&nbsp; ${propItem.row.maximum}` : ''"
-                        v-validate="FORM.validator.quantity(propItem.row, propItem.row.maximum)"
-                      />
-                    </q-field>
+                  <q-input :name="`ship_delivery_items.${propItem.row.__index}.quantity`" 
+                    v-model="propItem.row.quantity" type="number" 
+                    outlined dense align="center" color="blue-grey-5" style="min-width:120px"
+                    :suffix="propItem.row.item_id ? `/ ${propItem.row.maximum}` : ''"
+                    v-validate="FORM.validator.quantity(propItem.row, propItem.row.maximum)"
+                    :error="errors.has(`ship_delivery_items.${propItem.row.__index}.quantity`)"
+                  />
                 </q-td>
                 <q-td key="unit_id" width="20%" >
-                  <q-field  style="min-width:100px" :error="errors.has(`ship_delivery_items.${propItem.row.__index}.unit_id`)" >
-                    <q-select :name="`ship_delivery_items.${propItem.row.__index}.unit_id`" v-model="propItem.row.unit_id"	inverted color="blue-grey-5"
-                      :options="ItemUnitOptions[propItem.row.__index]"
-                      v-validate="propItem.row.item_id ? 'required' : ''"
-                      @input="(val)=>{ setUnitReference(propItem.row.__index, val) }"
-                    />
-                  </q-field>
+                  <q-select :name="`ship_delivery_items.${propItem.row.__index}.unit_id`" 
+                    v-model="propItem.row.unit_id"	
+                    outlined dense color="blue-grey-5" style="min-width:100px"
+                    :options="ItemUnitOptions[propItem.row.__index]"
+                    map-options
+                    v-validate="propItem.row.item_id ? 'required' : ''"
+                    :error="errors.has(`ship_delivery_items.${propItem.row.__index}.unit_id`)" 
+                    @input="(val)=>{ setUnitReference(propItem.row.__index, val) }"/>
                 </q-td>
               </q-tr>
               <!-- <q-tr  class="" :propItem="propItem" v-if=" propItem.row.item_id">
@@ -84,8 +90,8 @@
               </q-tr> -->
             </template>
             <q-tr slot="bottom-row" slot-scope="prop" :scope="prop">
-              <q-td colspan="100%" class="text-center" v-if="rsForm.ship_delivery_items && rsForm.ship_delivery_items.length == 0">
-                <span>No data</span> 
+              <q-td colspan="100%" class="text-center" v-if="AllDetail && AllDetail.length == 0">
+                <span>{{$tc('messages.no_details')}}</span> 
               </q-td>
             </q-tr>
           </q-table>
@@ -206,7 +212,7 @@ export default {
       }
       return vars
     },
-    MaxMount() {
+    AllDetail() {
       if(! this.rsForm.customer_id || this.SHEET.items.data.length == 0) return []
      
       let data = []
@@ -272,9 +278,9 @@ export default {
         this.rsForm.customer_name = this.MAPINGKEY['customers'][val].name
         this.rsForm.customer_phone = this.MAPINGKEY['customers'][val].phone
         this.rsForm.customer_address = this.MAPINGKEY['customers'][val].address_raw
-
+        
         this.SHEET.load('items', 'customer_id='+ val)
-        this.rsForm.ship_delivery_items = this.MaxMount
+        this.rsForm.ship_delivery_items = this.AllDetail
       }
       else {
         this.rsForm.customer_name = null

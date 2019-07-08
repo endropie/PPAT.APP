@@ -12,10 +12,14 @@ function getData () {
     }
   }
 
-  return layout 
+  return layout
 }
 
 export default {
+  AUTH: Object.assign({}, JSON.parse(LocalStorage.getItem('store:auth'))),
+  CONFIG: Object.assign({}, config, JSON.parse(LocalStorage.getItem('store:config'))),
+  SETTING: Object.assign({}, JSON.parse(LocalStorage.getItem('store:setting'))),
+  PAGEMETA: {},
   PAGE: {
     show: true,
     drawer: true
@@ -124,9 +128,5 @@ export default {
       warning: '#f2c037',
       negative: '#db2828'
     }
-  },
-  AUTH: Object.assign({}, JSON.parse(LocalStorage.getItem('store:auth'))),
-  CONFIG: Object.assign({}, config, JSON.parse(LocalStorage.getItem('store:config'))),
-  SETTING: Object.assign({}, JSON.parse(LocalStorage.getItem('store:setting'))),
-  PAGEMETA: {}
+  }
 }
