@@ -3,8 +3,12 @@
   <q-card inline class="main-box" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
+        <q-chip slot="optional" v-if="rsForm.status === 'VOID'"
+          icon="bookmark"  class="text-weight-medium"
+          label="void" color="negative" outline/>
         <template slot="menu-item">
           <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item label="void" icon="block" clickable @click="FORM.void" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -105,7 +109,7 @@
     <q-separator inset spaced :dark="LAYOUT.isDark"></q-separator>
     <q-card-section class="row q-col-gutter-sm">
       <div class="col-12">
-        <div class="row q-col-gutter-x-sm q-mb-md">
+        <div class="row q-col-gutter-x-sm">
           <select-filter class="col-12 col-sm-4"
             name="order_mode" 
             v-model="rsForm.order_mode" 
@@ -132,72 +136,11 @@
       </div>
       <!-- Incoming Items lists -->
       
-      <!-- <form-detail class="col-12" :list="$q.screen.lt.md"
-        :title="$tc('label.of', 2, {b:$tc('items.specification',2), a:$tc('label.detail') })"
-        :data.sync="rsForm.incoming_good_items"
-        :label-new="$t('label.new', {v:$tc('items.specification')})"
-        :dark="LAYOUT.isDark"
-        key="id"
-        min-length="-1"
-        :columns="[
-          { name: 'item_id', label: 'Part code', align: 'left'},
-          { name: 'part', label: 'Part name', align: 'left'},
-          { name: 'quantity', label: 'Quantity', align: 'center'},
-          { name: 'unit_id', label: 'Unit', align: 'center'},
-        ]">
-        
-        <template v-slot:field-item_id="rs">
-          <select-filter 
-            :ref="`items.${rs.row.__index}.item_id`"
-            :name="`items.${rs.row.__index}.item_id`" 
-            dense outlined hide-bottom-space color="blue-grey-5"
-            v-model="rs.row.item_id" 
-            v-validate="'required'"
-            :options="ItemOptions"
-            emit-value map-options clearable
-            :readonly="!IssetCustomerID"
-            @input="(val)=>{ setItemReference(rs.row.__index, val) }"
-            :error="errors.has(`items.${rs.row.__index}.item_id`)"
-            :error-message="errors.first(`items.${rs.row.__index}.item_id`)"
-          >
-            <template v-slot:selected-item="{scope}">
-              
-              <div :v-if="scope.opt.item" style="line-height:90%">
-                {{scope.opt.item.part_name}}<br>
-                <small>No. {{scope.opt.item.part_number}}</small>
-              </div>
-            </template>
-          </select-filter>
-        </template>
-      
-        <template v-slot:field-quantity="rs" >
-          <q-input 
-            :name="`items.${rs.row.__index}.quantity`" type="number"
-            v-model="rs.row.quantity" 
-            dense outlined hide-bottom-space color="blue-grey-5"
-            v-validate="rs.row.item_id ? 'required' : ''"
-            :error="errors.has(`items.${rs.row.__index}.quantity`)"/>
-        </template>
-
-        <template v-slot:field-unit_id="rs">
-          <q-select :name="`items.${rs.row.__index}.unit_id`" 
-            v-model="rs.row.unit_id" 
-            dense outlined hide-bottom-space color="blue-grey-5"
-            :options="ItemUnitOptions[rs.row.__index]"
-            map-options emit-value
-            option-value="value" option-label="label" 
-            v-validate="rs.row.item_id ? 'required' : ''"
-            :error="errors.has(`items.${rs.row.__index}.unit_id`)"
-            @input="(val)=> { setUnitReference(rs.row.__index, val) }"/>
-        
-          <q-input v-model="rs.row.unit_rate" class="hidden" />
-        </template>
-      </form-detail> -->
       <div class="col-12">
-        <q-table ref="table" class="main-box"
+        <q-table ref="table" class="main-box bordered no-shadow"
           :data="rsForm.incoming_good_items" dense
           :dark="LAYOUT.isDark"
-          :rows-per-page-options ="[0]"
+          :rows-per-page-options ="[0]" hide-bottom
           :columns="[
             { name: 'prefix', field: 'prefix', label: '',  align: 'left'},
             { name: 'item_id', field: 'item_id', label: 'Item details', align: 'left'},

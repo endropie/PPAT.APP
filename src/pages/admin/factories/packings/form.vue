@@ -122,6 +122,7 @@
             :disable="IssetItemFaults" 
             v-validate="''"
             :options="TypeFaultOptions" 
+            map-options emit-value
             :error="errors.has('type_fault_id')" :error-message="errors.first('type_fault_id')"
           />
           
@@ -146,7 +147,7 @@
                     type="number" min="0" align="center"
                     outlined dense hide-bottom-space color="blue-grey" 
                     v-model="props.row.quantity" 
-                    v-validate="'required'"
+                    v-validate="props.row.fault_id ? 'required' : ''"
                     :error="errors.has(`packing_items.packing_item_faults.${props.row.__index}.quantity`)"
                     />
                 </q-td>
@@ -386,10 +387,9 @@ export default {
       if(this.WorkOrderItemOptions.length == 0) return 0
 
       const find = this.WorkOrderItemOptions.find(opt => {
+        // console.warn('opt', opt)
         return opt.data.id === rsItem.work_order_item_id
       })
-
-      console.log('rate', find.data.unit_rate)
 
       return !find ? 0 : (Number(find.data.unit_amount) - Number(find.data.total_packing_item))
     },

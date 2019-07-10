@@ -70,11 +70,15 @@
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn flat dense color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
-          <q-btn flat dense color="light" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'invisible': rs.row.is_relationship === true}" />
-          <q-btn flat dense color="light" icon="delete"  @click.native="TABLE.delete(rs.row)" :class="{'invisible': rs.row.is_relationship === true}" />
+          <q-btn flat dense color="light" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden':  !isEditable(rs.row)}" />
+          <q-btn flat dense color="light" icon="delete"  @click.native="TABLE.delete(rs.row)" :class="{'hidden':  !isEditable(rs.row)}" />
         </q-td>
+        
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
           <span v-if="rs.row.number"> {{ rs.row.number + (rs.row.transaction == 'RETURN' ? '.RET' : '') }} 
+            
+            <q-chip dense tag color="faded" text-color="white" label="RET" v-if="rs.row.transaction == 'RETURN' "/>
+            <q-chip dense tag class="bg-red-10 text-white"  :label="rs.row.status" v-if="rs.row.status !== 'OPEN' "/>
           </span>
           <span v-else>- undifined -</span>
         </q-td>
@@ -126,7 +130,7 @@ export default {
           uri: '/admin/warehouses/incoming-goods',
         },
         columns: [
-          { name: 'prefix', label: ''},
+          { name: 'prefix', label: '', align: 'left'},
           { name: 'number', label: 'Number', field: 'number', align: 'left', sortable: true },
           { name: 'date', label: 'Date', field: 'date', align: 'center', sortable: true},
           { name: 'time', label: 'Time', field: 'time', align: 'center'},
@@ -149,6 +153,13 @@ export default {
     CustomerOptions() {
       return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
     },
+  },
+  methods:{
+    isEditable(row) {
+      if(row.hasOwnProperty('status') && row.status !== 'OPEN') return false
+      if(row.hasOwnProperty('is_relationship') && row.is_relationship) return false
+      return true
+    }
   }
 }
 </script>

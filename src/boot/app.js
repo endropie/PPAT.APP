@@ -21,6 +21,7 @@ export default ({ app, router, Vue }) => {
           })
         } else {
           let mode = {
+            icon: 'error',
             color: 'negative',
             position: 'top-right',
             timeout: 3000
@@ -41,9 +42,10 @@ export default ({ app, router, Vue }) => {
               break
             case 501:
               console.error(ErrRes)
-              mode.message = (title.title || title || 'PROCESS NOT ALLOWED!')
+              mode.message = (title || 'PROCESS NOT ALLOWED!')
               mode.detail = (ErrRes.data.message || ErrRes.statusText)
               break
+
             case 500:
               console.error(ErrRes)
               mode.message = 'Ops, Please contact administrator!'
@@ -55,7 +57,12 @@ export default ({ app, router, Vue }) => {
               } else mode.message = ErrRes.statusText
               break
           }
-          if (mode.type !== false) Notify.create(Object.assign({}, mode))
+
+          if (mode.detail) {
+            mode.html = true
+            mode.message += `<br><smal style="font-size:80%">${mode.detail}</small>`
+          }
+          if (mode.message) Notify.create(Object.assign({}, mode))
         }
       }
     },

@@ -5,9 +5,11 @@
         PPA - INCOMING GOODS
       </div>
       <div slot="header-tags">
-        <q-chip tag outline small color="negative" v-if="rsView.revise_id">
-          Revised
-        </q-chip>
+        <q-chip tag outline small color="negative" label="Revised" 
+          v-if="rsView.revise_id" />
+        <q-chip tag outline small color="negative" icon="bookmark" label="void" 
+          v-if="rsView.status == 'VOID'" />
+
       </div>
       <div class="row  q-gutter-md" >
         <div class="col-12">
@@ -45,7 +47,7 @@
           </div>
         </div>
         <div class="col-12">
-          <q-table ref="table" class="table-border d-grid no-shadow" color="secondary" separator="vertical" dense hide-bottom :dark="LAYOUT.isDark"
+          <q-table ref="table" class="bordered d-grid no-shadow" color="secondary" separator="vertical" dense hide-bottom :dark="LAYOUT.isDark"
             :data="rsView.incoming_good_items" 
             no-data-label = "No Production"
             :columns="[
@@ -61,7 +63,7 @@
             <div class="q-my-xs text-italic">Description:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 q-gutter-xs " style="padding-top:50px">
+        <div class="col-12 q-gutter-xs print-hide" style="padding-top:50px">
           <q-btn label="Back" color="dark" :icon-right="btnIcon('cancel')"  :to="`${VIEW.resource.uri}?return`"></q-btn>
           <q-btn label="Edit" color="positive" :icon-right="btnIcon('edit')" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
           <q-btn label="Print" color="grey" :icon-right="btnIcon('print')" @click.native="print()" ></q-btn>

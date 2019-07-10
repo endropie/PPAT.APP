@@ -3,20 +3,27 @@
   <q-card inline class="main-box" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
-          <q-chip slot="menu-prepend" v-if="rsForm.order_mode"
-            icon="bookmark"  class="text-weight-medium"
-            :label="rsForm.order_mode" />
+          <q-chip slot="optional" v-if="rsForm.order_mode"
+            icon="assignment"  class="text-weight-medium"
+            :label="rsForm.order_mode" color="primary" outline/>
 
-          <list-item slot="menu-item" v-if="$route.params.id"
-            :label="$tc('label.remove')" 
-            icon="delete" 
-            clickable v-close-popup 
+          <q-chip slot="optional" v-if="rsForm.status === 'VOID'"
+            icon="bookmark"  class="text-weight-medium"
+            label="void" color="negative" outline/>
+
+          <template slot="menu-item">
+            <list-item v-if="$route.params.id" :label="$tc('label.remove')" icon="delete" clickable v-close-popup 
             @click="FORM.delete"/>
+          
+          <list-item v-if="$route.params.id" label="void" icon="remove" clickable v-close-popup 
+            @click="FORM.void"/>
+          </template>
+         
         
       </form-header>
     </q-card-section>
     <!-- COLUMN::1st customer Identitity -->
-    <q-card-section class="row q-col-gutter-sm q-col-gutter-x-md">
+    <q-card-section class="row q-col-gutter-sm">
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm">
           <q-input class="col-12" name="number" 
@@ -27,13 +34,21 @@
             v-validate="$route.meta.mode == 'edit' ? 'required':''"
             :error="errors.has('number')" :error-message="errors.first('number')"/>
 
-          <q-input class="col-12" name="date" type="date" 
+          <input-date class="col-12" name="date" type="date" 
             stack-label label="Date" 
             v-model="rsForm.date" 
             :dark="LAYOUT.isDark" 
             v-validate="'required'"
             :error="errors.has('date')" 
             :error-message="errors.first('date')"/>
+
+          <!-- <q-input class="col-12" name="date" type="date" 
+            stack-label label="Date" 
+            v-model="rsForm.date" 
+            :dark="LAYOUT.isDark" 
+            v-validate="'required'"
+            :error="errors.has('date')" 
+            :error-message="errors.first('date')"/> -->
         </div>
       </div>
       <div class="col-12 col-sm-6" >
@@ -85,6 +100,7 @@
         <q-table 
           :data="rsForm.request_order_items" dense
           class="table-form full-width d-grid no-shadow" :dark="LAYOUT.isDark"
+          hide-bottom
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'prefix', label: '',  align: 'left'},
@@ -115,7 +131,7 @@
                 <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
               </q-td>
               <q-td key="quantity" :rsItem="rsItem" width="10%">
-                <q-input :name="`quantity-${rsItem.row.__index}.quantity`" 
+                <q-input :name="`request_orders_items.${rsItem.row.__index}.quantity`" 
                   v-model="rsItem.row.quantity" type="number"
                   outlined dense hide-bottom-space 
                   color="blue-grey-5" style="width:80px"
@@ -137,7 +153,7 @@
                 <q-input v-model="rsItem.row.unit_rate" class="hidden" />
               </q-td>
               <q-td key="price" :rsItem="rsItem" width="20%" style="min-width:120px">
-                <q-input type="number" :name="`request_orders_items.${rsItem.row.__index}.price`" 
+                <input-numeric type="number" :name="`request_orders_items.${rsItem.row.__index}.price`" 
                   v-model="rsItem.row.price" 
                   outlined dense hide-bottom-space 
                   color="blue-grey-5" style="width:120px"
@@ -146,9 +162,9 @@
                   :error="errors.has(`request_orders_items.${rsItem.row.__index}.price`)" />
               </q-td>
               <q-td key="total" :rsItem="rsItem" width="20%" style="min-width:150px">
-                <q-input :name="`total-${rsItem.row.__index}`" 
+                <input-numeric :name="`total-${rsItem.row.__index}`" 
                   :value="Number(rsItem.row.quantity) * Number(rsItem.row.price)" 
-                  outlined dense hide-bottom-space 
+                  readonly dense borderless hide-bottom-space 
                   color="blue-grey-5" style="width:120px"
                   v-validate="rsItem.row.item_id ? '' : ''"
                   :dark="LAYOUT.isDark"

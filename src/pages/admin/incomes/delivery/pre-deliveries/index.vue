@@ -34,10 +34,15 @@
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
-          <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'invisible': rs.row.is_relationship === true}" />
-          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'invisible': rs.row.is_relationship === true}" />
+          <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden': rs.row.is_relationship === true}" />
+          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden': rs.row.is_relationship === true}" />
         </q-td>
         
+        <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
+          <span> {{ rs.row.number }} </span>
+          <q-chip dense tag class="bg-red-10 text-white"  :label="rs.row.status" v-if="rs.row.status !== 'OPEN' "/>
+        </q-td>
+
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
           <span v-if="rs.row.customer"> {{ rs.row.customer.name }}</span>
           <span v-else>- undifined -</span>
@@ -64,7 +69,7 @@ export default {
           uri: '/admin/incomes/delivery/pre-deliveries',
         },
         columns: [
-          { name: 'prefix', label: ''},
+          { name: 'prefix', label: '', align: 'left'},
           { name: 'number', label: 'Number', field: 'number', align: 'left', sortable: true },
           { name: 'customer_id', label: 'Customer', field: 'customer_id', align: 'left', sortable: true },
           { name: 'trans_qty', label: 'Tran Qty', field: 'trans_qty', align: 'center', sortable: true },

@@ -17,7 +17,7 @@ export default async ({ app, Vue }) => {
 
   if (AUTH.hasOwnProperty('access') && AUTH.isTokenValid()) {
     axios.defaults.headers.common['Accept'] = 'application/json'
-    axios.defaults.headers.common['Authorization'] = `Bearer ${AUTH.access.token}`
+    // axios.defaults.headers.common['Authorization'] = `Bearer ${AUTH.access.token}`
   }
 
   axios.set = (method, url, data) => {
@@ -37,6 +37,8 @@ export default async ({ app, Vue }) => {
   axios.validToken = (callback) => {
     axios.post('/api/v1/auth/valid-token', {})
       .then((response) => callback(response))
-      .catch(() => callback())
+      .catch(() => {
+        callback()
+      })
   }
 }

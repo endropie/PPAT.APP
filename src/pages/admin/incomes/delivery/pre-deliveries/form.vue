@@ -3,8 +3,10 @@
   <q-card inline class="main-box " :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" :dark="LAYOUT.isDark">
+        
         <template slot="menu-item">
           <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="'void'" icon="block" clickable @click="FORM.void" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -118,7 +120,7 @@
         <q-table ref="table" dense hide-bottom 
           :data="rsForm.pre_delivery_items" 
           :dark="LAYOUT.isDark"
-          class="d-grid full-width no-shadow main-box"
+          class="d-grid full-width main-box bordered no-shadow "
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'prefix', label: '',  align: 'left'},
@@ -206,12 +208,13 @@
         </q-table>
       </div>
       <!-- COLUMN::4th Description -->
-      <q-field class="col-12" icon="rate_review">
-        <q-input name="description" type="textarea" rows="3" 
-          stack-label label="Description" 
-          :dark="LAYOUT.isDark"
-          v-model="rsForm.description"/>
-      </q-field>
+      <q-input name="description" type="textarea" rows="3" class="col-12"
+        stack-label label="Description"
+        filled
+        :dark="LAYOUT.isDark"
+        v-model="rsForm.description">
+      <q-icon name="rate_review" slot="before"/>
+      </q-input>
     
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />

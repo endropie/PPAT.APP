@@ -25,7 +25,7 @@
               <select-filter class="col-12 col-md-6" style="min-width:150px"
                 name="customer_id" 
                 v-model="FILTERABLE.fill.customer_id.value" 
-                stack-label label="Line" 
+                stack-label label="Customer" 
                 dense hide-bottom-space
                 :dark="LAYOUT.isDark"
                 :options="CustomerOptions" filter clearable />
@@ -43,7 +43,7 @@
                 :dark="LAYOUT.isDark" />
                
 
-              <q-select class="col-12 col-md-6" 
+              <q-select class="col-12 col-md-12" 
                 new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
                 dense input-debounce="0"
                 name="filterable" 
@@ -132,7 +132,7 @@ export default {
           uri: '/admin/incomes/delivery/delivery-orders',
         },
         columns: [
-          { name: 'prefix', label: ''},
+          { name: 'prefix', label: '', align: 'left'},
           
           { name: 'number', label: 'Number', field: 'number', align: 'left', sortable: true },
           { name: 'customer_id', label: 'Customer', field: 'customer_id', align: 'left', sortable: true },

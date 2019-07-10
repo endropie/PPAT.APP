@@ -5,7 +5,7 @@ export const CONFIG = (state, getters) => state.CONFIG
 export const AUTH = (state, getters) => {
   return {
     isTokenValid: () => {
-      if (!state.AUTH.hasOwnProperty('access')) return false
+      if (state.AUTH.access.hasOwnProperty('token')) return false
       return state.AUTH && state.AUTH.access.token && !getters.isTokenExpired
     },
     isTokenExpired: () => {

@@ -1,14 +1,13 @@
 <template>
   <q-layout view="lhh Lpr lFf" :class="LAYOUT.isDark ? 'bg-grey-10 text-white' : 'bg-white text-dark'">
-    <q-header class="header" elevated>
+    <q-header class="header print-hide" elevated>
       <admin-header :class="LAYOUT.isDark ? ' ': ''" />
     </q-header>
 
-    <q-drawer
+    <q-drawer class="print-hide"
       v-model="DRAWER"
       bordered
-      content-class="bg-grey-2"
-    >
+      content-class="bg-grey-2">
       <q-scroll-area :class="LAYOUT.isDark ? 'bg-black text-primary' : 'bg-white text-primary'" style="width: 100%; height: 100%;">
         <div class="row flex-center opacity-1" :class="LAYOUT.isDark ? 'bg-primary text-white' : 'bg-grey-2 text-primary'" style="height: 115px">
           <!-- <img alt="Quasar logo" src="~assets/quasar-logo.svg" style="height: 75px; width 75px;"> -->
@@ -59,10 +58,18 @@ export default {
   },
   created(){
     console.info('[PLAY] Admin created!')
-    // console.log('localStorage', this.$q.localStorage.getAll())
+    if(this.AUTH.access && this.AUTH.access.hasOwnProperty('token')) {
+      this.$axios.setHeader([
+        {key: 'Accept', value: 'application/json'},
+        {key: 'Authorization', value: `Bearer ${this.AUTH.access.token}`}
+      ])
+    }
     this.$axios.validToken(
       (response) => {
+        if(!response) this.setLogoff()
+        else{
           this.setAdminStore(response)
+        }
       }
     )
   },
@@ -82,6 +89,16 @@ export default {
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
       done()
+    },
+    setLogoff () {
+      this.$axios.setHeader([
+        {key: 'Accept', value: 'application/json'},
+        {key: 'Authorization', value: null}
+      ])
+      this.$store.commit('admin/setLogoff');
+      setTimeout(() => {
+        this.$router.push('/auth')
+      }, 500)
     },
     setLogout () {
       this.$axios.setHeader([

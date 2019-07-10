@@ -12,16 +12,29 @@
           <address class="text-weight-light">{{rsView.customer_address}}</address>
           <div class="text-weight-light ">Phone: {{rsView.customer_phone}}</div>
         </div>
-        <div class="info">
-          <dl class="horizontal text-weight-medium" style="min-width: 350px;">
-            <dt class="text-weight-light">SALE ORDER</dt><dd>{{ rsView.request_order ? rsView.request_order.number : '-' }}</dd>
-            <dt class="text-weight-light">No. SJ-OUT</dt><dd>{{ rsView.number }}</dd>
-            <dt class="text-weight-light">Date</dt><dd>{{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }}</dd>
-            <dt class="text-weight-light">Delivery at</dt><dd>{{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '-' }}</dd>
-          </dl>
-        </div>
+        <q-markup-table separator="cell" 
+          dense 
+          :dark="LAYOUT.isDark"
+          class="bordered no-shadow no-border-radius no-margin">
+          <tr>
+            <th>SALE ORDER</th>
+            <td>{{ rsView.request_order ? rsView.request_order.number : '-' }}</td>
+          </tr>
+          <tr>
+            <th>No. SJ-OUT</th>
+            <td>{{ rsView.number }}</td>
+          </tr>
+          <tr>
+            <th>Date</th>
+            <td>{{$app.moment(rsView.created_at).format('DD/MM/YYYY')}}</td>
+          </tr>
+          <tr>
+            <th>Delivery at</th>
+            <td>{{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '-'}}</td>
+          </tr>
+        </q-markup-table>
         <div class="col-12">
-          <q-table ref="table" class="table-border d-grid no-shadow no-radius" color="secondary" separator="vertical" dense hide-bottom
+          <q-table ref="table" class="d-grid bordered no-shadow no-radius" color="secondary" separator="vertical" dense hide-bottom
             :data="rsView.delivery_order_items" 
             no-data-label = "No Production"
             :columns="[
@@ -38,7 +51,7 @@
             <div class="q-my-xs text-italic">Description:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 group print-hide " style="padding-top:50px">
+        <div class="col-12 q-gutter-sm print-hide" style="padding-top:50px">
           <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
           <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
           <q-btn color="negative" :icon-right="btnIcon('file_copy')" label="Revision" :to="`${VIEW.resource.uri}/${$route.params.id}/revision`" v-if="IS_EDITABLE"></q-btn>

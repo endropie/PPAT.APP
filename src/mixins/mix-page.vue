@@ -25,6 +25,7 @@ export default {
     },
     SHOW: {
       get () {
+        // console.warn('GET SHOW ->')
         return this.$store.state.admin.PAGE.show
       },
       set (val) {
@@ -45,7 +46,7 @@ export default {
       }, 100)
     },
     setAdminStore (response) {
-      if (response.data && response.data.valid === true) {
+      if (response && response.data.valid === true) {
         this.$axios.setHeader([
           {key: 'Accept', value: 'application/json'},
           {key: 'Authorization', value: `Bearer ${response.data.access.token}`}
@@ -54,7 +55,7 @@ export default {
         this.$store.commit('admin/setLogin', {
           access: {
             token: response.data.access.token,
-            expires_in: response.data.access.token,
+            expires_in: response.data.access.expires_in,
             login_at: new Date()
           },
           user: {

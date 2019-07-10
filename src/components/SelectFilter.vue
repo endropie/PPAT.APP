@@ -91,6 +91,7 @@ export default {
       update(() => {
         const needle = val.toLowerCase()
         this.options = this.$attrs.options.filter(v => {
+          if(!v.hasOwnProperty('sublabel')) v.sublabel = ''
           return v.label.toLowerCase().includes(needle) || v.sublabel.toLowerCase().includes(needle)
         })
       })

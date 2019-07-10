@@ -20,7 +20,7 @@
         :error-message="errors.first('number')"
         autofocus/>
         
-      <q-select class="col-12 col-sm-6"
+      <select-filter class="col-12 col-sm-6"
         name="line_id" 
         v-model="rsForm.line_id" 
         label="Line Production" 
@@ -28,8 +28,7 @@
         v-validate="'required'"
         :options="LineOptions" clearable
         :error="errors.has('line_id')" 
-        :error-message="errors.first('line_id')"
-        ></q-select>
+        :error-message="errors.first('line_id')"/>
       <q-tooltip :disable="!IssetWorkOrderItems" :offset="[0, 10]">To change, Please delete Work-Order items first!</q-tooltip>
 
         
@@ -48,7 +47,7 @@
       </q-field>
       <div class="col-12">
         <q-table ref="table-items" dense hide-bottom
-          class="no-shadow inline full-width" color="secondary"  style="display:grid"
+          class="no-shadow inline full-width no-hightlight" color="secondary"  style="display:grid"
           :data="rsForm.work_order_items" 
           :rows-per-page-options ="[0]"
           :columns="[
@@ -59,8 +58,7 @@
             { name: 'ngratio', label: 'NG Ratio', align: 'center'},
             { name: 'quantity', label: 'Total', align: 'center'},
           ]"
-          :pagination=" {sortBy: null, descending: false, page: null, rowsPerPage: 0}"
-        >
+          :pagination=" {sortBy: null, descending: false, page: null, rowsPerPage: 0}">
           <template slot="body" slot-scope="rsItem">
             <q-tr :rsItem="rsItem">
               <q-td key="prefix" :rsItem="rsItem" style="width:50px">
@@ -84,8 +82,8 @@
                 <q-input 
                   :name="`work_order_items.${rsItem.row.__index}.target`" type="number"
                   :min="0" align="center" 
-                  filled dense hide-bottom-space color="blue-grey-4"
                   v-model="rsItem.row.target"  
+                  filled dense hide-bottom-space color="blue-grey-4"
                   v-validate="rsItem.row.item_id ? FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index]) : ''"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.target`)"
                   :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
@@ -97,10 +95,11 @@
                   :name="`work_order_items.${rsItem.row.__index}.unit_id`" 
                   v-model="rsItem.row.unit_id" 
                   filled dense hide-bottom-space color="blue-grey-4"
+                  :options="ItemUnitOptions[rsItem.row.__index]"
+                  map-options
                   v-validate="rsItem.row.item_id ? 'required' : ''"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.unit_id`)"
                   :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
-                  :options="ItemUnitOptions[rsItem.row.__index]"
                   @input="(val) => setUnitReference(rsItem.row.__index, val)"
                 />
               </q-td>
@@ -151,15 +150,15 @@
                             />
                           </q-td>
                           <q-td key="line_id" width="50%" >
-                            <q-select 
+                            <select-filter 
                               :name="`line_id-${propLine.row.__index}`" 
-                              borderless hide-bottom-space readonly color="blue-grey-1" 
+                              borderless dense hide-bottom-space hide-dropdown-icon readonly color="blue-grey-1" 
                               v-model="propLine.row.line_id" 
                               v-validate="'required'"
                               :error="errors.has(`line_id-${propLine.row.__index}`)"
                               :options="LineOptions" filter
                             />
-                            <q-tooltip :disable="!!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
+                            <q-tooltip v-if="!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
                       
                           </q-td>
                           <q-td key="begin_date" width="25%">

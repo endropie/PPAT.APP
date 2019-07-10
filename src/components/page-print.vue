@@ -3,32 +3,31 @@
     <thead>
       <td class="page-print-header" style="max-width:calc(100vw - 50px)">
         <slot name="header">
-          <div class="header no-wrap row " style="margin-bottom30px">
-              <div class="head-icon self-center">
-                <slot name="'header-icon'">
-                  <div>
-                    <q-icon  name="widgets" color="primary" class=""/>
-                  </div>
-                </slot>
-              </div>
-              <div class="head-brand">
-                <div class="brand text-no-wrap">
-                  <div  class="title text-weight-bolder uppercase ellipsis text-truncate" style="opacity:0.8">
-                    <slot name="header-title">
-                      <span>Priuk Perkasa Abadi, PT</span>
-                    </slot>
-                  </div>
-                  <div class="subtitle text-weight-light ellipsis text-truncate">
-                    <slot name="header-subtitle">
-                      <span>Jalan Jati Raya Blok J3 No.7, Cikarang Selatan, Bekasi, Jawa Barat 17530</span>
-                    </slot>
-                  </div> 
+          <div class="header no-wrap row items-start" style="margin-bottom30px">
+            <div class="head-icon self-start">
+              <slot name="'header-icon'">
+                <div>
+                  <q-icon  name="widgets" color="primary" class=""/>
                 </div>
-                <div class="tags no-print">
-                  <slot name="header-tags"></slot>
+              </slot>
+            </div>
+            <div class="head-brand">
+              <div class="brand text-no-wrap float-left">
+                <div  class="title text-weight-bolder uppercase ellipsis text-truncate" style="opacity:0.8">
+                  <slot name="header-title">
+                    <span>Priuk Perkasa Abadi, PT</span>
+                  </slot>
                 </div>
+                <div class="subtitle text-weight-light ellipsis text-truncate">
+                  <slot name="header-subtitle">
+                    <span>Jalan Jati Raya Blok J3 No.7, Cikarang Selatan, Bekasi, Jawa Barat 17530</span>
+                  </slot>
+                </div> 
               </div>
-            
+              <div class="tags no-print float-right">
+                <slot name="header-tags"></slot>
+              </div>
+            </div>
           </div>
         </slot>
       </td>
@@ -152,8 +151,9 @@ table
       justify-content space-start
 
 @media print
-  .layout-padding
+  .q-page-container
     padding 5px !important
+    
   .page-print
     box-shadow none
     -webkit-box-shadow none

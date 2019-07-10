@@ -7,17 +7,20 @@ import ListItem from '@/components/ListItem'
 import FormHeader from '@/components/FormHeader'
 import FormDetail from '@/components/FormDetail'
 import SelectFilter from '@/components/SelectFilter'
+import InputNumeric from '@/components/InputNumeric'
+import InputDate from '@/components/InputDate'
 
 import '@/css/form-page.styl'
 
 export default {
   mixins: [GlobalMix, MixPage, MixSheet],
   components: {
+    InputNumeric,
+    InputDate,
     SelectFilter,
     ListItem,
     FormHeader,
     FormDetail,
-    // VueAutonumeric,
     // QNumeric
   },
   data () {
@@ -34,6 +37,7 @@ export default {
         toView: (id) => this.FORM__toView(id),
         meta: () => this.FORM__meta(),
         load: (callback) => this.FORM__load(callback),
+        void: () => this.FORM__void(),
         delete: () => this.FORM__delete(),
         reset: (data) => this.FORM__reset(data),
         response: {
@@ -171,7 +175,7 @@ export default {
     },
 
     FORM__response_error (ErrRes, title) { 
-      this.$app.response.error(ErrRes, {'title': title})
+      this.$app.response.error(ErrRes, title)
     },
 
     FORM__response_relationship (dialog = {}) {
@@ -215,10 +219,42 @@ export default {
     },
 
     FORM__response_success (params = {}) {
-      let txtMessage = (params.mode || this.$route.meta.mode || 'SUBMIT').toUpperCase() + ' SUCCESS'
-      let txtDetail  = (params.message || 'The processing has excecute!')
-      
-      this.$app.notify.success({message: txtMessage, detail: txtDetail})
+      let mode = {
+        icon: 'check_circle_outline',
+        message: (params.mode || this.$route.meta.mode || 'SUBMIT').toUpperCase() + ' SUCCESS',
+        detail: (params.message || 'The processing has excecute!')
+      }
+      // let txtMessage = (params.mode || this.$route.meta.mode || 'SUBMIT').toUpperCase() + ' SUCCESS'
+      // let txtDetail  = (params.message || 'The processing has excecute!')
+      if(mode.detail) {
+        mode.message += `<br><small style="font-size:80%">${mode.detail}</small>`
+        mode.html = true
+      }
+      this.$app.notify.success(mode)
+    },
+
+    FORM__void () {
+      this.$q.dialog({
+        title: 'Void Confirm',
+        message: 'Are you sure to void the record ?',
+        preventClose: true,
+        ok: 'Yes, please!',
+        cancel: 'Cancel'
+      }).onOk(() => {
+        this.$axios.delete(`${this.FORM.resource.api}/${this.$route.params.id}?mode=void`)
+          .then((response) => {
+            console.warn('then', response)
+            if (response.data.success) {
+              let txtMessage = 'The record has been void!'
+              this.$q.notify({message: txtMessage, color: 'positive', icon: 'check', position: 'top-right', timeout: 3000})
+              this.FORM__toIndex()
+            }
+          })
+          .catch(error => {
+            if(!error.hasOwnProperty('response')) console.warn('error', error)
+            this.FORM.response.error(error.response)
+          })
+      })
     },
 
     FORM__delete () {
@@ -240,11 +276,8 @@ export default {
             }
           })
           .catch(error => {
-            console.warn('error', error)
-            if (error.hasOwnProperty('response')) {
-              console.error(error.response)
-            }
-            else console.error(error)
+            if(!error.hasOwnProperty('response')) console.warn('error', error)
+            this.FORM.response.error(error.response)
           })
       })
     },

@@ -63,6 +63,7 @@
             v-model="rsForm.shift_id"  
             v-validate="'required'" 
             :options="ShiftOptions" filter 
+            map-options emit-value
             :error="errors.has('shift_id')"
           />
         </div>
@@ -87,16 +88,16 @@
             <q-tr :propItem="propItem" width="30%">
               <q-td key="prefix"  style="max-width:70px" >
                 <div class="">
-                  <q-btn class="no-padding" dense flat size="md" @click="removeItem(propItem.row.__index)" icon="delete" color="blue-grey-5">
+                  <q-btn dense flat size="md" @click="removeItem(propItem.row.__index)" icon="delete" color="blue-grey-5">
                     <q-tooltip :offset="[10, 10]">Remove</q-tooltip>
                   </q-btn>
-                  <q-btn class="no-padding" dense flat size="md"  @click="cloneItem(propItem.row.__index)" icon="queue" color="blue-grey-4">
+                  <q-btn dense flat size="md"  @click="cloneItem(propItem.row.__index)" icon="queue" color="blue-grey-4">
                     <q-tooltip :offset="[10, 10]">clone</q-tooltip>
                   </q-btn>
                 </div>
               </q-td>
               <q-td key="work_order_item_id"  >
-                <q-select 
+                <select-filter 
                   :name="`workin_production_items.${propItem.row.__index}.work_order_item_id`" 
                   v-model="propItem.row.work_order_item_id" 
                   outlined hide-bottom-space dense color="blue-grey-5"
@@ -109,7 +110,7 @@
                 
               </q-td>
               <q-td key="item_id"  width="35%">
-                <q-select 
+                <select-filter 
                   :name="`workin_production_items.${propItem.row.__index}.item_id`" 
                   v-model="propItem.row.item_id" class="full-width" 
                   outlined hide-bottom-space dense color="blue-grey-5"
@@ -140,6 +141,7 @@
                   outlined hide-bottom-space dense color="blue-grey-5"
                   @input="(val)=> { setUnitReference(propItem.row.__index, val) }"
                   :options="ItemUnitOptions[propItem.row.__index]"
+                  map-options emit-value
                   v-validate="propItem.row.item_id ? 'required' : ''"
                   :error="errors.has(`workin_production_items.${propItem.row.__index}.unit_id`)"
                 />
@@ -314,9 +316,6 @@ export default {
     },
     ShiftOptions() {
       return (this.SHEET.shifts.data.map(item => ({label: item.name, value: item.id})) || [])
-    },
-    CustomerOptions() {
-      return (this.SHEET.customers.data.map(item => ({label: [item.code, item.name].join(' - '), value: item.id})) || [])
     },
     UnitOptions() {
       return (this.SHEET.units.data.map(item => ({label: item.code, value: item.id})) || [])
@@ -517,7 +516,7 @@ export default {
       this.rsForm.workin_production_items.push(newEntri)
     },
     cloneItem(index) {
-      let newEntri =  this.rsForm.workin_production_items[index];
+      let newEntri = Object.assign({}, JSON.parse(JSON.stringify( this.rsForm.workin_production_items[index])))
       this.rsForm.workin_production_items.push(newEntri)
     },
     removeItem(index) {

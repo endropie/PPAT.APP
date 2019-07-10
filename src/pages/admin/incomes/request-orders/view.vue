@@ -3,9 +3,10 @@
     <q-page padding class="row justify-center"  v-if="SHOW">
       <page-print class="q-pa-md q-pr-lg shadow-2">
         <div slot="header-tags">
-          <q-chip tag outline small color="negative" v-if="rsView.revise_id">
-            Revised
-          </q-chip>
+          <q-chip tag outline small color="negative" icon="assignment" label="Revised"
+            v-if="rsView.revise_id" />
+          <q-chip tag outline small color="negative" icon="bookmark" label="void" 
+            v-if="rsView.status == 'VOID'" />
         </div>
         <div class="row justify-around q-gutter-y-sm" >
           <div class="text-center">
@@ -25,7 +26,7 @@
               </table>
           </div>
           <div class="col-12">
-            <q-table ref="table" class="table-border d-grid no-shadow no-radius" color="secondary" separator="vertical" dense hide-bottom
+            <q-table ref="table" class="d-grid bordered no-shadow" color="secondary" separator="vertical" dense hide-bottom
               :data="rsView.request_order_items" 
               no-data-label = "No Production"
               :columns="[
@@ -47,7 +48,7 @@
               <div class="q-my-xs text-italic">Description:</div>
               <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
           </div>
-          <div class="col-12 group print-hide " style="padding-top:50px">
+          <div class="col-12 q-gutter-sm print-hide " style="padding-top:50px">
             <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
             <q-btn label="Edit" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`"  />
             <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
