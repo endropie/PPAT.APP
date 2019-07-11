@@ -34,7 +34,7 @@
             v-validate="$route.meta.mode == 'edit' ? 'required':''"
             :error="errors.has('number')" :error-message="errors.first('number')"/>
 
-          <input-date class="col-12" name="date" type="date" 
+          <input-date class="col-12" name="date" 
             stack-label label="Date" 
             v-model="rsForm.date" 
             :dark="LAYOUT.isDark" 

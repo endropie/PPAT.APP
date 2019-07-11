@@ -2,7 +2,7 @@
   <q-input 
     v-bind="$attrs"
     v-on="$listeners"
-    v-model="value" 
+    v-model="date" 
     filled  mask="date">
       <template v-slot:append>
         <q-icon name="event" class="cursor-pointer">
@@ -26,14 +26,21 @@ export default {
     },
     data() {
       return {
-        value: this.$attrs.value,
-        setDefault: {
-            
-        }
+        value: this.$attrs.value
       }
     },
     watch: {
       '$attrs.value': 'setValue',
+    },
+    computed:{
+      date: {
+        get() {
+          return this.value
+        },
+        set(v){
+          this.value = v
+        }
+      }
     },
     methods: {
       setValue(v) {

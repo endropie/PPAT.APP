@@ -75,12 +75,7 @@ export default {
   },
   mounted () {
     // Page Component mounted!  
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 1000);
-      }
-    )
+    this.INDEX.load()
   }
 }
 </script>

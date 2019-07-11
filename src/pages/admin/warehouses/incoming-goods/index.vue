@@ -35,25 +35,25 @@
                 dense hide-bottom-space
                 :dark="LAYOUT.isDark"
                 :options="CustomerOptions" filter clearable />
-              <!-- <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
                 stack-label label="Begin Date" 
-                v-model="FILTERABLE.fill.date_start.value" 
+                v-model="FILTERABLE.fill.begin_date.value" 
                 type="date"
                 dense hide-bottom-space 
                 :dark="LAYOUT.isDark" />
               <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
                 stack-label label="Until Date" 
-                v-model="FILTERABLE.fill.date_end.value" 
+                v-model="FILTERABLE.fill.until_date.value" 
                 type="date" 
                 dense hide-bottom-space
                 :dark="LAYOUT.isDark" />
-                -->
+               
 
-              <q-select class="col-12 col-md-6" 
+              <q-select class="col-12 col-md-12" 
                 new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
                 dense input-debounce="0"
                 name="filterable" 
-                v-model="FILTERABLE.value" 
+                v-model="FILTERABLE.search" 
                 placeholder="Searching..." 
                 emit-value
                 :dark="LAYOUT.isDark">
@@ -111,12 +111,12 @@ export default {
             type: 'integer',
             transform: (value) => { return null }
           },
-          begin_daterange: {
+          begin_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
           },
-          until_daterange: {
+          until_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
@@ -142,12 +142,7 @@ export default {
     }
   },
   created () {
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 500);
-      }
-    )
+    this.INDEX.load()
   },
   computed: {
     CustomerOptions() {

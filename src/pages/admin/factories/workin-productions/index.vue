@@ -40,30 +40,28 @@
                 :options="LineOptions" filter clearable />
               <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
                 stack-label label="Begin Date" 
-                v-model="FILTERABLE.fill.date_start.value" 
+                v-model="FILTERABLE.fill.begin_date.value" 
                 type="date"
                 dense hide-bottom-space 
                 :dark="LAYOUT.isDark" />
               <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
                 stack-label label="Until Date" 
-                v-model="FILTERABLE.fill.date_end.value" 
+                v-model="FILTERABLE.fill.until_date.value" 
                 type="date" 
                 dense hide-bottom-space
                 :dark="LAYOUT.isDark" />
-              <q-select class="col-12" 
                 
-                new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
-                input-debounce="0"
+              <q-select class="col-12" 
+                multiple use-chips use-input new-value-mode="add"
+                dense hide-dropdown-icon
                 name="filterable" 
-                v-model="FILLABEL.value" 
+                v-model="FILTERABLE.search" emit-value
                 placeholder="Searching..." 
-                emit-value
-                :dark="LAYOUT.isDark" 
-                >
+                :dark="LAYOUT.isDark">
                 <template slot="append">
-                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit()"/>
+                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit"/>
                 </template>
-              </q-select>
+              </q-select> 
               
             </div>
           </table-header>
@@ -121,12 +119,12 @@ export default {
             type: 'integer',
             transform: (value) => { return null }
           },
-          date_start: {
+          begin_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
           },
-          date_end: {
+          until_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
@@ -152,12 +150,7 @@ export default {
     }
   },
   created () {
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 500);
-      }
-    )
+    this.INDEX.load()
   },
   computed: {
     LineOptions() {

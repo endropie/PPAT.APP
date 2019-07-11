@@ -47,7 +47,7 @@
                 new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
                 dense input-debounce="0"
                 name="filterable" 
-                v-model="FILTERABLE.value" 
+                v-model="FILTERABLE.search" 
                 placeholder="Searching..." 
                 emit-value
                 :dark="LAYOUT.isDark">
@@ -61,7 +61,7 @@
           </table-header>
         </template>
 
-        <!-- <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.value" placeholder="Searching..."  color="blue-grey-5"
+        <!-- <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.search" placeholder="Searching..."  color="blue-grey-5"
           @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
           <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
             
@@ -160,13 +160,7 @@ export default {
     }
   },
   created () {
-
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 500);
-      }
-    )
+    this.INDEX.load()
   },
   computed: {
     CustomerOptions() {

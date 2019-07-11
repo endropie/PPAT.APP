@@ -100,12 +100,12 @@ export default {
             type: 'integer',
             transform: (value) => { return null }
           },
-          date_start: {
+          begin_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
           },
-          date_end: {
+          until_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
@@ -136,13 +136,7 @@ export default {
     }
   },
   created () {
-    console.log('[PLAY] Request Orders created!')
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 500);
-      }
-    )
+    this.INDEX.load()
   },
   computed: {
     CustomerOptions() {

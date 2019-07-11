@@ -92,12 +92,7 @@ export default {
     }
   },
   created () {
-    this.SHOW = false
-      this.INDEX.load(
-        () => {
-          setTimeout(() => this.SHOW = true, 500);
-        }
-      )
+    this.INDEX.load()
   }
 }
 </script>

@@ -28,6 +28,43 @@
               <q-separator :dark="LAYOUT.isDark"/>
             </template>
 
+            <div class="row q-col-gutter-xs" >
+              <select-filter class="col-12 col-md-6" style="min-width:150px"
+                name="customer_id" 
+                v-model="FILTERABLE.fill.customer_id.value" 
+                stack-label :label="$tc('general.customer')" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark"
+                :options="CustomerOptions" clearable />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Begin Date" 
+                v-model="FILTERABLE.fill.begin_date.value" 
+                type="date"
+                dense hide-bottom-space 
+                :dark="LAYOUT.isDark" />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Until Date" 
+                v-model="FILTERABLE.fill.until_date.value" 
+                type="date" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark" />
+               
+
+              <q-select class="col-12" 
+                new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
+                dense input-debounce="0"
+                name="filterable" 
+                v-model="FILTERABLE.search" 
+                placeholder="Searching..." 
+                emit-value
+                :dark="LAYOUT.isDark">
+
+                <template slot="append">
+                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit"/>
+                </template>
+              </q-select> 
+              
+            </div>
           </table-header>
         </template>
 
@@ -62,6 +99,28 @@ export default {
   mixins: [MixIndex],
   data () {
     return {
+      SHEET: {
+        customers: {data:[], api:'/api/v1/incomes/customers?mode=all'}
+      },
+      FILTERABLE: {
+        fill: {
+          customer_id: {
+            value: null,
+            type: 'integer',
+            transform: (value) => { return null }
+          },
+          begin_date: {
+            value: null,
+            type: 'date',
+            transform: (value) => { return null }
+          },
+          until_date: {
+            value: null,
+            type: 'date',
+            transform: (value) => { return null }
+          }
+        }
+      },
       TABLE:{
         mode: 'index',
         resource:{
@@ -83,13 +142,12 @@ export default {
     }
   },
   created () {
-    // console.log('[PLAY] Pre Delivery created!')
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 500);
-      }
-    )
-  }
+    this.INDEX.load()
+  },
+  computed: {
+    CustomerOptions() {
+      return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
+    },
+  },
 }
 </script>

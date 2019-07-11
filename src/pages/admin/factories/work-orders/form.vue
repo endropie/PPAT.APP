@@ -79,7 +79,7 @@
                 
               </q-td>
               <q-td key="target"  width="15%">
-                <q-input 
+                <q-input
                   :name="`work_order_items.${rsItem.row.__index}.target`" type="number"
                   :min="0" align="center" 
                   v-model="rsItem.row.target"  
@@ -150,12 +150,12 @@
                             />
                           </q-td>
                           <q-td key="line_id" width="50%" >
-                            <select-filter 
-                              :name="`line_id-${propLine.row.__index}`" 
+                            <select-filter class="field-auto-hight"
+                              :name="`work_order_item_lines.${propLine.row.__index}.line_id`" 
                               borderless dense hide-bottom-space hide-dropdown-icon readonly color="blue-grey-1" 
                               v-model="propLine.row.line_id" 
                               v-validate="'required'"
-                              :error="errors.has(`line_id-${propLine.row.__index}`)"
+                              :error="errors.has(`work_order_item_lines.${propLine.row.__index}.line_id`)"
                               :options="LineOptions" filter
                             />
                             <q-tooltip v-if="!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
@@ -163,13 +163,15 @@
                           </q-td>
                           <q-td key="begin_date" width="25%">
                             
-                            <q-input v-model="propLine.row.begin_date" type="date" 
+                            <q-input class="field-auto-hight"
+                              v-model="propLine.row.begin_date" type="date" 
                               filled dense hide-bottom-space color="blue-grey-1" 
                               :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                             />
                           </q-td>
                           <q-td key="until_date"  width="25%">
-                            <q-input  v-model="propLine.row.until_date" type="date" 
+                            <q-input class="field-auto-hight"
+                              v-model="propLine.row.until_date" type="date" 
                               filled dense hide-bottom-space color="blue-grey-1"  
                               :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                             />

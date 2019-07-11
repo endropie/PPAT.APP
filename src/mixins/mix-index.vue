@@ -68,7 +68,6 @@ export default {
           let apiParamlink = this.TABLE__getParams().join('&')
           this.TABLE.pagination.page = 1
           this.DATAINDEX__route(this.TABLE.resource.uri + `?` + apiParamlink)
-          this.DATAINDEX__getData()
         }
       }
     }
@@ -143,7 +142,7 @@ export default {
         }
         else {
           this.TABLE__init(this.$route)
-          this.DATAINDEX__getData(null, callbacks)
+          this.DATAINDEX__getData(callbacks)
         }
       }
       
@@ -162,12 +161,12 @@ export default {
     DATAINDEX__route (paramUrl) {
       this.$router.push(paramUrl)
     },
-    DATAINDEX__getData (refresh = null, callbacks) {
+    DATAINDEX__getData (callback = null) {
       let pagination = this.TABLE.pagination
       this.TABLE.loading = true
       let apiParamlink = this.TABLE__getParams().join('&')
       
-      // console.log('[PLAY] $get = "'+ (this.TABLE.resource.api + `?` + apiParamlink) +'"')
+      console.log('[PLAY] $get = "'+ (this.TABLE.resource.api + `?` + apiParamlink) +'"')
       this.$axios
         .get(this.TABLE.resource.api + `?` + apiParamlink)
         .then(response => {
@@ -179,19 +178,7 @@ export default {
           this.TABLE.pagination.rowsPerPage = Number(response.data.per_page)
 
           setTimeout(() => {
-            if (refresh !== null) setTimeout(() => { refresh() }, 800)
-            const call = (f) => {
-              if (typeof f === 'function') return f()
-              else if (typeof f === 'undefined') return f
-            }
-
-            if (typeof callbacks === 'object' && Array.isArray(callbacks)) {
-              callbacks.map((f) => {
-                if (typeof f === 'function') f()
-                console.warn('[PLAY] WARNING - Many (array) of callbacks must call function type!')
-              })
-            }
-            else return call(callbacks)
+            if (callback !== null) setTimeout(() => { callback() }, 800)
           }, 500)
         })
         .catch(error => {

@@ -87,9 +87,7 @@ export default {
     }
   },
   created() {
-    this.INDEX.load(
-      // this calllback function!
-    )
+    this.INDEX.load()
   }
 }
 </script>

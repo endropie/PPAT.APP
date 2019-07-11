@@ -58,13 +58,8 @@ export default {
     }
   },
   created () {
-    // Page Component mounted!  
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 500);
-      }
-    )
+    // Page Component mounted!
+    this.INDEX.load()
   }
 }
 </script>

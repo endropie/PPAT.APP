@@ -29,25 +29,38 @@
           </template>
 
           <template slot="default">
-            <div class="row q-pa-xs q-gutter-xs items-end">
-              <q-select class="col-12" ref="filterable" 
-                name="filterable" 
-                add-icon=" " 
-                dense
-                v-model="FILLABEL.value" 
-                fill-input
-                use-chips
-                use-input
-                multiple
+            <div class="row q-pa-xs q-col-gutter-xs items-end">
+              <select-filter class="col-12 col-sm-12 col-md-6" style="min-width:150px"
+                name="customer_id" 
+                v-model="FILTERABLE.fill.customer_id.value" 
+                stack-label label="Line" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark"
+                :options="CustomerOptions" filter clearable />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Begin Date" 
+                v-model="FILTERABLE.fill.begin_date.value" 
+                type="date"
+                dense hide-bottom-space 
+                :dark="LAYOUT.isDark" />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Until Date" 
+                v-model="FILTERABLE.fill.until_date.value" 
+                type="date" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark" />
 
+              <q-select class="col-12" 
+                multiple use-chips use-input new-value-mode="add"
+                dense hide-dropdown-icon
+                name="filterable" 
+                v-model="FILTERABLE.search" emit-value
                 placeholder="Searching..." 
-                @add="FILTERABLE.setCreate" 
-                @remove="FILTERABLE.setRemove">
-                
-              </q-select>
-              <span class="col q-ml-xs q-pt-xs">
-                <q-btn class="float-right" icon="search" label="Search" size="sm" color="secondary" right @click="FILTERABLE.submit()"/>
-              </span>
+                :dark="LAYOUT.isDark">
+                <template slot="append">
+                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit"/>
+                </template>
+              </q-select> 
             </div>
 
           </template>
@@ -57,7 +70,7 @@
         <div>
           <div class="row q-pa-xs q-gutter-xs items-end">
             <q-field class="col-12" ref="filterable" label-width="1">
-              <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.value" placeholder="Searching..."  color="blue-grey-5"
+              <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.search" placeholder="Searching..."  color="blue-grey-5"
                 @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
                 <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
                   <!-- component Field -->
@@ -130,12 +143,12 @@ export default {
             type: 'integer',
             transform: (value) => { return null }
           },
-          date_start: {
+          begin_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
           },
-          date_end: {
+          until_date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
@@ -166,12 +179,7 @@ export default {
     }
   },
   created () {
-    this.SHOW = false
-    this.INDEX.load(
-      () => {
-        setTimeout(() => this.SHOW = true, 500);
-      }
-    )
+    this.INDEX.load()
   },
   computed: {
     CustomerOptions() {
