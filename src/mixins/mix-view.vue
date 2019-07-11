@@ -91,7 +91,7 @@ export default {
         preventClose: true,
         ok: 'Yes, please!',
         cancel: 'Cancel'
-      }).then(() => {
+      }).onOk(() => {
         this.$axios.delete(`${this.VIEW.resource.api}/${this.$route.params.id}`)
           .then((response) => {
             // console.warn(response)
@@ -106,7 +106,6 @@ export default {
             this.$app.response.error(error.response, 'Deleting Invalid!')
           })
       })
-        .catch(() => {})
     },
 
     VIEW__toIndex () { // Back history page with 1 step

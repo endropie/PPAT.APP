@@ -5,7 +5,7 @@
       <q-item>
         <q-item-section>
           <form class="form" novalidate @submit.prevent="validateForm()">
-            <div class="row gutter-xs" >
+            <div class="row q-gutter-xs" >
               <q-input 
                 name="app_name" 
                 label="App Name" 
@@ -14,7 +14,7 @@
                 class="col-12" 
                 :dark="LAYOUT.isDark" 
                 :error="errors.has('app_name')" 
-                :error-label="errors.first('app_name')"
+                :error-message="errors.first('app_name')"
               />
               <q-input 
                 name="app_subname" 
@@ -23,7 +23,7 @@
                 class="col-12" label="Sub name" 
                 :dark="LAYOUT.isDark" 
                 :error="errors.has('app_subname')" 
-                :error-label="errors.first('app_subname')"
+                :error-message="errors.first('app_subname')"
               />
               <div class="col-12" align="right">
                 <!-- <q-btn color="light" size="sm" @click="setForm(FORM.data)">Reset</q-btn> -->
@@ -60,8 +60,8 @@ export default {
   },
   mounted(){
     // Component Page Mounted!
-    // this.PAGE.hide()
-    // this.FORM.onLoad(
+    // this.SHOW = false
+    // this.FORM.load(
     //   ()=> this.routing()
     // )
 
@@ -80,7 +80,7 @@ export default {
       this.rsForm.app_subname = SETTING.general.app_subname
       
       setTimeout(() => {
-        this.PAGE.show()
+        this.SHOW = true
         this.FORM.show= true
       }, 800);
       

@@ -14,8 +14,7 @@ function parseMenuNode (node, __path) {
 
   if (node.children !== void 0) {
     node.children.forEach(node => parseMenuNode(node, prefix))
-  }
-  else if (node.tabs !== void 0) {
+  } else if (node.tabs !== void 0) {
     node.tabs.forEach(tab => {
       const hash = setUrl(prefix, tab.path)
       if (tab.resources !== void 0) {
@@ -35,8 +34,7 @@ function parseMenuNode (node, __path) {
             component: () => import(`@/pages/${hash.substring(1)}/${tabres.page}`)
           })
         })
-      }
-      else {
+      } else {
         AdminPages.push({
           path: hash,
           meta: {
@@ -57,8 +55,7 @@ function parseMenuNode (node, __path) {
       path: prefix,
       redirect: redir
     })
-  }
-  else if (node.resources !== void 0) {
+  } else if (node.resources !== void 0) {
     node.resources.forEach(res => {
       const hash = prefix + (res.path ? ('/' + res.path) : '')
       AdminPages.push({
@@ -72,9 +69,10 @@ function parseMenuNode (node, __path) {
         component: () => import(`@/pages/${prefix.substring(1)}/${res.page}`)
       })
     })
-  }
-  else {
-    let file = (node.file || '')
+  } else {
+    // let file = (node.fileType || '')
+    // let strFile = node.file || `@/pages/${prefix.substring(1)}`
+    // console.warn(prefix, 'file->', `"${strFile}"`)
     AdminPages.push({
       path: prefix,
       meta: {
@@ -83,7 +81,8 @@ function parseMenuNode (node, __path) {
         tabs: node.tabs || [],
         hash: prefix
       },
-      component: () => import(`@/pages/${prefix.substring(1) + file}`)
+      // component: () => import(`"@/../README.md"`)
+      component: () => import(`@/pages/${prefix.substring(1)}`)
     })
   }
 }

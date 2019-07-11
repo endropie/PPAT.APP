@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="page-index" v-if="PAGE.enable">
+  <q-page padding class="page-index" v-if="SHOW">
     <q-pull-to-refresh @refresh="TABLE.refresh">
       <q-table 
         ref="table" 
@@ -19,16 +19,15 @@
         :pagination.sync="TABLE.pagination"
         @request="TABLE.compute"
         :loading="TABLE.loading"
-        >
-        
+      >
         <template v-slot:top-right>
-          <q-input borderless dense debounce="300" v-model="TABLE.filter" placeholder="Search">
+          <q-input type="search" borderless dense debounce="300" v-model="TABLE.filter" :dark="LAYOUT.isDark">
             <template v-slot:prepend>
               <q-icon name="search" />
             </template>
             <template v-slot:append>
-              <q-btn  dense flat round color="positive" icon="add"  @click="$router.push(`${TABLE.resource.uri}/create`)"/>
-              <q-btn  dense flat round color="grey" icon="more_vert" />
+              <q-btn  dense flat color="grey" icon="add"  @click="$router.push(`${TABLE.resource.uri}/create`)"/>
+              <q-btn  dense flat color="grey" icon="more_vert" />
             </template>
           </q-input>
         </template>
@@ -84,13 +83,13 @@ export default {
     }
   },
   created () {
-    // this.PAGE.hide()
-    // this.PAGE.enable = false
+    // this.SHOW = false
+    // this.SHOW = false
     this.INDEX.load(
       () => {
         setTimeout(() => {
-          this.PAGE.enable = true
-          // console.log('this.PAGE.enable', this.PAGE.enable)
+          this.SHOW = true
+          // console.log('this.SHOW', this.SHOW)
         }, 500);
       }
     )

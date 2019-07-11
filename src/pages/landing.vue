@@ -56,6 +56,10 @@ export default {
   components: {
     PrivacyPolicy
   },
+  created() {
+    console.warn('Locale -> ', this.$q.lang.getLocale() )
+    console.warn('success -> ', this.$q.lang.label.success )
+  },
   methods: {
     launch () {
       openURL('http://quasar-framework.org')

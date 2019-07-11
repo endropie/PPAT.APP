@@ -54,11 +54,6 @@ export default {
         }
       }, 700)
     },
-    alert () {
-      this.$q.dialog({
-        title: 'Good job!'
-      })
-    }
   },
   beforeDestroy () {
     clearInterval(this.interval1)

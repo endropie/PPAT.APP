@@ -52,7 +52,6 @@ module.exports = function (ctx) {
       plugins: [
         'Notify'
       ]
-
       // iconSet: 'ionicons-v4'
       // lang: 'de' // Quasar language
     },
@@ -74,6 +73,11 @@ module.exports = function (ctx) {
         //   exclude: /node_modules/
         // })
 
+        cfg.module.rules.push({
+          test: /\.md$/,
+          loader: 'vue-loader!vue-md-loader'
+        })
+
         cfg.resolve.alias = {
           ...cfg.resolve.alias,
           '@': path.resolve(__dirname, 'src')
@@ -84,7 +88,7 @@ module.exports = function (ctx) {
     devServer: {
       // https: true,
       // port: 8080,
-      open: true // opens browser window automatically
+      // open: true // opens browser window automatically
     },
 
     animations: 'all', // --- includes all animations

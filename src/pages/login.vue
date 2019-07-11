@@ -24,7 +24,7 @@
                 v-validate="'required'"
                 icon="person" 
                 :error="errors.has('email')" 
-                :error-label="errors.first('email')"
+                :error-message="errors.first('email')"
               >
                 <q-btn icon="edit" size="md" dense flat  color='grey-6' v-if="FORM.hasEmail" @click="FORM.hasEmail = false" :tabindex="5000"></q-btn>
               </q-input>
@@ -37,7 +37,7 @@
                 v-model="rsLogin.password" 
                 v-validate="'required'"
                 :error="errors.has('password')" 
-                :error-label="errors.first('password')" 
+                :error-message="errors.first('password')" 
                 @keyup="(event) => {
                   if (event.keyCode === 13) {
                     event.preventDefault();
@@ -64,7 +64,7 @@
       </div>
       <a class="ribbon" :title="`PPA Administration Built on v${$q.version}`" />
     </div>
-    <q-inner-loading :visible="FORM.loading">
+    <q-inner-loading :showing="FORM.loading">
       <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
   </div>

@@ -53,17 +53,3 @@ export const LAYOUT = (state) => {
     ...state.LAYOUT
   }
 }
-
-export const PAGE = (state) => {
-  return {
-    show: () => {
-      // console.warn('PAGE->show')
-      state.PAGE.enable = true
-    },
-    hide: () => {
-      // console.warn('PAGE->hide')
-      state.PAGE.enable = false
-    },
-    ...state.PAGE
-  }
-}

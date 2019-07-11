@@ -1,20 +1,7 @@
 <template>
-  <q-layout view="lhh Lpr lFf" :class="{'bg-grey-8': LAYOUT.isDark}">
+  <q-layout view="lhh Lpr lFf" :class="LAYOUT.isDark ? 'bg-grey-10 text-white' : 'bg-white text-dark'">
     <q-header class="header" elevated>
-      <q-toolbar color="primary" :class="{'bg-grey-10': LAYOUT.isDark}">
-        <q-btn class="cordova-only electron-only" icon="arrow_back" aria-label="Go back" flat round dense v-go-back.single="PAGEMETA.backRoute" />
-        <q-toolbar-title>
-          <q-icon v-show="$route.meta.icon" style="font-size: 2rem; margin-right: 5px;" :name="$route.meta.icon" />
-          {{ $route.meta.title }} -> L: {{LAYOUT.isDark}}
-        </q-toolbar-title>
-        
-        <q-btn
-          aria-label="Screen" class="within-iframe-hide"  flat round dense
-          @click="$q.fullscreen.toggle()" :icon="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'"
-        />
-        <q-btn aria-label="Logout" class="within-iframe-hide" icon="power_settings_new" flat round dense @click="setLogout()" />
-        <q-btn aria-label="Menu" class="within-iframe-hide" icon="menu" flat round dense @click="DRAWER = !DRAWER" />
-      </q-toolbar>
+      <admin-header :class="LAYOUT.isDark ? ' ': ''" />
     </q-header>
 
     <q-drawer
@@ -22,11 +9,11 @@
       bordered
       content-class="bg-grey-2"
     >
-    <q-scroll-area :class="LAYOUT.isDark ? 'bg-grey-10' : 'bg-grey-3'" style="width: 100%; height: 100%;">
-        <div class="row flex-center " :class="LAYOUT.isDark ? 'bg-black' : 'bg-white'" style="height: 115px">
+      <q-scroll-area :class="LAYOUT.isDark ? 'bg-black text-primary' : 'bg-white text-primary'" style="width: 100%; height: 100%;">
+        <div class="row flex-center opacity-1" :class="LAYOUT.isDark ? 'bg-primary text-white' : 'bg-grey-2 text-primary'" style="height: 115px">
           <!-- <img alt="Quasar logo" src="~assets/quasar-logo.svg" style="height: 75px; width 75px;"> -->
-          <q-icon name="widgets" class="text-h3" :color="LAYOUT.isDark ? 'white' : 'primary'" />
-          <div class="caption q-ml-md" :class="LAYOUT.isDark ? 'text-white' : 'bg-white'">
+          <q-icon name="widgets" class="text-h3" />
+          <div class="caption q-ml-md">
             <!-- Quasar v{{ $q.version }} -->
             PPA Play <BR/>V-{{'1.0'}}
           </div>
@@ -41,9 +28,9 @@
         appear :duration="400" @leave="resetScroll">
         <router-view />
       </transition>
-      <q-page v-if="!PAGE.enable" >
-        <q-inner-loading :visible="!PAGE.enable" :dark="LAYOUT.isDark">
-          <q-spinner-dots size="70px" color="primary" />
+      <q-page v-if="!SHOW" >
+        <q-inner-loading :showing="!SHOW" :dark="LAYOUT.isDark">
+          <q-spinner-facebook  size="70px" color="primary" />
         </q-inner-loading>
       </q-page>
     </q-page-container>
@@ -56,17 +43,18 @@ import { mapState, mapActions } from 'vuex'
 import MixPage from '@/mixins/mix-page.vue'
 import AdminTabs from 'components/admin-tabs'
 import AdminMenu from 'components/AdminMenu'
+import AdminHeader from 'components/AdminHeader'
 
 export default {
-  name: 'AdminLayout',
   mixins: [MixPage],
   components: {
     AdminTabs,
-    AdminMenu
+    AdminMenu,
+    AdminHeader,
   },
   data () {
     return {
-      leftDrawerOpen: this.$q.platform.is.desktop
+      // data..
     }
   },
   created(){
@@ -79,17 +67,6 @@ export default {
     )
   },
   computed: {
-    title(){
-      return this.$route.meta.title
-    },
-    DRAWER: {
-      get () {
-        return this.$store.state.admin.PAGE.drawer
-      },
-      set (val) {
-        this.$store.commit('admin/setDrawer', val)
-      }
-    },
     ...mapState('admin', [
       'PAGEMETA',
       'AUTH'
@@ -123,6 +100,9 @@ export default {
 header.header 
   // background-image: linear-gradient(145deg, ()$primary 11%, ()$dark-primary 75%)
   background-image: linear-gradient(145deg, rgba(255,255,255,0) 10%,  rgba(0, 0, 0, 0.5) 90%)
+
+  .q-toolbar
+    height 50px
 aside.q-drawer
   background #fff0
 </style>

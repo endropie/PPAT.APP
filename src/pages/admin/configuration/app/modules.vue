@@ -1,9 +1,9 @@
 <template>
   <q-page padding>
     <q-list highlight class="main-box" :dark="LAYOUT.isDark">
-      <q-list-header icon="settings">Module setting</q-list-header>
+      <q-item-label header icon="settings">Module setting</q-item-label>
       
-      <q-item-separator />
+      <q-separator :dark="LAYOUT.isDark" />
     </q-list>
   </q-page>
 </template>

@@ -73,7 +73,7 @@ export default {
           })
       }
     },
-    SHEET__REQUEST (callbacks) {
+    SHEET__REQUEST (callbacks = null) {
       let requests = []
       for (const i in this.SHEET) {
         if (this.SHEET.hasOwnProperty(i)) {
@@ -96,13 +96,8 @@ export default {
             else if (typeof f === 'undefined') return f
           }
 
-          if (typeof callbacks === 'object' && Array.isArray(callbacks)) {
-            callbacks.map((f) => {
-              if (typeof f === 'function') f()
-              console.warn('[PLAY] WARNING - Many (array) of callbacks must call function type!')
-            })
-          }
-          else return call(callbacks)
+          if (callbacks !== null) callbacks()
+            
         })
         .catch(error => {
           this.$app.response.error(error.response, 'ERROR Get Option')

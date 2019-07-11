@@ -9,10 +9,10 @@ const common = [
     icon: 'style',
     middleware: [access, permission],
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   },
   {
@@ -46,22 +46,23 @@ const incomes = [
     icon: 'group',
     path: 'customers',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   },
   {
+    hide: true,
     name: 'Forecasts',
     icon: 'timeline',
     path: 'forecasts',
     middleware: [access],
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   },
   {
@@ -69,10 +70,10 @@ const incomes = [
     icon: 'shop',
     path: 'request-orders',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   },
   {
@@ -87,10 +88,10 @@ const incomes = [
         icon: 'linear_scale',
         path: 'pre-deliveries',
         resources: [
-          {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-          {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-          {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-          {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+          { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+          { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+          { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+          { page: 'view', path: ':id', meta: { middleware: [permission()] } }
         ]
       },
       {
@@ -98,10 +99,10 @@ const incomes = [
         icon: 'playlist_add_check',
         path: 'ship-delivery-items',
         resources: [
-          {page: 'index', path: '', icon: 'list', meta: {middleware: [permission(['delivery-orders-read'])]}},
-          {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission(['delivery-orders-create'])]}},
+          { page: 'index', path: '', icon: 'list', meta: { middleware: [permission(['delivery-orders-read'])] } },
+          { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission(['delivery-orders-create'])] } },
           // {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission(['delivery-orders-update'])]}},
-          {page: 'view', path: ':id', meta: {middleware: [permission(['delivery-orders-read'])]}}
+          { page: 'view', path: ':id', meta: { middleware: [permission(['delivery-orders-read'])] } }
         ]
       },
       {
@@ -109,10 +110,10 @@ const incomes = [
         icon: 'local_shipping',
         path: 'ship-deliveries',
         resources: [
-          {page: 'index', path: '', icon: 'list', meta: {middleware: [permission(['delivery-orders-read'])]}},
-          {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission(['delivery-orders-create'])]}},
+          { page: 'index', path: '', icon: 'list', meta: { middleware: [permission(['delivery-orders-read'])] } },
+          { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission(['delivery-orders-create'])] } },
           // {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission(['delivery-orders-update'])]}},
-          {page: 'view', path: ':id', meta: {middleware: [permission(['delivery-orders-read'])]}}
+          { page: 'view', path: ':id', meta: { middleware: [permission(['delivery-orders-read'])] } }
         ]
       },
       {
@@ -120,11 +121,11 @@ const incomes = [
         icon: 'local_offer',
         path: 'delivery-orders',
         resources: [
-          {page: 'index', path: '', icon: 'list', meta: {middleware: [permission(['delivery-orders-read'])]}},
+          { page: 'index', path: '', icon: 'list', meta: { middleware: [permission(['delivery-orders-read'])] } },
           // {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission(['delivery-orders-create'])]}},
           // {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission(['delivery-orders-update'])]}},
-          {page: 'reform', path: ':id/revision', meta: {mode: 'revision', middleware: [permission(['delivery-orders-read'])]}},
-          {page: 'view', path: ':id', meta: {mode: 'view', middleware: [permission(['delivery-orders-read'])]}}
+          { page: 'reform', path: ':id/revision', meta: { mode: 'revision', middleware: [permission(['delivery-orders-read'])] } },
+          { page: 'view', path: ':id', meta: { mode: 'view', middleware: [permission(['delivery-orders-read'])] } }
         ]
       }
     ]
@@ -162,10 +163,10 @@ const warehouses = [
     path: 'incoming-goods',
     param: '?begin_daterange=' + moment().format('YYYY-MM-DD') + '&until_daterange=' + moment().format('YYYY-MM-DD'),
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   }
 ]
@@ -176,10 +177,10 @@ const factories = [
     icon: 'timeline',
     path: 'work-orders',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   },
   {
@@ -187,10 +188,10 @@ const factories = [
     icon: 'play_for_work',
     path: 'workin-productions',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   },
   {
@@ -198,10 +199,10 @@ const factories = [
     icon: 'move_to_inbox',
     path: 'packings',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}},
-      {page: 'view', path: ':id', meta: {middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } },
+      { page: 'view', path: ':id', meta: { middleware: [permission()] } }
     ]
   }
 ]
@@ -212,9 +213,9 @@ const references = [
     icon: 'format_bold',
     path: 'brands',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   },
   {
@@ -222,9 +223,9 @@ const references = [
     icon: 'view_array',
     path: 'specifications',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   },
   {
@@ -232,9 +233,9 @@ const references = [
     icon: 'color_lens',
     path: 'colors',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   },
   {
@@ -242,9 +243,9 @@ const references = [
     icon: 'web_asset',
     path: 'units',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   },
   {
@@ -252,9 +253,9 @@ const references = [
     icon: 'format_size',
     path: 'sizes',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   },
   {
@@ -262,9 +263,9 @@ const references = [
     icon: 'dehaze',
     path: 'type_items',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   },
   {
@@ -272,9 +273,9 @@ const references = [
     icon: 'table_chart',
     path: 'category_items',
     resources: [
-      {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-      {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-      {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+      { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   }
 ]
@@ -304,7 +305,7 @@ const configuration = [
     icon: 'perm_identity',
     path: 'profile',
     resources: [
-      {page: 'form', path: '', meta: {mode: 'edit', middleware: [permission()]}}
+      { page: 'form', path: '', meta: { mode: 'edit', middleware: [permission()] } }
     ]
   },
   {
@@ -318,9 +319,9 @@ const configuration = [
         icon: 'supervisor_account',
         path: 'users',
         resources: [
-          {page: 'index', path: '', icon: 'list', meta: {middleware: [permission(['users-read'])]}},
-          {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission(['users-create'])]}},
-          {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission(['users-update'])]}}
+          { page: 'index', path: '', icon: 'list', meta: { middleware: [permission(['users-read'])] } },
+          { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission(['users-create'])] } },
+          { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission(['users-update'])] } }
         ]
       },
       {
@@ -328,9 +329,9 @@ const configuration = [
         icon: 'format_bold',
         path: 'roles',
         resources: [
-          {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-          {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-          {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+          { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+          { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+          { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
         ]
       },
       {
@@ -338,9 +339,9 @@ const configuration = [
         icon: 'format_bold',
         path: 'permissions',
         resources: [
-          {page: 'index', path: '', icon: 'list', meta: {middleware: [permission()]}},
-          {page: 'form', path: 'create', meta: {mode: 'create', middleware: [permission()]}},
-          {page: 'form', path: ':id/edit', meta: {mode: 'edit', middleware: [permission()]}}
+          { page: 'index', path: '', icon: 'list', meta: { middleware: [permission()] } },
+          { page: 'form', path: 'create', meta: { mode: 'create', middleware: [permission()] } },
+          { page: 'form', path: ':id/edit', meta: { mode: 'edit', middleware: [permission()] } }
         ]
       }
     ]
@@ -350,7 +351,7 @@ const configuration = [
     icon: 'perm_identity',
     path: 'customize',
     resources: [
-      {page: 'form', path: '', meta: {mode: 'edit'}}
+      { page: 'form', path: '', meta: { mode: 'edit' } }
     ]
   }
 ]
@@ -366,7 +367,7 @@ export default [
   //   name: 'Dashboard',
   //   icon: 'widgets',
   //   path: 'dashboard',
-  //   file: '.md'
+  //   fileType: '.md'
   // },
   { // common
     name: 'Common',
@@ -412,5 +413,12 @@ export default [
     path: 'configuration',
     // extract: true,
     children: configuration
+  },
+  {
+    name: 'Change Log',
+    icon: 'widgets',
+    path: 'log',
+    file: 'README.md'
+    // fileType: '.md'
   }
 ]

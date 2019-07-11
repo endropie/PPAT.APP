@@ -1,39 +1,38 @@
 <template>
-  <div v-if="!node.hide">
-  <q-expansion-item v-if="node.children && node.children.length"
-    :icon="node.icon"  
-    :content-inset-level="0.2"
-    expand-separator
-    dense-toggle
-    :dark="LAYOUT.isDark"
-    :label="node.name || ''" 
-    :opened="$route.fullPath.startsWith(prefix)" >
-      <template slot="header">
-        <q-item-section side>
-          <q-icon :name="node.icon"  :color="LAYOUT.isDark ? 'white': 'primary'"/>
-        </q-item-section>
-        <q-item-section label>
-          {{node.name || ''}}
-        </q-item-section>
+  <q-list v-if="node.hide !== true">
+    <q-expansion-item v-if="node.children && node.children.length"
+      :icon="node.icon"  
+      :content-inset-level="0.2"
+      expand-separator
+      dense-toggle
+      :label="node.name || ''" 
+      :opened="$route.fullPath.startsWith(prefix)" >
+        <template slot="header">
+          <q-item-section avatar>
+            <q-icon :name="node.icon" />
+          </q-item-section>
+          <q-item-section label>
+            {{node.name || ''}}
+          </q-item-section>
 
-      </template>
+        </template>
+        
+        <admin-menu-item v-for="(nodeitem, index) in node.children" :node="nodeitem" :prefix="getPrefix(nodeitem)" isChildren :key="index"  />
       
-      <admin-menu-item v-for="(nodeitem, index) in node.children" :node="nodeitem" :prefix="getPrefix(nodeitem)" isChildren :key="index"  />
-    
 
-  </q-expansion-item>
-  <q-item v-else :to="prefix" v-bind:class="{ 'active': $route.fullPath.startsWith(prefix)}" replace :dark="LAYOUT.isDark"
-    :label="node.name || '- Undefine name -'">
+    </q-expansion-item>
+    
+    <q-item v-else :to="prefix" v-bind:class="{ 'active': $route.fullPath.startsWith(prefix)}" replace 
+      :label="node.name || '- Undefine name -'">
       <q-item-section avatar>
-        <q-icon :name="isChildren ? `keyboard_arrow_right` : node.icon" :color="LAYOUT.isDark ? 'white': 'primary'"/>
+        <q-icon :name="isChildren ? `keyboard_arrow_right` : node.icon"/>
       </q-item-section>
       <q-item-section >
-        <q-item-label :class="LAYOUT.isDark ? 'text-white': 'text-dark-primary'">
           {{node.name || '- Undefine name -'}}
-        </q-item-label>
       </q-item-section>
     </q-item>
-  </div>
+  
+  </q-list>
 </template>
 
 <script>

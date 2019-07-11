@@ -2,10 +2,19 @@
 import GlobalMix from './mix-global.vue'
 import MixSheet from '@/mixins/mix-sheet.vue'
 import MixPage from '@/mixins/mix-page.vue'
+
+import TableHeader from '@/components/TableHeader'
+import TablePreferences from '@/components/TablePreferences'
+import SelectFilter from '@/components/SelectFilter'
 import '@/css/index-page.styl'
 
 export default {
   mixins: [GlobalMix, MixPage, MixSheet],
+  components: {
+    TableHeader,
+    TablePreferences,
+    SelectFilter
+  },
   data () {
     return {
       INDEX: {
@@ -46,6 +55,7 @@ export default {
         getTitle: () => this.TABLE__getTitle()
       },
       FILTERABLE: {
+        value: null,
         model: [],
         search: [],
         fill: {},
@@ -126,6 +136,7 @@ export default {
   methods: {
     INDEX__load (callbacks = null) {
       const callBase = () => {
+        console.warn('RUN')
         if (this.TABLE.mode === 'datagrid') {
           this.TABLE__init()
           this.DATAGRID__getData(null, callbacks)
@@ -135,15 +146,11 @@ export default {
           this.DATAINDEX__getData(null, callbacks)
         }
       }
-      if (typeof callbacks === 'function') {
-        this.SHEET.assign()
-        this.SHEET.request(
-          callBase()
-        )
-      }
-      else {
-        console.warn('*[PLAY]* - callback is function required')
-      }
+      
+      console.warn('run INDEX LOAD!')
+      this.SHEET.assign()
+      this.SHEET.request(callBase)
+      
     },
     DATAINDEX__compute (props) {
       setTimeout(() => {
@@ -331,22 +338,20 @@ export default {
         preventClose: true,
         ok: 'Yes, please!',
         cancel: 'Cancel'
+      }).onOk(() => {
+        this.$axios.delete(`${this.TABLE.resource.api}/${row.id}`)
+          .then((response) => {
+          // console.warn(response)
+            if (response.data.success) {
+              this.TABLE__rowDelete(row.id)
+              let txtMessage = 'The record has been deleted!'
+              this.$q.notify({message: txtMessage, color: 'positive', icon: 'check', position: 'top-right', timeout: 3000})
+            }
+          })
+          .catch(error => {
+            this.$app.response.error(error.response, 'Delete')
+          })
       })
-        .then(() => {
-          this.$axios.delete(`${this.TABLE.resource.api}/${row.id}`)
-            .then((response) => {
-            // console.warn(response)
-              if (response.data.success) {
-                this.TABLE__rowDelete(row.id)
-                let txtMessage = 'The record has been deleted!'
-                this.$q.notify({message: txtMessage, color: 'positive', icon: 'check', position: 'top-right', timeout: 3000})
-              }
-            })
-            .catch(error => {
-              this.$app.response.error(error.response, 'Delete')
-            })
-        })
-        .catch(() => {})
     },
     TABLE__rowDelete (id) {
       this.TABLE.resData = this.TABLE.resData.filter((item) => {

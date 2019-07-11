@@ -1,19 +1,22 @@
 <script>
-// import axios from 'axios'
 import GlobalMix from './mix-global.vue'
 import MixPage from '@/mixins/mix-page.vue'
 import MixSheet from '@/mixins/mix-sheet.vue'
 
+import ListItem from '@/components/ListItem'
+import FormHeader from '@/components/FormHeader'
+import FormDetail from '@/components/FormDetail'
 import SelectFilter from '@/components/SelectFilter'
-// import VueAutonumeric from '@/components/VueAutonumeric'
-// import QNumeric from '@/components/QNumeric'
 
 import '@/css/form-page.styl'
 
 export default {
   mixins: [GlobalMix, MixPage, MixSheet],
   components: {
-    SelectFilter
+    SelectFilter,
+    ListItem,
+    FormHeader,
+    FormDetail,
     // VueAutonumeric,
     // QNumeric
   },
@@ -30,8 +33,9 @@ export default {
         toBack: () => this.FORM__toBack(),
         toView: (id) => this.FORM__toView(id),
         meta: () => this.FORM__meta(),
-        onLoad: (callback) => this.FORM__onLoad(callback),
+        load: (callback) => this.FORM__load(callback),
         delete: () => this.FORM__delete(),
+        reset: (data) => this.FORM__reset(data),
         response: {
           relationship: (values) => this.FORM__response_relationship(values),
           fields: (ErrRes = {}, form) => this.FORM__response_fields(ErrRes, form),
@@ -70,7 +74,7 @@ export default {
     }
   },
   methods: {
-    FORM__onLoad (callback) {
+    FORM__load (callback) {
       if (typeof callback !== 'function') console.warn('*[PLAY]* - callback is function required')
 
       const callBase = () => {
@@ -196,11 +200,11 @@ export default {
             color: 'warning'
           },
           cancel: 'Continue'
-        }).then(() => {
+        }).onOk(() => {
           if (dialog.hasOwnProperty('then')) {
             dialog.then()
           }
-        }).catch(() => {
+        }).onCancel(() => {
           if (dialog.hasOwnProperty('catch')) {
             dialog.catch()
           }
@@ -224,10 +228,11 @@ export default {
         preventClose: true,
         ok: 'Yes, please!',
         cancel: 'Cancel'
-      }).then(() => {
+      }).onOk(() => {
+        console.warn('DELETE', this.$route.params.id)
         this.$axios.delete(`${this.FORM.resource.api}/${this.$route.params.id}`)
           .then((response) => {
-            // console.warn(response)
+            console.warn('then', response)
             if (response.data.success) {
               let txtMessage = 'The record has been deleted!'
               this.$q.notify({message: txtMessage, color: 'positive', icon: 'check', position: 'top-right', timeout: 3000})
@@ -235,13 +240,13 @@ export default {
             }
           })
           .catch(error => {
+            console.warn('error', error)
             if (error.hasOwnProperty('response')) {
               console.error(error.response)
             }
             else console.error(error)
           })
       })
-        .catch(() => {})
     },
 
     FORM__toIndex () { // Back history page with 1 step
@@ -277,16 +282,11 @@ export default {
       }, 500)
     },
 
-    selectfilter (val, update, abort, p) {
-      console.log(p)
-      if (val.length < 2) {
-        abort()
-        return
-      }
-
-      update(() => {
-        const needle = val.toLowerCase()
-        this.options = this.options.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    FORM__reset(data = null) {
+      if(data === null) data = this.FORM.data
+      this.$nextTick(() => {
+        this.$validator.reset();
+        this.setForm(data)
       })
     }
   }

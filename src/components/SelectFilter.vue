@@ -1,5 +1,4 @@
 <template>
-<div>
   <q-select
     ref="select-filter"
     v-model="model"
@@ -12,8 +11,7 @@
     fill-input
     emit-value
     map-options
-    autocomplete="off"
-  >
+    autocomplete="off">
     <!-- :options="this.selfFilter ? this.options : this.$attrs.options" -->
     <!-- @filter="(v, f, c) => { this.selfFilter ? filterFn(v, f, c) : $emit('filter', v, f, c) }" -->
     <template v-slot:no-option>
@@ -24,13 +22,11 @@
       </q-item>
     </template>
   </q-select>
-
-</div>
 </template>
 <script>
 
 export default {
-  name: 'q-select-filter',
+  name: 'select-filter',
   inheritAttrs: false,
   props: {
     selfFilter: {
@@ -53,18 +49,17 @@ export default {
   },
   methods: {
     setValue(v) {
-      console.warn('SET VALUE', this.$attrs.value)
+      // console.warn('SET VALUE', this.$attrs.value)
       this.model = v
     },
     setOptions(v) {
-      console.warn('SET OPTIONS', this.$attrs.options)
+      // console.warn('SET OPTIONS', this.$attrs.options)
       this.options = v
     },
     // use this default filter function
     filterFn (val, update) {
       if (!this.selfFilter) {
-        console.warn('EMIT')
-         this.$emit('filter', v, u, a)
+        this.$emit('filter', v, u, a)
         return
       }
 

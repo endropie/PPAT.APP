@@ -1,7 +1,11 @@
 import { colors, LocalStorage } from 'quasar'
 
-export const setDrawer = (state, val) => {
+export const setPageDrawer = (state, val) => {
   state.PAGE.drawer = val
+}
+
+export const setPageShow = (state, val) => {
+  state.PAGE.show = val
 }
 
 export const setPageMeta = (state, meta) => {
@@ -43,9 +47,7 @@ export const setConfig = (state, values) => {
 }
 
 export const setTheme = (state, name) => {
-  console.log('actions->setValue', state, colors)
   const newColor = state.THEMES[name]
-  console.warn('state.LAYOUT', state.LAYOUT)
   state.LAYOUT.color = Object.assign(state.LAYOUT.color, newColor)
   const object = state.LAYOUT.color
   for (const i in object) {

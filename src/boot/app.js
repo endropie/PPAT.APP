@@ -80,7 +80,7 @@ export default ({ app, router, Vue }) => {
         }
         else {
           let mode = {
-            type: 'negative',
+            color: 'negative',
             position: 'top-right',
             timeout: 3000
           }
@@ -92,7 +92,7 @@ export default ({ app, router, Vue }) => {
             case 404:
               mode.message = 'Ops, Data resource not found!'
               mode.detail = (ErrRes.data.message || ErrRes.statusText)
-              mode.type = 'warning'
+              mode.color = 'warning'
               break
             case 422:
               mode.message = 'The fields was not failed!'
@@ -115,7 +115,6 @@ export default ({ app, router, Vue }) => {
               else mode.message = ErrRes.statusText
               break
           }
-
           if (mode.type !== false) Notify.create(Object.assign({}, mode))
         }
       }
@@ -129,7 +128,7 @@ export default ({ app, router, Vue }) => {
         timeout: 3000
       },
       error: function (values = {}, description = null) {
-        const mode = {type: 'negative'}
+        const mode = {color: 'negative'}
         if (typeof values === 'string' || values instanceof String) {
           values = {message: values, detail: description}
         }
@@ -137,7 +136,7 @@ export default ({ app, router, Vue }) => {
         Notify.create(Object.assign(this.prevent, mode, values))
       },
       warning: function (values = {}, description = null) {
-        const mode = {type: 'warning'}
+        const mode = {color: 'warning'}
         if (typeof values === 'string' || values instanceof String) {
           values = {message: values, detail: description}
         }
@@ -145,7 +144,7 @@ export default ({ app, router, Vue }) => {
         Notify.create(Object.assign(this.prevent, mode, values))
       },
       info: function (values = {}, description = null) {
-        const mode = {type: 'info'}
+        const mode = {color: 'info'}
         if (typeof values === 'string' || values instanceof String) {
           values = {message: values, detail: description}
         }
@@ -153,7 +152,7 @@ export default ({ app, router, Vue }) => {
         Notify.create(Object.assign(this.prevent, mode, values))
       },
       success: function (values = {}, description = null) {
-        const mode = {type: 'positive'}
+        const mode = {color: 'positive'}
         if (typeof values === 'string' || values instanceof String) {
           values = {message: values, detail: description}
         }

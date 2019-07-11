@@ -8,11 +8,30 @@ export default {
     }
   },
   created () {
-    // this.PAGE.enable = this.$store.admin.page.show
+    // this.SHOW = this.$store.admin.page.show
     // console.info('[PLAY] MIX-TABLE is Created!')
   },
   computed: {
-    ...mapGetters('admin', ['PAGE', 'LAYOUT'])
+    title() {
+      return this.$route.meta.title || ''
+    },
+    DRAWER: {
+      get () {
+        return this.$store.state.admin.PAGE.drawer
+      },
+      set (val) {
+        this.$store.commit('admin/setPageDrawer', val)
+      }
+    },
+    SHOW: {
+      get () {
+        return this.$store.state.admin.PAGE.show
+      },
+      set (val) {
+        this.$store.commit('admin/setPageShow', val)
+      }
+    },
+    ...mapGetters('admin', ['LAYOUT'])
   },
   methods: {
     directToAdmin () {

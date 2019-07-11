@@ -1,6 +1,6 @@
  
 <template id="main">    
-  <q-list class="menu" inset-separator :dark="LAYOUT.isDark" no-border>
+  <q-list class="menu">
     <template v-for="(node, index) in AdminMenus">
       <admin-menu-item :node="node" :isIndent="false" :prefix="`/admin/${node.path}`" :key="index" />
     </template>
@@ -31,7 +31,6 @@ export default {
       min-height 42px
 
   .q-item__section--avatar
-    color $primary
     min-width: 38px;
 
   .q-expansion-item--expanded > div > .q-item > .q-item__section--main

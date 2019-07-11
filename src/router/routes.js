@@ -7,9 +7,13 @@ const routes = [
   },
   {
     path: '/auth',
-    component: () => import('pages/login.vue'),
+    component: () => import('pages/login.vue')
   }
 ]
+
+RouteAdmin.forEach(link => {
+  routes.push(link)
+})
 
 // Always leave this as last one
 if (process.env.MODE !== 'ssr') {
@@ -18,9 +22,5 @@ if (process.env.MODE !== 'ssr') {
     component: () => import('pages/Error404.vue')
   })
 }
-
-RouteAdmin.forEach(link => {
-  routes.push(link)
-})
 
 export default routes
