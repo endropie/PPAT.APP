@@ -35,12 +35,13 @@
             :error="errors.has('number')" :error-message="errors.first('number')"/>
 
           <input-date class="col-12" name="date" 
-            stack-label label="Date" 
+            stack-label :label="rsForm.date" 
             v-model="rsForm.date" 
             :dark="LAYOUT.isDark" 
             v-validate="'required'"
             :error="errors.has('date')" 
-            :error-message="errors.first('date')"/>
+            :error-message="errors.first('date')">
+          </input-date>
 
           <!-- <q-input class="col-12" name="date" type="date" 
             stack-label label="Date" 
