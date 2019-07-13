@@ -12,7 +12,7 @@
         @request="TABLE.compute"
         :loading="TABLE.loading">
 
-         <!-- Table Header -->
+        <!-- Table Header -->
         <template v-slot:top>
           <table-header hide-search
             :title="TABLE.getTitle()"
@@ -31,7 +31,7 @@
               <select-filter class="col-12 col-md-6" style="min-width:150px"
                 name="customer_id" 
                 v-model="FILTERABLE.fill.customer_id.value" 
-                stack-label label="Line" 
+                stack-label :label="$tc('general.customer')" 
                 dense hide-bottom-space
                 :dark="LAYOUT.isDark"
                 :options="CustomerOptions" filter clearable />

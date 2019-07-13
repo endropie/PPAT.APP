@@ -15,6 +15,8 @@ RouteAdmin.forEach(link => {
   routes.push(link)
 })
 
+// console.warn('process.env.dev', process.env)
+
 // Always leave this as last one
 if (process.env.MODE !== 'ssr') {
   routes.push({

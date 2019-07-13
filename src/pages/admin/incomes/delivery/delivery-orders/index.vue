@@ -14,41 +14,65 @@
         @request="TABLE.compute"
         :loading="TABLE.loading">
 
-        <template slot="top-right" slot-scope="props" :props="props">
-          <div>
-            <div class="row q-pa-xs q-gutter-xs">
-              <q-field class="col-auto" style="width:200px">
-                <q-select name="customer_id" v-model="FILTERABLE.fill.customer_id.value" stack-label label="Customer"
-                  :options="CustomerOptions" filter />
-              </q-field>
-              <q-field class="col">
-                <q-input stack-label label="Begin Date" v-model="FILTERABLE.fill.date_start.value" type="date" />
-              </q-field>
-              <q-field class="col">
-                <q-input stack-label label="Until Date" v-model="FILTERABLE.fill.date_end.value" type="date" />
-              </q-field>
+        <!-- Table Header -->
+        <template v-slot:top>
+          <table-header hide-search
+            :title="TABLE.getTitle()"
+            :TABLE.sync="TABLE"
+            :filter.sync="TABLE.filter" >
+
+            <div class="row q-col-gutter-xs" >
+              <select-filter class="col-12 col-md-6" style="min-width:150px"
+                name="customer_id" 
+                v-model="FILTERABLE.fill.customer_id.value" 
+                stack-label label="Line" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark"
+                :options="CustomerOptions" filter clearable />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Begin Date" 
+                v-model="FILTERABLE.fill.begin_daterange.value" 
+                type="date"
+                dense hide-bottom-space 
+                :dark="LAYOUT.isDark" />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Until Date" 
+                v-model="FILTERABLE.fill.until_daterange.value" 
+                type="date" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark" />
+               
+
+              <q-select class="col-12 col-md-6" 
+                new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
+                dense input-debounce="0"
+                name="filterable" 
+                v-model="FILTERABLE.value" 
+                placeholder="Searching..." 
+                emit-value
+                :dark="LAYOUT.isDark">
+
+                <template slot="append">
+                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit()"/>
+                </template>
+              </q-select> 
+              
             </div>
-            <div class="row q-pa-xs q-gutter-xs items-end">
-              <q-field class="col-12" ref="filterable" label-width="1">
-                <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.value" placeholder="Searching..."  color="blue-grey-5"
-                  @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
-                  <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
-                    <!-- component Field -->
-                  </q-popover>
-                </q-chips-input>
-              </q-field>
-              <span class="col q-ml-xs q-pt-xs">
-                <q-btn class="float-right" icon="search" label="Search" size="sm" color="secondary" right @click="FILTERABLE.submit()"/>
-              </span>
-            </div>
-          </div>
+          </table-header>
         </template>
 
+        <!-- <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.value" placeholder="Searching..."  color="blue-grey-5"
+          @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
+          <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
+            
+          </q-popover>
+        </q-chips-input> -->
+
         <!-- slot name syntax: body-cell-<column_name> -->
-        <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
+        <template slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
           <!-- <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'invisible': rs.row.is_relationship === true}" /> -->
-        </q-td>
+        </template>
         
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
           <span v-if="rs.row.customer"> {{ rs.row.customer.name }}</span>
@@ -89,12 +113,12 @@ export default {
             type: 'integer',
             transform: (value) => { return null }
           },
-          date_start: {
+          begin_daterange: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
           },
-          date_end: {
+          until_daterange: {
             value: null,
             type: 'date',
             transform: (value) => { return null }

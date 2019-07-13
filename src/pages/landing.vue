@@ -1,15 +1,17 @@
 <template>
   <div class="index-page bg-grey-2 window-height window-width column items-center no-wrap">
+    store:{{$store.getters['admin/CONFIG'].general.baseURL}} <br/>
+    axios:{{$axios.defaults.baseURL}}
     <div class="banner bg-primary flex flex-center">
       PPA
     </div>
     <div class="text-center">
       <div class="card bg-white shadow-4 column no-wrap flex-center group">
         <!-- <img src="~assets/quasar-play-logo-full.svg"> -->
-        <q-icon name="widgets" class="q-display-4" color="blue-7" />
-        <p class="q-title text-orange-14" style="position: relative;    top: -25px;right: -30px;text-shadow: 1px 0px 2px #424242;font-family: courier new;font-weight: bold;">
-          PPA PLAY
-        </p>
+        <q-icon name="widgets" class="text-h2" color="blue-7" />
+          <p class="text-h4 text-orange-14 text-weight-bolder" style="font: courier">
+            PPA PLAY
+          </p>
         <br>
 
         <q-btn
@@ -24,24 +26,40 @@
         <q-btn
           color="grey-7"
           label="Read Privacy Policy"
-          @click="viewPrivacyPolicy"
+          @click.native="$refs.privacy.show()"
           flat
           rounded
           no-caps
           class="q-mt-sm"
         />
 
-        <q-btn
-          color="grey-7"
-          label="Direct"
-          to="/admin/factories/work-orders/1"
-          flat
-          rounded
-          no-caps
-          class="q-mt-sm"
+        <q-btn :label="`Server: ${BASEURL}`"
+          flat rounded no-caps color="grey-7"
+          class="absolute-bottom-right q-mt-sm"
+          @click.native="openSetURL()"
+          
         />
 
         <privacy-policy ref="privacy" />
+        <modal ref="modal" >
+          <div class="column">
+            <q-select 
+              label="Host API"
+              v-model="baseURL"
+              :options="servers"
+              :loading="loadingSeturl">
+              <template slot="after">
+                <q-btn dense
+                  :disable="baseURL === BASEURL"
+                  :flat="baseURL === BASEURL"
+                  :icon="baseURL !== BASEURL ? 'refresh' : 'done'"
+                  :color="baseURL !== BASEURL ? 'warning' : 'primary'" 
+                 @click="saveBaseURL()" />
+                
+              </template>
+            </q-select>
+          </div>
+        </modal>
       </div>
     </div>
     <a class="ribbon" :title="`PPA Administration Built on v${$q.version}`" />
@@ -54,15 +72,46 @@ import PrivacyPolicy from 'components/PrivacyPolicy'
 
 export default {
   components: {
-    PrivacyPolicy
+    PrivacyPolicy,
   },
-  created() {
-    console.warn('Locale -> ', this.$q.lang.getLocale() )
-    console.warn('success -> ', this.$q.lang.label.success )
+  data(){
+    return {
+      servers:['http://localhost:8000', 'http://ppa.virmata.com'],
+      baseURL: null,
+      loadingSeturl: false
+    }
+  },
+  mounted() {
+    console.warn('Modal -> ')
+  },
+  computed: {
+    BASEURL: {
+      get() {
+        return this.$store.state.admin.CONFIG.general.baseURL
+      },
+      set(v) {
+        this.loadingSeturl = true
+        const newURL = this.$store.commit('admin/setBaseURL', v)
+        console.warn('new', newURL)
+        this.loadingSeturl = false
+      }
+    }
   },
   methods: {
     launch () {
       openURL('http://quasar-framework.org')
+    },
+    openSetURL(){
+      this.baseURL = this.$store.state.admin.CONFIG.general.baseURL
+      this.$refs.modal.show()
+    },
+    saveBaseURL(){
+      this.loadingSeturl = true
+
+      setTimeout(() => {
+        const newURL = this.$store.commit('admin/setBaseURL', this.baseURL)
+        this.loadingSeturl = false
+      }, 1000);
     },
     viewPrivacyPolicy () {
       this.$refs.privacy.show()

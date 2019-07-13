@@ -1,16 +1,16 @@
 <template>
-  <div class="index-table column full-width" 
+  <div class="table-header column full-width" 
     v-bind="$attrs"
     v-on="$listeners"
   >
-    <div class="full-width q-gutter-x-sm">
-      <div class="float-right">
-        <q-btn 
+    <div class="header-top q-gutter-x-sm">
+      <div class="row no-wrap float-right">
+        <slot name="menu-prepend"></slot>
+        <q-btn v-if="!hideMenu"
           flat round dense 
           color="light" 
-          icon="more_vert"
-          v-if="!hideMenu"
-        >
+          icon="more_vert">
+
           <q-menu :content-class="{'bg-faded text-light':LAYOUT.isDark}">
             <slot name="menu" >
               <q-list :dark="LAYOUT.isDark" class="table-menu" style="min-width: 150px">
@@ -38,6 +38,7 @@
             </slot>
           </q-menu>
         </q-btn>
+        <slot name="menu-append"></slot>
       </div>
       <div class="float-left no-margin">
         <div v-if="title" class="text-h6">
@@ -45,24 +46,33 @@
         </div>
         <div v-if="subtitle" class="text-caption  text-light">{{subtitle}}</div>
       </div>
-      <div class="float-right" :class="{'full-width': $q.screen.lt.sm}" v-if="!hideSearch">
-        <q-input 
-          class="table-filter" 
-          v-model="model.filter" 
-          v-if="filter !== undefined"
-          :dark="LAYOUT.isDark" 
-          outlined dense 
-          autocomplete="off" 
-          placeholder="Search..." 
-        >
-          <template v-slot:append>
-            <q-icon name="search" color="light" dense />
-          </template>
-        </q-input>
+      <div class="float-right row justify-end" :class="{'full-width': $q.screen.lt.sm}">
+        <div>
+          <slot name="search-prepend"></slot>
+        </div>
+        <div  v-if="!hideSearch">
+          <q-input 
+            class="table-filter" 
+            v-model="model.filter" 
+            v-if="filter !== undefined"
+            :dark="LAYOUT.isDark" 
+            outlined dense 
+            autocomplete="off" 
+            placeholder="Search..." 
+          >
+            <template v-slot:append>
+              <q-icon name="search" color="light" dense />
+            </template>
+          </q-input>
+
+        </div>
+        <div>
+          <slot name="search-prepend"></slot>
+        </div>
 
       </div>
     </div>
-    <div class="full-width">  
+    <div class="header-main">  
       <slot></slot>
     </div>
   </div>

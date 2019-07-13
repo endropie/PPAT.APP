@@ -69,51 +69,48 @@
           :dark="LAYOUT.isDark"/>
       
         <!-- PLATING DETAIL -->
-        <div class="col-12">
+        <form-detail class="col-12" :list="$q.screen.lt.md"
+          :title="$tc('label.of', 2, {b:$tc('items.specification',2), a:$tc('label.detail') })"
+          :columns="[
+            {name:'thick', label: 'Label Thick'},
+            {name:'plate', label: 'Label Plate'},
+          ]"
+          :data="rsForm.specification_details"
+          :label-new="$t('label.new', {v:$tc('items.specification')})"
+          :new-data="{id: null, plate:null, thick:null }"
+          :dark="LAYOUT.isDark"
+          min-length="-1">
+          
+          <template v-slot:field-thick="rs">
+            <q-input  class="col-12 col-sm-3"
+            :name="`specification_details.${rs.row.__index}.thick`" 
+            :label="$tc('items.thick',2)"
+            type="number" 
+            v-model="rs.row.thick" 
+            v-validate="'required'" 
+            filled dense hide-bottom-space 
+            :dark="LAYOUT.isDark" 
+            :error="errors.has(`specification_details.${rs.row.__index}.plate`)"  
+            :error-message="errors.first(`specification_details.${rs.row.__index}.plate`)">
+            </q-input> 
 
-          <form-detail :list="$q.screen.lt.md"
-            :title="$tc('label.of', 2, {b:$tc('items.specification',2), a:$tc('label.detail') })"
-            :columns="[
-              {name:'thick', label: 'Label Thick'},
-              {name:'plate', label: 'Label Plate'},
-            ]"
-            :data="rsForm.specification_details"
-            :label-new="$t('label.new', {v:$tc('items.specification')})"
-            :new-data="{id: null, plate:null, thick:null }"
-            :dark="LAYOUT.isDark"
-            min-length="-1">
-            
-            <template v-slot:field-thick="rs">
-              <q-input  class="col-12 col-sm-3"
-              :name="`specification_details.${rs.row.__index}.thick`" 
-              :label="$tc('items.thick',2)"
-              type="number" 
-              v-model="rs.row.thick" 
-              v-validate="'required'" 
-              filled dense hide-bottom-space 
+          </template>
+          <template v-slot:field-plate="rs" >
+            <q-input class="col-12 col-sm-9"
+              :name="`specification_details.${rs.row.__index}.plate`"
+              :label="$tc('label.name', 3, {v:$tc('items.plate')})" 
+              v-model="rs.row.plate" 
+              filled dense hide-bottom-space
               :dark="LAYOUT.isDark" 
-              :error="errors.has(`specification_details.${rs.row.__index}.plate`)"  
-              :error-message="errors.first(`specification_details.${rs.row.__index}.plate`)">
-              </q-input> 
+              :error="errors.has(`specification_details.${rs.row.__index}.plate`)" 
+              :error-message="errors.first(`specification_details.${rs.row.__index}.plate`)" >
 
-            </template>
-            <template v-slot:field-plate="rs" >
-              <q-input class="col-12 col-sm-9"
-                :name="`specification_details.${rs.row.__index}.plate`"
-                :label="$tc('label.name', 3, {v:$tc('items.plate')})" 
-                v-model="rs.row.plate" 
-                filled dense hide-bottom-space
-                :dark="LAYOUT.isDark" 
-                :error="errors.has(`specification_details.${rs.row.__index}.plate`)" 
-                :error-message="errors.first(`specification_details.${rs.row.__index}.plate`)" >
-
-                
-              </q-input>
-            </template>
-            
-            
-          </form-detail>
-        </div>
+              
+            </q-input>
+          </template>
+          
+          
+        </form-detail>
       </div>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />

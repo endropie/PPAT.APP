@@ -13,8 +13,22 @@
         @request="TABLE.compute"
         :loading="TABLE.loading">
 
-        <template slot="top-right" slot-scope="props" :props="props">
-          <q-search hide-underline v-model="TABLE.filter" slot="right"/>
+        <!-- Table Header -->
+        <template v-slot:top>
+          <table-header hide-search
+            :title="TABLE.getTitle()"
+            :TABLE.sync="TABLE"
+            :filter.sync="TABLE.filter" >
+
+            <template v-slot:menu-item>
+              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
+                <q-item-section>Add new</q-item-section>
+                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
+              </q-item>
+              <q-separator :dark="LAYOUT.isDark"/>
+            </template>
+
+          </table-header>
         </template>
 
         <!-- slot name syntax: body-cell-<column_name> -->

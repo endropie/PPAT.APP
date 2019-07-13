@@ -139,7 +139,7 @@ export default {
           }, 800);
         })
         .catch(error => { 
-          this.$app.response.error(error.response, title)
+          this.$app.response.error(error.response, 'test')
           
         })
         .finally(()=>{

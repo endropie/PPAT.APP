@@ -11,29 +11,35 @@
 
 * field-[name] => for body-cell-[name] or list-item-[name] 
 -->
-  <div class="form-detail">
+  <div class="form-detail" 
+    v-bind="$attrs"
+    v-on="$listeners">
     <slot>
       <slot name="list" v-if="list">
         <q-list bordered dense :dark="dark" :separator="!!('cell' && 'horizontal')">
           <q-item-label v-if="title" header>{{title}}</q-item-label>
           <q-item-label v-if="subtitle" caption :lines="subtitleLines">{{subtitle}}</q-item-label>
           <q-separator inset :dark="dark"/>
+          <q-separator inset :dark="dark" style="margin-top:1px;margin-bottom:10px"/>
           <q-item v-for="(item, index) in data" :key="index" >
             <!-- prepend -->
             <slot name="list-append"  />
             <q-item-section>
               <slot name="list-item" v-bind="item">
                 <!-- col-start -->
-                <div :class="rowClass" class="q-pt-sm">
-                  <template v-for="(column, key) in columns">
-                    <slot :name="`list-item-${column.name}`" :row="item" >
-                      <slot :name="`field-${column.name}`" :row="item">
-                        <div :key="key"></div>
+                <template v-for="(column, key) in columns">
+                  <div :class="{ rowClass}" class="row q-col-gutter-xs q-pa-xs" :key="key">
+                    <div class="col-12 col-sm-3">
+                      {{column.label || column.name || ''}}
+                    </div>
+                    <div class="col-12 col-sm-9">
+                      <slot :name="`field-${column.name}`" :row="{__index:index, ...item}" >
+                        <div :field="column.name"></div>
                       </slot>
-                    </slot>
+                    </div>
                     <!-- col-body -->
-                  </template>
-                </div>
+                  </div>
+                </template>
                 <!-- col-end -->
               </slot>
             </q-item-section>
@@ -58,20 +64,33 @@
         </q-list>
       </slot>
       <slot name="table" v-else>
-        <q-markup-table>
+        <q-markup-table bordered>
           <thead>
             <tr>
+              <th> </th>
               <th v-for="(column, key) in columns" :key="key">
                 {{ column.label || column.name }}
               </th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(column, index) in data" :key="index">
-              <td v-for="(cell, key) in columns" :key="key">
-                <slot :name="`body-cell-${cell.name}`" :row="cell">
-                  <slot :name="`field-${cell.name}`" :row="cell"/>
+            <tr v-for="(cell, index) in data" :key="index">
+              <td align="center">
+                <q-btn dense flat icon="clear" color="negative" @click="removeRow(index)"/>
+              </td>
+              <td v-for="(column, key) in columns" :key="key">
+                <slot :name="`body-cell-${column.name}`" :row="{__index:index, ...cell}" :index="index">
+                  <slot :name="`field-${column.name}`" :row="{__index:index, ...cell}" :index="index">
+                    <div ></div>
+                  </slot>
                 </slot>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="100%">
+                <div class="row justify-center">
+                  <q-btn flat outline dense color="green-5" :label="labelNew" @click="addRow()" />
+                </div>
               </td>
             </tr>
           </tbody>
@@ -95,10 +114,6 @@ export default {
       columns: {
         type: Array,
         required: true
-      },
-      newData: {
-        type: Object,
-        default: {}
       },
       minLength:{
         type: Number | String,
@@ -147,7 +162,12 @@ export default {
   },
   methods: {
     addRow() {
-      const newEntri = this.newData;
+      const newEntri = {}
+      for (const col in this.columns) {
+        if (this.columns.hasOwnProperty(col)) {
+          newEntri[col] = this.columns[col].default || null
+        }
+      }
       this.data.push(newEntri)
       this.$emit('added')
     },

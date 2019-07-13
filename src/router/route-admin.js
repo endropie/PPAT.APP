@@ -70,9 +70,11 @@ function parseMenuNode (node, __path) {
       })
     })
   } else {
-    // let file = (node.fileType || '')
-    // let strFile = node.file || `@/pages/${prefix.substring(1)}`
-    // console.warn(prefix, 'file->', `"${strFile}"`)
+    // let file = `@/pages/${prefix.substring(1)}`
+    // if (node.file) file = node.file
+    // console.error(`@/pages/${prefix.substring(1)}`)
+    // console.warn(file)
+
     AdminPages.push({
       path: prefix,
       meta: {
@@ -81,7 +83,7 @@ function parseMenuNode (node, __path) {
         tabs: node.tabs || [],
         hash: prefix
       },
-      // component: () => import(`"@/../README.md"`)
+      // component: () => import(`${file}`)
       component: () => import(`@/pages/${prefix.substring(1)}`)
     })
   }

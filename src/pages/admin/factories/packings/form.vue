@@ -36,7 +36,7 @@
           <select-filter class="col-12"
             name="customer_id" 
             v-model="rsForm.customer_id" 
-            label="Customer" 
+            :label="$tc('general.customer')" 
             :disable="IssetItemID" 
             v-validate="'required'"
             :options="CustomerOptions" filter clearable

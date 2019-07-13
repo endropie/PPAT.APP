@@ -15,30 +15,30 @@
               <q-list class="identity" no-border dense>
                 <q-item multiline>
                   <q-item-section>
-                    <q-item-tile label>{{ rsView.customer.name }}</q-item-tile>
-                    <q-item-tile sublabel>Customer</q-item-tile>
+                    <q-item-label>{{ rsView.customer.name }}</q-item-label>
+                    <q-item-label caption>Customer</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-item multiline>
                   <q-item-section>
-                    <q-item-tile label>{{ rsView.reference_number || '-'}}</q-item-tile>
-                    <q-item-tile sublabel>
+                    <q-item-label>{{ rsView.reference_number || '-'}}</q-item-label>
+                    <q-item-label caption>
                       Refrence {{ rsView.reference_date ? 'at '+$app.moment(rsView.reference_date).format('DD/MM/YYYY') : ''}}
-                    </q-item-tile>
+                    </q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
               <q-list class="identity" no-border dense>
                 <q-item multiline>
                   <q-item-section>
-                    <q-item-tile label>No. {{rsView.number}}</q-item-tile>
-                    <q-item-tile sublabel>created at {{ rsView.created_at ? $app.moment(rsView.created_at).format('DD/MM/YYYY hh:mm') : '' }}</q-item-tile>
+                    <q-item-label>No. {{rsView.number}}</q-item-label>
+                    <q-item-label caption>created at {{ rsView.created_at ? $app.moment(rsView.created_at).format('DD/MM/YYYY hh:mm') : '' }}</q-item-label>
                   </q-item-section>
                 </q-item>
                 <q-item multiline>
                   <q-item-section>
-                    <q-item-tile label>No. REG {{rsView.registration}}</q-item-tile>
-                    <q-item-tile sublabel>Income at {{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '' }}</q-item-tile>
+                    <q-item-label>No. REG {{rsView.registration}}</q-item-label>
+                    <q-item-label caption>Income at {{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '' }}</q-item-label>
                   </q-item-section>
                 </q-item>
               </q-list>
@@ -57,16 +57,15 @@
           >
           </q-table>
         </div>
-        
         <div class="col-12">
             <div class="q-my-xs text-italic">Description:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 group print-hide " style="padding-top:50px">
-          <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <q-btn color="positive" :icon-right="btnIcon('edit')" label="Edit" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
-          <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
-          <q-btn color="negative" :icon-right="btnIcon('delete')" label="Delete" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn>
+        <div class="col-12 q-gutter-xs " style="padding-top:50px">
+          <q-btn label="Back" color="dark" :icon-right="btnIcon('cancel')"  :to="`${VIEW.resource.uri}?return`"></q-btn>
+          <q-btn label="Edit" color="positive" :icon-right="btnIcon('edit')" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
+          <q-btn label="Print" color="grey" :icon-right="btnIcon('print')" @click.native="print()" ></q-btn>
+          <q-btn label="Delete" color="negative" :icon-right="btnIcon('delete')" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn>
         </div>
       </div>
     </page-print>

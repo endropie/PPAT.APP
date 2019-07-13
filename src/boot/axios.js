@@ -5,10 +5,14 @@ export default async ({ app, Vue }) => {
 
   // axios.defaults.baseURL = 'http://laravel.ppa'
   // axios.defaults.baseURL = 'localhost:8000'
-  const CONFIG = app.store.state.admin.CONFIG
+  const CONFIG = app.store.getters['admin/CONFIG']
   const AUTH = app.store.getters['admin/AUTH']
+
   if (CONFIG) {
     axios.defaults.baseURL = CONFIG.general.baseURL
+    if (process.env.DEV) {
+      axios.defaults.baseURL = 'http://localhost:8000'
+    }
   }
 
   if (AUTH.hasOwnProperty('access') && AUTH.isTokenValid()) {
@@ -19,9 +23,9 @@ export default async ({ app, Vue }) => {
   axios.set = (method, url, data) => {
     if (method.toUpperCase() === 'POST') return axios.post(url, data)
 
-    if (method.toUpperCase() === 'PUT') return axios({method: method, url: url, data: data})
+    if (method.toUpperCase() === 'PUT') return axios({ method: method, url: url, data: data })
 
-    if (method.toUpperCase() === 'PATCH') return axios({method: method, url: url, data: data})
+    if (method.toUpperCase() === 'PATCH') return axios({ method: method, url: url, data: data })
   }
   axios.setHeader = (values = []) => {
     values.forEach(function (data) {

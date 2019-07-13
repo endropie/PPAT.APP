@@ -136,7 +136,7 @@ export default {
   methods: {
     INDEX__load (callbacks = null) {
       const callBase = () => {
-        console.warn('RUN')
+        
         if (this.TABLE.mode === 'datagrid') {
           this.TABLE__init()
           this.DATAGRID__getData(null, callbacks)
@@ -147,7 +147,6 @@ export default {
         }
       }
       
-      console.warn('run INDEX LOAD!')
       this.SHEET.assign()
       this.SHEET.request(callBase)
       

@@ -1,4 +1,5 @@
 import { colors, LocalStorage } from 'quasar'
+import axios from 'axios'
 
 export const setPageDrawer = (state, val) => {
   state.PAGE.drawer = val
@@ -27,7 +28,7 @@ export const setLogin = (state, val) => {
 }
 
 export const setLocked = (state) => {
-  state.AUTH = Object.assign(state.AUTH, {access: null})
+  state.AUTH = Object.assign(state.AUTH, { access: null })
   LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
 }
 
@@ -44,6 +45,14 @@ export const setSetting = (state, values) => {
 export const setConfig = (state, values) => {
   state.CONFIG = Object.assign(state.CONFIG, values)
   LocalStorage.set('store:setting', JSON.stringify(state.CONFIG))
+}
+
+export const setBaseURL = (state, value) => {
+  state.CONFIG.general.baseURL = value
+  axios.defaults.baseURL = value
+  LocalStorage.set('store:setting', JSON.stringify(state.CONFIG))
+
+  return value
 }
 
 export const setTheme = (state, name) => {
@@ -64,8 +73,7 @@ export const setTheme = (state, name) => {
 export const setMode = (state, mode) => {
   if (typeof mode === 'boolean') {
     state.LAYOUT.isDark = mode
-  }
-  else {
+  } else {
     state.LAYOUT.isDark = !state.LAYOUT.isDark
   }
   // Save to storage

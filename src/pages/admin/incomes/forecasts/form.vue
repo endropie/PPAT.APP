@@ -17,7 +17,7 @@
               <q-input name="number" label="No Transaction" v-model="rsForm.number" placeholder="[Auto Generate]" autofocus v-validate="$route.meta.mode == 'edit' ? 'required':''"/>
             </q-field>
             <q-field class="col-12" icon="account_box" :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-              <q-select name="customer_id" v-model="rsForm.customer_id" label="Customer" :disable="IssetIncomeItems" v-validate="'required'"
+              <q-select name="customer_id" v-model="rsForm.customer_id" :label="$tc('general.customer')" :disable="IssetIncomeItems" v-validate="'required'"
                 :options="CustomerOptions" filter clearable
                 @input="setCustomerReference"
                 ></q-select>

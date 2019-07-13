@@ -12,7 +12,7 @@
       <div class="row q-gutter-sm q-gutter-x-md">
         <!-- COLUMN::1st customer Identitity -->
         <q-field class="col-12" :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-          <q-select name="customer_id" v-model="rsForm.customer_id" stack-label label="Customer"  v-validate="'required'"
+          <q-select name="customer_id" v-model="rsForm.customer_id" stack-label :label="$tc('general.customer')"  v-validate="'required'"
             :options="CustomerOptions" filter clearable
             @input="setCustomerReference"
           />

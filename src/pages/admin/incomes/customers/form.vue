@@ -8,9 +8,9 @@
         </template>
       </form-header>
     </q-card-section>
+    <q-separator :dark="LAYOUT.isDark"></q-separator>
     <!-- ROW::1st Customer Identitity -->
     <q-card-section class="row q-col-gutter-x-sm">
-      <readme class="q-ma-md"></readme>
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-md">
           <q-input name="code" class="col-8"
@@ -81,38 +81,82 @@
       </div>
       <!-- COLUMN::2nd Customer Coporation details -->
       <div class="col-12 col-sm-6" >
-        <div class="row q-col-gutter-x-lg q-mb-lg">
-            <q-field class="col-12" :error="errors.has('pkp')" :error-message="errors.first('pkp')">
-            <q-input name="pkp" label="No. PKP" v-model="rsForm.pkp" v-validate="''" :dark="LAYOUT.isDark"/>
-          </q-field>
-            <q-field class="col-12" :error="errors.has('npwp')" :error-message="errors.first('npwp')">
-            <q-input name="npwp" label="NPWP" v-model="rsForm.npwp" v-validate="''" :dark="LAYOUT.isDark"/>
-          </q-field>
-            <q-field class="col-12" :error="errors.has('bank_account')" :error-message="errors.first('bank_account')">
-            <q-input name="bank_account" label="Bank Account" v-model="rsForm.bank_account" v-validate="''" :dark="LAYOUT.isDark"/>
-          </q-field>
-          <div class="col-12 g-dark" > 
-            <h6 class="q-mb-sm text-secondary">
-              Taxes <hr/>
-            </h6>
-          </div>
-          <div class="row q-col-gutter-sm  q-mb-lg">
-            <q-field class="col-4  q-mt-lg" >
-              <q-toggle name="with_tax" label="Tax" v-model="rsForm.with_tax" :false-value="0" :true-value="1" :dark="LAYOUT.isDark"/>
-            </q-field>
-            <q-field class="col-8 q-mt-lg">
-              <q-toggle name="with_pph" label="PPH" v-model="rsForm.with_pph" :false-value="0" :true-value="1" :dark="LAYOUT.isDark"/>
-            </q-field>
-            <q-field class="col-4" :error="errors.has('tax')" :error-message="errors.first('tax')">
-                <q-input name="tax" label="Tax [PPN]" type="number" v-model="rsForm.tax" :dark="LAYOUT.isDark"/>
-            </q-field>
-            <q-field class="col-4" :error="errors.has('pph_material')" :error-message="errors.first('pph_material')">
-                <q-input name="pph_material" label="Material" type="number" v-model="rsForm.pph_material" :dark="LAYOUT.isDark"/>
-            </q-field>
-            <q-field class="col-4" :error="errors.has('pph_service')" :error-message="errors.first('pph_service')">
-                <q-input name="pph_service" label="Service" type="number" v-model="rsForm.pph_service" :dark="LAYOUT.isDark"/>
-            </q-field>
-          </div>
+        <div class="column q-mb-lg">
+        
+          <q-input name="pkp" class="col-12"
+            label="No. PKP" 
+            v-model="rsForm.pkp" 
+            v-validate="''" 
+            :dark="LAYOUT.isDark"
+            :error="errors.has('pkp')" 
+            :error-message="errors.first('pkp')" />
+
+          <q-input name="npwp" class="col-12" 
+            label="NPWP" 
+            v-model="rsForm.npwp" 
+            v-validate="''" 
+            :dark="LAYOUT.isDark"
+            :error="errors.has('npwp')" 
+            :error-message="errors.first('npwp')"/>
+
+          <q-input name="bank_account" class="col-12" 
+              label="Bank Account" 
+              v-model="rsForm.bank_account" 
+              v-validate="''" 
+              :dark="LAYOUT.isDark"
+              :error="errors.has('bank_account')" 
+              :error-message="errors.first('bank_account')" />
+          
+          <q-list bordered :dark="LAYOUT.isDark">
+            <q-item-label header>Taxes</q-item-label>
+            <q-separator :dark="LAYOUT.isDark"></q-separator>
+            <q-item>
+              <q-item-section >
+                <div class="row q-col-gutter-sm">
+                  <q-field class="col-4" borderless >
+                    <q-toggle name="with_tax" 
+                      label="Tax" 
+                      v-model="rsForm.with_tax" 
+                      :false-value="0" 
+                      :true-value="1" 
+                      :dark="LAYOUT.isDark"/>
+                  </q-field>
+                  <q-field class="col-8" borderless>
+                    <q-toggle name="with_pph" 
+                      label="PPH" 
+                      v-model="rsForm.with_pph" 
+                      :false-value="0" 
+                      :true-value="1" 
+                      :dark="LAYOUT.isDark"/>
+                  </q-field>
+                  <q-input name="tax" class="col-4" 
+                    label="Tax [PPN]" type="number" 
+                    filled
+                    v-model="rsForm.tax" 
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('tax')" 
+                    :error-message="errors.first('tax')" />
+                  <q-input name="pph_material" class="col-4" 
+                    label="Material" type="number" 
+                    filled
+                    v-model="rsForm.pph_material" 
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('pph_material')" 
+                    :error-message="errors.first('pph_material')" />
+              
+                  <q-input name="pph_service" class="col-4" 
+                    label="Service" type="number" 
+                    filled
+                    v-model="rsForm.pph_service" 
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('pph_service')" 
+                    :error-message="errors.first('pph_service')" />
+              
+                </div>
+
+              </q-item-section>
+            </q-item>
+          </q-list>
         </div>
       </div>
     </q-card-section>
@@ -120,37 +164,48 @@
     <q-card-section class="row q-col-gutter-sm q-col-gutter-x-md q-mb-lg">
       <!-- COLUMN::3th Contact lists -->
       <div class="col-12">
-        <q-list dense class="main-box bg-secondary" :dark="LAYOUT.isDark" color="secondary" separator>
-          <q-item-label header class="text-white">Contact List</q-item-label>
+        <q-list dense class="main-box" :dark="LAYOUT.isDark" color="secondary" separator bordered>
+          <q-item-label header >Contact List</q-item-label>
           <q-separator  :dark="LAYOUT.isDark" />
           <q-item v-for="(item, index) in rsForm.customer_contacts" :key="index">
-            <q-item-section>
+            <q-item-section class="">
               <div class="row q-col-gutter-xs">
-                <q-field dense class="col-12 col-md-5" :error="errors.has(`name-contact-${index}`)"  :error-message="errors.first(`name-contact-${index}`)">
-                  <q-input dense :name="`name-contact-${index}`" v-model="rsForm.customer_contacts[index].name" stack-label label="Name" placeholder="Enter fullname ..." 
-                    inverted-light color="white" 
-                    v-validate="rsForm.customer_contacts[index].phone ? 'required' : ''"/>
-                </q-field>
-                <q-field class="col-12 col-md-3" :error="errors.has(`label-contact-${index}`)"  :error-message="errors.first(`label-contact-${index}`)">
-                  <q-input dense :name="`label-contact-${index}`"  v-model="rsForm.customer_contacts[index].label" stack-label label="Position" placeholder="Enter Position ..."
-                    inverted-light color="white" 
-                  />
-                </q-field>
-                <q-field class="col-12 col-md-4" :error="errors.has(`phone-contact-${index}`)"  :error-message="errors.first(`phone-contact-${index}`)">
-                  <q-input dense :name="`phone-contact-${index}`" v-model="rsForm.customer_contacts[index].phone" stack-label label="Phone" placeholder="xxx-xxxx-xxxx" 
-                    inverted-light color="white"
-                    v-validate="rsForm.customer_contacts[index].name ? 'required' : ''"
-                  />
-                </q-field>
+
+                
+                <q-input :name="`customer_contacts.${index}.name`" class="col-12 col-sm-5"
+                  label="Name"  stack-label 
+                  placeholder="Enter fullname ..." 
+                  dense filled hide-bottom-space
+                  v-model="rsForm.customer_contacts[index].name" 
+                  v-validate="rsForm.customer_contacts[index].phone ? 'required' : ''"
+                  :error="errors.has(`customer_contacts.${index}.name`)"  
+                  :error-message="errors.first(`customer_contacts.${index}.name`)"/>
+                  
+                <q-input :name="`customer_contacts.${index}.label`"  class="col-12 col-sm-3" 
+                  v-model="rsForm.customer_contacts[index].label" 
+                  stack-label label="Position" 
+                  placeholder="Enter Position ..."
+                  dense filled  hide-bottom-space
+                  :error="errors.has(`customer_contacts.${index}.label`)" 
+                  :error-message="errors.first(`customer_contacts.${index}.label`)"/>
+                
+                <q-input :name="`customer_contacts.${index}.phone`" class="col-12 col-sm-4"
+                  v-model="rsForm.customer_contacts[index].phone" 
+                  label="Phone" stack-label 
+                  placeholder="xxx-xxxx-xxxx" 
+                  dense filled hide-bottom-space
+                  v-validate="rsForm.customer_contacts[index].name ? 'required' : ''"
+                  :error="errors.has(`customer_contacts.${index}.phone`)"  
+                  :error-message="errors.first(`customer_contacts.${index}.phone`)" />
               </div>
             </q-item-section>
-            <q-item-side>
+            <q-item-section side>
               <q-btn dense flat icon="clear" color="red" @click="removeContact(index)" />
-            </q-item-side>
+            </q-item-section>
           </q-item>
-          <q-separator  :dark="LAYOUT.isDark" />
-          <q-item  class="no-padding">
-            <q-item-section align="center">
+          <q-separator spaced inset :dark="LAYOUT.isDark" />
+          <q-item>
+            <q-item-section align="q-pb-sm">
               <q-btn align="center" dense icon="add" color="positive" label="New contact" @click="addNewContact()" />
             </q-item-section>
           </q-item>
@@ -158,36 +213,48 @@
       </div>
       <!-- COLUMN::4th Reference Mode Picker -->
       <div class="col-12">
-        <div class="row q-col-gutter-sm q-mb-md" :class="{'text-white': LAYOUT.isDark}">
-          <q-field class="col-12 col-md-4" :error="errors.has('invoice_mode')" :error-message="errors.first('invoice_mode')"
+        <div class="row items-start q-col-gutter-md q-mb-md" :class="{'text-white': LAYOUT.isDark}">
+          <q-field class="col-12 col-sm-4" 
+            label="Invoice Type" stack-label
+            :error="errors.has('invoice_mode')" 
+            :error-message="errors.first('invoice_mode')"
             :dark="LAYOUT.isDark"
-            helper="Pick the mode for bill of customers">
-            <p class="label">
-              <q-icon name="credit_card"></q-icon> 
-              Invoice Type
-            </p>
-            <q-option-group name="invoice_mode" type="radio"  v-model="rsForm.invoice_mode" v-validate="'required'"
-              :dark="LAYOUT.isDark"
-              :options="SETTING.customer.invoice_mode" 
-            />
+            hint="Pick the mode for bill of customers">
+            
+              <q-option-group 
+                name="invoice_mode" type="radio" class="q-pa-sm"
+                v-model="rsForm.invoice_mode" 
+                v-validate="'required'"
+                :dark="LAYOUT.isDark" dense
+                :options="SETTING.customer.invoice_mode" />
+            
           </q-field>
-          <q-field class="col-12 col-md-4" color="secondary" helper="Pick the mode for Delivery documents"
-            :error="errors.has('delivery_mode')" :error-message="errors.first('delivery_mode')">
-            <p class="label">
-              <q-icon name="local_shipping"></q-icon> 
-              Delivery Type
-            </p>
-            <q-option-group name="delivery_mode" type="radio" v-model="rsForm.delivery_mode" v-validate="'required'"
+          <q-field class="col-12 col-sm-4" 
+            label="Delivery Type"  stack-label
+            hint="Pick the mode for Delivery documents"
+            :error="errors.has('delivery_mode')" 
+            :error-message="errors.first('delivery_mode')">
+            
+            <q-option-group name="delivery_mode" type="radio" class="q-pa-sm"
+              v-model="rsForm.delivery_mode" 
+              v-validate="'required'"
+              :dark="LAYOUT.isDark" dense
               :options="SETTING.customer.delivery_mode" />
+
           </q-field>
-          <q-field class="col-12 col-md-4" color="secondary" helper="Pick the mode for Sales documents"
-            :error="errors.has('order_mode')" :error-message="errors.first('order_mode')">
-            <p class="label">
-              <q-icon name="shop"></q-icon> 
-              PO Type ({{rsForm.order_mode}})
-            </p>
-            <q-option-group name="order_mode" type="radio" v-model="rsForm.order_mode" v-validate="'required'"
+          <q-field class="col-12 col-sm-4" 
+            label="PO type"  stack-label
+            hint="Pick the mode for Sales documents"
+            :error="errors.has('order_mode')" 
+            :error-message="errors.first('order_mode')">
+            
+            <q-option-group 
+              name="order_mode" type="radio" class="q-pa-sm"
+              v-model="rsForm.order_mode" 
+              v-validate="'required'"
+              :dark="LAYOUT.isDark" dense
               :options="SETTING.customer.order_mode" />
+
           </q-field>
         </div>
       </div>

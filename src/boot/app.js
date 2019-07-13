@@ -1,73 +1,15 @@
 // import MixGlobal from '../mixins/mix-global'
 import { Notify, date } from 'quasar'
 import moment from 'moment'
-
-function valueOfObject (obj, strprop) {
-  // Property not found
-  if (typeof obj === 'undefined') return
-
-  // index of next Property split
-  var _index = strprop.indexOf('.')
-
-  // Property split found; recursive call
-  if (_index > -1) {
-    // get object at Property (before split), pass on remainder
-    return valueOfObject(obj[strprop.substring(0, _index)], strprop.substr(_index + 1))
-  }
-
-  // no split; get Property
-  return obj[strprop]
-}
-
-function setValueOfObject (obj, strprop, val) {
-  // Property not found
-  if (typeof obj === 'undefined') return
-  if (typeof val === 'undefined') return
-
-  // index of next Property split
-  var _index = strprop.indexOf('.')
-
-  // Property split found; recursive call
-  if (_index > -1) {
-    // get object at Property (before split), pass on remainder
-    return setValueOfObject(obj[strprop.substring(0, _index)], strprop.substr(_index + 1), val)
-  }
-
-  // no split; set Property
-  if (!obj.hasOwnProperty(strprop)) return
-  obj[strprop] = val
-  return obj[strprop]
-}
-
+import Modal from '@/components/Modal'
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
-  let application = {
-    // config: {
-    //   get: function (strprop) {
-    //     return valueOfObject(app.store.state.admin.CONFIG, strprop)
-    //   },
-    //   set: function (strprop, val) {
-    //     const value = setValueOfObject(app.store.state.admin.CONFIG, strprop, val)
-    //     if (value === val) {
-    //       app.store.commit('admin/setConfig')
-    //       return value
-    //     }
-    //     return undefined
-    //   }
-    // },
-    // setting: {
-    //   get: function (strprop) {
-    //     return valueOfObject(app.store.state.admin.SETTING, strprop)
-    //   },
-    //   set: function (strprop, val) {
-    //     const value = setValueOfObject(app.store.state.admin.SETTING, strprop, val)
-    //     if (value === val) {
-    //       app.store.commit('admin/setSetting')
-    //       return value
-    //     }
-    //     return undefined
-    //   }
-    // },
+  // Vue.component('component-a', { /* ... */ })
+  // Vue.component('component-b', { /* ... */ })
+
+  Vue.component('modal', Modal)
+
+  Vue.prototype.$app = {
     response: {
       error: function (ErrRes, title = null) {
         if (!ErrRes) {
@@ -77,8 +19,7 @@ export default ({ app, router, Vue }) => {
             position: 'top-left',
             type: 'negative'
           })
-        }
-        else {
+        } else {
           let mode = {
             color: 'negative',
             position: 'top-right',
@@ -111,8 +52,7 @@ export default ({ app, router, Vue }) => {
             default:
               if (ErrRes.data) {
                 mode.message = (ErrRes.data.message || ErrRes.statusText)
-              }
-              else mode.message = ErrRes.statusText
+              } else mode.message = ErrRes.statusText
               break
           }
           if (mode.type !== false) Notify.create(Object.assign({}, mode))
@@ -128,33 +68,33 @@ export default ({ app, router, Vue }) => {
         timeout: 3000
       },
       error: function (values = {}, description = null) {
-        const mode = {color: 'negative'}
+        const mode = { color: 'negative' }
         if (typeof values === 'string' || values instanceof String) {
-          values = {message: values, detail: description}
+          values = { message: values, detail: description }
         }
 
         Notify.create(Object.assign(this.prevent, mode, values))
       },
       warning: function (values = {}, description = null) {
-        const mode = {color: 'warning'}
+        const mode = { color: 'warning' }
         if (typeof values === 'string' || values instanceof String) {
-          values = {message: values, detail: description}
+          values = { message: values, detail: description }
         }
 
         Notify.create(Object.assign(this.prevent, mode, values))
       },
       info: function (values = {}, description = null) {
-        const mode = {color: 'info'}
+        const mode = { color: 'info' }
         if (typeof values === 'string' || values instanceof String) {
-          values = {message: values, detail: description}
+          values = { message: values, detail: description }
         }
 
         Notify.create(Object.assign(this.prevent, mode, values))
       },
       success: function (values = {}, description = null) {
-        const mode = {color: 'positive'}
+        const mode = { color: 'positive' }
         if (typeof values === 'string' || values instanceof String) {
-          values = {message: values, detail: description}
+          values = { message: values, detail: description }
         }
 
         Notify.create(Object.assign(this.prevent, mode, values))
@@ -164,6 +104,4 @@ export default ({ app, router, Vue }) => {
     moment: moment,
     date: date
   }
-
-  Vue.prototype.$app = application
 }

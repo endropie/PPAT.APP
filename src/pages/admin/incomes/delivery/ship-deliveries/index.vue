@@ -13,34 +13,22 @@
         @request="TABLE.compute"
         :loading="TABLE.loading">
 
-        <template slot="top-left" slot-scope="props" :props="props">
-          <div>
-            <div class="row q-pa-xs q-gutter-xs">
-              <q-field class="col-auto" style="width:200px">
-                <q-select name="customer_id" v-model="FILTERABLE.fill.customer_id.value" stack-label label="Customer"
-                  :options="CustomerOptions" filter />
-              </q-field>
-              <q-field class="col">
-                <q-input stack-label label="Begin Date" v-model="FILTERABLE.fill.date_start.value" type="date" />
-              </q-field>
-              <q-field class="col">
-                <q-input stack-label label="Until Date" v-model="FILTERABLE.fill.date_end.value" type="date" />
-              </q-field>
-            </div>
-            <div class="row q-pa-xs q-gutter-xs items-end">
-              <q-field class="col-12" ref="filterable" label-width="1">
-                <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.value" placeholder="Searching..."  color="blue-grey-5"
-                  @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
-                  <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
-                    <!-- component Field -->
-                  </q-popover>
-                </q-chips-input>
-              </q-field>
-              <span class="col q-ml-xs q-pt-xs">
-                <q-btn class="float-right" icon="search" label="Search" size="sm" color="secondary" right @click="FILTERABLE.submit()"/>
-              </span>
-            </div>
-          </div>
+        <!-- Table Header -->
+        <template v-slot:top>
+          <table-header hide-search
+            :title="TABLE.getTitle()"
+            :TABLE.sync="TABLE"
+            :filter.sync="TABLE.filter" >
+
+            <template v-slot:menu-item>
+              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
+                <q-item-section>Add new</q-item-section>
+                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
+              </q-item>
+              <q-separator :dark="LAYOUT.isDark"/>
+            </template>
+
+          </table-header>
         </template>
 
         <template slot="body" slot-scope="rs">

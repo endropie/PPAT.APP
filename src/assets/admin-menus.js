@@ -23,17 +23,17 @@ const common = [
     children: [
       {
         name: 'Material Items',
-        path: '',
+        path: 'e',
         icon: 'style'
       },
       {
         name: 'Material index',
-        path: 'items',
+        path: 'items2',
         icon: 'style'
       },
       {
         name: 'Material stock',
-        path: 'items',
+        path: 'items1',
         icon: 'style'
       }
     ]
@@ -81,8 +81,9 @@ const incomes = [
     icon: 'border_all',
     path: 'delivery',
     first: 'pre-deliveries',
-    iframeTabs: true,
-    tabs: [
+    // iframeTabs: true,
+    // tabs: []
+    children: [
       {
         name: 'Delivery Orders',
         icon: 'linear_scale',

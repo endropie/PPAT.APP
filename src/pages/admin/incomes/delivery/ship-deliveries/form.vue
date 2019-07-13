@@ -8,80 +8,115 @@
         </template>
       </form-header>
     </q-card-section>
-    <q-card-section>
-      <div class="row q-gutter-sm q-gutter-x-md">
-        <!-- COLUMN::1st customer Identitity -->
-        <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-sm q-mb-md">
-            <q-field class="col-12" :error="errors.has('number')" :error-message="errors.first('number')">
-              <q-input name="number" label="No Transaction" v-model="rsForm.number" placeholder="[Auto Generate]" v-validate="$route.meta.mode == 'edit' ? 'required':''"/>
-            </q-field>
-            <q-field class="col-12" :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-              <q-select name="customer_id" v-model="rsForm.customer_id" label="Customer" v-validate="'required'"
-                :options="CustomerOptions" filter clearable
-                @input="setCustomerReference"
-                ></q-select>
-            </q-field>
-
-          </div>
-        </div>
-        <!-- COLUMN::2nd Transaction details -->
-        <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-sm">
-            <q-field class="col-12" >
-              <q-input name="customer_name" stack-label label="Name" v-model="rsForm.customer_name" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12" >
-              <q-input name="customer_phone" stack-label label="phone" v-model="rsForm.customer_phone" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12" >
-              <q-input name="customer_address" stack-label label="Address" v-model="rsForm.customer_address"  type="textarea" rows="2" />
-            </q-field>
-          </div>
-        </div>
-        <!-- COLUMN::3th Part items lists -->
-        <div class="col-12 q-my-md" v-if="ShipDeliveryItemOptions.length > 0">
-          <q-table ref="table" :data="rsForm.ship_delivery_items" dense hide-bottom class="table d-grid full-width shadow-1"
-            :rows-per-page-options ="[0]"
-            :columns="[
-              { name: 'prefix', label: '', field:'id', align: 'left'},
-              { name: 'code', label: '#code', align: 'left', field:(v)=> v.item.code, style:'padding:10px 7px'},
-              { name: 'item_id', label: 'Part item', align: 'left', field:(v)=> v.item.part_name},
-              { name: 'quantity', label: 'Quantity', align: 'center', field: 'quantity'},
-              { name: 'unit_id', label: 'unit', align: 'center', field:(v)=> v.unit.name},
-            ]"
-            :pagination="{ rowsPerPage: 0}"
-            >
+    <!-- COLUMN::1st customer Identitity -->
+    <q-card-section class="row q-col-gutter-sm q-col-gutter-x-md">
+      <div class="col-12 col-sm-6" >
+        <div class="row q-col-gutter-x-sm q-mb-md">
+          <q-input name="number" class="col-12" 
+            label="No Transaction" 
+            placeholder="[Auto Generate]" 
+            v-model="rsForm.number" 
+            v-validate="$route.meta.mode == 'edit' ? 'required':''"
+            :error="errors.has('number')" 
+            :error-message="errors.first('number')"/>
             
-          </q-table>
-        </div>
-        <!-- COLUMN::4th Description -->
-        <div class="col-12">
-          <div class="row q-gutter-x-sm q-mb-md">
-            <q-field class="col-12" :error="errors.has(`operator_id`)" :error-message="errors.first(`operator_id`)">
-              <q-select name="operator_id"  stack-label label="Operator" v-model="rsForm.operator_id" :options="OperatorOptions" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12 col-sm-8 col-md-4" :error="errors.has('date')" :error-message="errors.first('date')">
-              <q-input name="date" stack-label label="Date" v-model="rsForm.date" type="date" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12 col-sm-4 col-md-2" :error="errors.has('time')" :error-message="errors.first('time')">
-              <q-input name="time" stack-label label="Time" v-model="rsForm.time" type="time" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12 col-sm-8 col-md-4" :error="errors.has('due_date')" :error-message="errors.first('due_date')">
-              <q-input name="due_date" stack-label label="Due Date" v-model="rsForm.due_date" type="date" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12 col-sm-4 col-md-2" :error="errors.has('due_time')" :error-message="errors.first('due_time')">
-              <q-input name="due_time" stack-label label="Due Time" v-model="rsForm.due_time" type="time" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12" icon="rate_review">
-              <q-input name="description" type="textarea" rows="3" stack-label label="Description" v-model="rsForm.description"/>
-            </q-field>
-          </div>
+          <select-filter name="customer_id" class="col-12" 
+            v-model="rsForm.customer_id"
+            :label="$tc('general.customer')" 
+            :options="CustomerOptions" filter clearable
+            v-validate="'required'"
+            :error="errors.has('customer_id')" 
+            :error-message="errors.first('customer_id')"
+            @input="setCustomerReference" />
         </div>
       </div>
+      <!-- COLUMN::2nd Transaction details -->
+      <div class="col-12 col-sm-6" >
+        <div class="row q-col-gutter-x-sm">
+          
+          <q-input name="customer_name" class="col-12"
+            stack-label label="Name" 
+            v-model="rsForm.customer_name" 
+            v-validate="'required'"/>
+            
+          <q-input name="customer_phone" class="col-12"
+            stack-label label="phone" 
+            v-model="rsForm.customer_phone" 
+            v-validate="'required'"/>
+            
+          <q-input name="customer_address" class="col-12"
+            type="textarea" rows="2"
+            stack-label label="Address" 
+            v-model="rsForm.customer_address" />
+        </div>
+      </div>
+      <!-- COLUMN::3th Part items lists -->
+      <div class="col-12 q-my-md" v-if="ShipDeliveryItemOptions.length > 0">
+        <q-table ref="table" :data="rsForm.ship_delivery_items" dense hide-bottom class="table d-grid full-width shadow-1"
+          :rows-per-page-options ="[0]"
+          :columns="[
+            { name: 'prefix', label: '', field:'id', align: 'left'},
+            { name: 'code', label: '#code', align: 'left', field:(v)=> v.item.code, style:'padding:10px 7px'},
+            { name: 'item_id', label: 'Part item', align: 'left', field:(v)=> v.item.part_name},
+            { name: 'quantity', label: 'Quantity', align: 'center', field: 'quantity'},
+            { name: 'unit_id', label: 'unit', align: 'center', field:(v)=> v.unit.name},
+          ]"
+          :pagination="{ rowsPerPage: 0}"
+          >
+          
+        </q-table>
+      </div>
+      <!-- COLUMN::4th Description -->
+      <div class="col-12">
+        <div class="row q-col-gutter-x-sm q-mb-md">
+          
+          <select-filter name="operator_id" class="col-12"
+            stack-label label="Operator" 
+            v-model="rsForm.operator_id" 
+            :options="OperatorOptions" 
+            v-validate="'required'"
+            :error="errors.has(`operator_id`)" 
+            :error-message="errors.first(`operator_id`)"/>
+            
+          <q-input name="date" type="date" class="col-12 col-sm-8 col-md-4"
+            stack-label label="Date" 
+            v-model="rsForm.date" 
+            v-validate="'required'"
+            :error="errors.has('date')" 
+            :error-message="errors.first('date')"/>
+            
+          <q-input name="time" type="time" class="col-12 col-sm-4 col-md-2"
+            stack-label label="Time" 
+            v-model="rsForm.time" 
+            v-validate="'required'"
+            :error="errors.has(`time`)" 
+            :error-message="errors.first(`time`)"/>
+            
+          <q-input name="due_date" type="date" class="col-12 col-sm-8 col-md-4"
+            stack-label label="Due Date" 
+            v-model="rsForm.due_date" 
+            v-validate="'required'" 
+            :error="errors.has('due_date')" 
+            :error-message="errors.first('due_date')"/>
+            
+          <q-input name="due_time" type="time" class="col-12 col-sm-4 col-md-2"
+            stack-label label="Due Time" 
+            v-model="rsForm.due_time"  
+            v-validate="'required'"
+            :error="errors.has('due_time')" 
+            :error-message="errors.first('due_time')"/>
+            
+          <q-input name="description"  class="col-12" 
+            filled type="textarea" rows="3"
+            stack-label label="Description" 
+            v-model="rsForm.description"/>
+
+        </div>
+      </div>
+    
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
-    <q-card-actions class="q-mx-lg">
+    <q-card-actions class="group">
       <q-btn :label="$tc('label.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
       <q-btn :label="$tc('label.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
       <q-btn :label="$tc('label.save')" icon="save" color="positive" @click="onSave()" v-if="IS_EDITABLE"></q-btn>     

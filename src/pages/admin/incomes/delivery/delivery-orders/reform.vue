@@ -41,7 +41,7 @@
               </div>
             </q-field>
             <q-field class="col-12" :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-              <q-select name="customer_id" v-model="rsForm.customer_id" label="Customer" readonly v-validate="'required'"
+              <q-select name="customer_id" v-model="rsForm.customer_id" :label="$tc('general.customer')" readonly v-validate="'required'"
                 :options="CustomerOptions" 
                 @input="setCustomerReference"
                 ></q-select>

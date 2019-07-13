@@ -1,19 +1,33 @@
 <template>
   <q-select
     ref="select-filter"
-    v-model="model"
+    v-model="value"
     v-bind="$attrs"
     v-on="$listeners"
     @filter="filterFunc"
     :options="opt"
-    hide-selected
-    use-input
-    fill-input
-    emit-value
-    map-options
+    :hide-selected="hideSelected"
+    :use-input="useInput"
+    :fill-input="fillInput"
+    :emit-value="emitValue"
+    :map-options="mapOptions"
     autocomplete="off">
     <!-- :options="this.selfFilter ? this.options : this.$attrs.options" -->
     <!-- @filter="(v, f, c) => { this.selfFilter ? filterFn(v, f, c) : $emit('filter', v, f, c) }" -->
+    <template v-slot:option="scope">
+      <q-item
+        v-bind="scope.itemProps"
+        v-on="scope.itemEvents"
+      >
+        <q-item-section avatar v-if="scope.opt.icon">
+          <q-icon :name="scope.opt.icon" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label v-html="scope.opt.label" />
+          <q-item-label caption>{{ scope.opt.sublabel }}</q-item-label>
+        </q-item-section>
+      </q-item>
+    </template>
     <template v-slot:no-option>
       <q-item>
         <q-item-section class="text-grey">
@@ -21,7 +35,16 @@
         </q-item-section>
       </q-item>
     </template>
+    <template v-slot:selected-item="scope">
+      <slot name="selected-item" :scope="scope">
+      </slot>
+    </template>
+    
+    <template v-slot:default>
+      <slot></slot>
+    </template>
   </q-select>
+  
 </template>
 <script>
 
@@ -29,15 +52,17 @@ export default {
   name: 'select-filter',
   inheritAttrs: false,
   props: {
-    selfFilter: {
-      type: Boolean,
-      default: true
-    }
+    selfFilter: {type: Boolean, default: true },
+    useInput: {type: Boolean, default: true },
+    fillInput: {type: Boolean, default: true },
+    emitValue: {type: Boolean, default: true },
+    mapOptions: {type: Boolean, default: true },
+    hideSelected: {type: Boolean, default: false },
   },
   data () {
     return {
-      model:  null,
-      options: [] // this.$attrs.options
+      value:  this.$attrs.value || null,
+      options: this.$attrs.options || [] // this.$attrs.options
     }
   },
   mounted() {
@@ -50,7 +75,7 @@ export default {
   methods: {
     setValue(v) {
       // console.warn('SET VALUE', this.$attrs.value)
-      this.model = v
+      this.value = v
     },
     setOptions(v) {
       // console.warn('SET OPTIONS', this.$attrs.options)
@@ -65,7 +90,9 @@ export default {
 
       update(() => {
         const needle = val.toLowerCase()
-        this.options = this.$attrs.options.filter(v => v.label.toLowerCase().includes(needle))
+        this.options = this.$attrs.options.filter(v => {
+          return v.label.toLowerCase().includes(needle) || v.sublabel.toLowerCase().includes(needle)
+        })
       })
     },
     filterFunc (v, u, a) {

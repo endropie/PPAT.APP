@@ -12,38 +12,59 @@
         @request="TABLE.compute"
         :loading="TABLE.loading">
 
-        <template slot="top-right" slot-scope="props" :props="props">
-          <div>
-            <div class="row q-pa-xs q-gutter-xs">
-              <q-field class="col-auto">
-                <q-select name="customer_id" v-model="FILTERABLE.fill.customer_id.value" stack-label label="Customer"
-                  :dark="LAYOUT.isNighMode"
-                  :options="CustomerOptions" filter clearable/>
-              </q-field>
-              <q-field class="col">
-                <q-input stack-label label="Begin date" v-model="FILTERABLE.fill.begin_daterange.value" type="date" :dark="LAYOUT.isNighMode"/>
-              </q-field>
-              <q-field class="col">
-                <q-input stack-label label="Until date" v-model="FILTERABLE.fill.until_daterange.value" type="date" :dark="LAYOUT.isNighMode" />
-              </q-field>
+        <!-- Table Header -->
+        <template v-slot:top>
+          <table-header hide-search
+            :title="TABLE.getTitle()"
+            :TABLE.sync="TABLE"
+            :filter.sync="TABLE.filter" >
+
+            <template v-slot:menu-item>
+              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
+                <q-item-section>Add new</q-item-section>
+                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
+              </q-item>
+              <q-separator :dark="LAYOUT.isDark"/>
+            </template>
+
+            <div class="row q-col-gutter-xs" >
+              <select-filter class="col-12 col-md-6" style="min-width:150px"
+                name="customer_id" 
+                v-model="FILTERABLE.fill.customer_id.value" 
+                stack-label :label="$tc('general.customer')" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark"
+                :options="CustomerOptions" filter clearable />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Begin Date" 
+                v-model="FILTERABLE.fill.begin_daterange.value" 
+                type="date"
+                dense hide-bottom-space 
+                :dark="LAYOUT.isDark" />
+              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
+                stack-label label="Until Date" 
+                v-model="FILTERABLE.fill.until_daterange.value" 
+                type="date" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark" />
+               
+
+              <q-select class="col-12 col-md-6" 
+                new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
+                dense input-debounce="0"
+                name="filterable" 
+                v-model="FILTERABLE.value" 
+                placeholder="Searching..." 
+                emit-value
+                :dark="LAYOUT.isDark">
+
+                <template slot="append">
+                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit()"/>
+                </template>
+              </q-select> 
+              
             </div>
-            <div class="row q-pa-xs q-gutter-xs items-end">
-              <q-field class="col col-auto col-auto" ref="filterable" label-width="1" label-right>
-                <q-chips-input name="filterable" :value="FILLABEL.value" placeholder="Searching..." 
-                  :dark="LAYOUT.isNighMode"
-                  @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
-                  <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
-                    <!-- component Field -->
-                  </q-popover>
-                  
-                </q-chips-input>
-                
-              </q-field>
-              <span class="col q-ml-xs q-pt-xs">
-                <q-btn class="float-right" icon="search" label="Search" size="sm" color="secondary" right @click="FILTERABLE.submit()"/>
-              </span>
-            </div>
-          </div>
+          </table-header>
         </template>
 
         <!-- slot name syntax: body-cell-<column_name> -->

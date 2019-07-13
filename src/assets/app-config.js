@@ -1,7 +1,7 @@
 
 const config = {
   general: {
-    baseURL: 'http://127.0.0.1:8000' // 'http://laravel.ppa'
+    baseURL: 'http://ppa.virmata.com' // 'http://laravel.ppa'
   },
   options: {
     transaction_mode: [

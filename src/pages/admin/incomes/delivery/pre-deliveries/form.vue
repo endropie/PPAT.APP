@@ -1,172 +1,217 @@
 <template>
 <q-page padding class="main-page justify-center"  v-if="SHOW">
-  <q-card inline class="q-ma-sm ">
+  <q-card inline class="main-box " :dark="LAYOUT.isDark">
     <q-card-section>
-      <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
+      <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" :dark="LAYOUT.isDark">
         <template slot="menu-item">
           <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
-    <q-card-section>
-      <div class="row q-gutter-sm q-gutter-x-md">
-        <!-- COLUMN::Base Transaction mode -->
-        <q-field class="col-12 q-border" label="Transaction mode" label-width="3" :error="errors.has('transaction')" :error-message="errors.first('transaction')"
-          v-if="this.$route.meta.mode !== 'edit'">
-          <q-option-group name="transaction" type="radio" v-model="rsForm.transaction" color="secondary" inline
-            :disable="this.$route.meta.mode == 'edit'"
-            v-validate="'required'"
-            :options="$store.state.admin.CONFIG.options.transaction_mode"
-          />
-        </q-field>
-        <!-- COLUMN::1st customer Identitity -->
-        <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-md">
-            <q-field class="col-12" :error="errors.has('number')" :error-message="errors.first('number')">
-              <q-input name="number" label="No Transaction" v-model="rsForm.number" placeholder="[Auto Generate]" v-validate="$route.meta.mode == 'edit' ? 'required':''"/>
-            </q-field>         
-            <q-field class="col-12" :error="errors.has('customer')" :error-message="errors.first('customer')">
-              <q-select name="customer" v-model="rsForm.customer_id" label="Customer" v-validate="'required'"
-                :disable="IssetItemDetails || (rsForm.request_order_id != null )" 
-                :options="CustomerOptions" filter clearable
-                @input="setCustomerReference"
-                ></q-select>
-              <q-tooltip :disable="!IssetItemDetails" :offset="[0, 10]">To change, Please remove all detail parts, first!</q-tooltip>
-            </q-field>
-            <!-- <q-field class="col-12 col-md-6" :error="errors.has(`trans_qty`)" :error-message="errors.first(`trans_qty`)">
-              <q-input name="trans_qty" stack-label label="Qty Trans" v-model="rsForm.trans_qty" type="number" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12 col-md-6" :error="errors.has(`rit_id`)" :error-message="errors.first(`rit_id`)">
-              <q-select name="rit_id"  stack-label label="R I T" v-model="rsForm.rit_id" v-validate="'required'"
-                :options="[{value:1,label:'Rit-1'},{value:2,label:'Rit-2'},{value:13,label:'Rit-3'}]"
-              />
-            </q-field> -->
-            <q-field class="col-12 col-md-6" :error="errors.has('plan_begin_date')" :error-message="errors.first('plan_begin_date')">
-              <q-input name="plan_begin_date" stack-label label="Begin date of Plan" v-model="rsForm.plan_begin_date" type="date" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12 col-md-6" :error="errors.has('plan_until_date')" :error-message="errors.first('plan_until_date')">
-              <q-input name="plan_until_date" stack-label label="Until date of Plan" v-model="rsForm.plan_until_date" type="date" v-validate="'required'"/>
-            </q-field>
-          </div>
-        </div>
-        <!-- COLUMN::2nd Transaction details -->
-        <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-md">
-            <q-field class="col-12">
-              <q-input name="customer_name" stack-label label="Name" v-model="rsForm.customer_name"  v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12">
-              <q-input name="customer_phone" stack-label label="phone" v-model="rsForm.customer_phone"  v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12">
-              <q-input name="customer_address" stack-label label="Address" v-model="rsForm.customer_address"  type="textarea" rows="2" />
-            </q-field>
-          </div>
-        </div>
-        <!-- COLUMN::3th Items lists -->
-        <div class="col-12">
-          <div class="row no-wrap q-gutter-sm">
-            <q-field>
-              <q-select name="order_mode" v-model="rsForm.order_mode" disable label="Request orders mode" radio
-                :options="$store.state.admin.CONFIG.options.order_mode"
-              />
-            </q-field>
-            <!-- <q-field class="full-width" :error="errors.has('request_order_id')" :error-message="errors.first('request_order_id')"> 
-              <q-select name="request_order_id" v-model="rsForm.request_order_id" label="Request Order Reference" 
-                :disable="IssetItemDetails || rsForm.order_mode !== 'PO'" 
-                v-validate="rsForm.order_mode === 'PO' ? 'required' : ''"
-                :options="RequestOrderOptions" filter clearable
-                />
-            </q-field> -->
-          </div>
-        </div>
-        <div class="col-12">
-          <q-table ref="table" :data="rsForm.pre_delivery_items" dense hide-bottom class="d-grid full-width no-shadow"
-            :rows-per-page-options ="[0]"
-            :columns="[
-              { name: 'prefix', label: '',  align: 'left'},
-              { name: 'item_id', label: 'Part Item', align: 'left'},
-              { name: 'quantity', label: 'Quantity', align: 'center'},
-              { name: 'unit_id', label: 'Unit', align: 'center'},
-            ]"
-            :pagination="{rowsPerPage: 0}"
-            >
-            <template slot="body" slot-scope="propItem">
-              <q-tr :propItem="propItem">
-                <q-td key="prefix">
-                  <q-btn dense  @click="removeItem(propItem.row.__index)" icon="delete" color="blue-grey-5"/>
-                </q-td>
-                <q-td key="item_id" width="50%">
-                  <q-field style="min-width:150px" :error="errors.has(`pre_delivery_items.${propItem.row.__index}.item_id`)" :error-message="errors.first(`pre_delivery_items.${propItem.row.__index}.item_id`)">
-                    <q-select class="col-auto" :name="`pre_delivery_items.${propItem.row.__index}.item_id`" v-model="propItem.row.item_id" inverted color="blue-grey-5"
-                      v-validate="`required|excluded:${rsForm.pre_delivery_items.map((x,index) => index !==propItem.row.__index ? x.item_id : -1)}`" 
-                      :readonly="!IssetCustomerID"
-                      :options="ItemOptions" filter
-                      @input="(val)=>{ setItemReference(propItem.row.__index, val) }"
-                    />
-                    <q-tooltip :disable="IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
-                  </q-field>
-                </q-td>
-                <q-td style="min-width:120px" key="quantity" width="30%">
-                    <q-field :error="errors.has(`pre_delivery_items.${propItem.row.__index}.quantity`)" >
-                      <q-input minimal :name="`pre_delivery_items.${propItem.row.__index}.quantity`" v-model="propItem.row.quantity" type="number" align="center" inverted color="blue-grey-5"
-                        @input="(val)=> {propItem.row.unit_qty = (val) * (propItem.row.unit_rate)}"
-                        :suffix="'&nbsp;/&nbsp;' + strUnitConvertion(propItem.row, MaxMount[propItem.row.__index])"
-                        :warning="propItem.row.quantity > MaxStock[propItem.row.__index]"
-                        :before="[{icon: 'warning', warning: true, handler () {}}]"
-                        v-validate="FORM.validator.quantity(propItem.row, numUnitConvertion(propItem.row, MaxMount[propItem.row.__index]))"
-                      />
-                    </q-field>
-                </q-td>
-                <q-td key="unit_id" width="15%">
-                  <q-field :error="errors.has(`pre_delivery_items.${propItem.row.__index}.unit_id`)" :error-message="errors.first(`pre_delivery_items.${propItem.row.__index}.unit_id`)">
-                    <q-select minimal :name="`unit_id-${propItem.row.__index}`" v-model="propItem.row.unit_id" :options="ItemUnitOptions[propItem.row.__index]" inverted color="blue-grey-5"
-                      @input="(val)=> { setUnitReference(propItem.row.__index, val) }"
-                    />
-                  </q-field>
-                </q-td>
-              </q-tr>
-              <q-tr v-if="propItem.row.item" class="">
-                <q-td></q-td>
-                <q-td >
-                  <div class="text-left">
-                    <table class="table-description full-width">
-                      <tr><td>No Plate    </td><td>{{ propItem.row.item.part_number }}</td></tr>
-                      <tr><td>Plate name  </td><td>{{ propItem.row.item.part_name }}</td></tr>
-                    </table>
-                  </div>
-                </q-td>
-                  <q-td colspan="2">
-                  <div class="text-left" >
-                    <table class="table-description full-width">
-                      <tr>
-                        <td>Quantity    </td>
-                        <td>{{ formatNumber(propItem.row.quantity * propItem.row.unit_rate) }} {{ MAPINGKEY["items"][propItem.row.item_id] ? MAPINGKEY["items"][propItem.row.item_id].unit.name :'' }}</td>
-                      </tr>
-                      <tr><td>FG #alias    </td><td>{{ propItem.row.item.part_alias }}</td></tr>
-                    </table>
-                  </div>
-                </q-td>
-                <q-td colspan="100%"> </q-td>
-              </q-tr>
-            </template>
+    <!-- COLUMN:: Transaction Identitity -->
+    <q-card-section class="row q-col-gutter-sm q-col-gutter-x-md">
+      <q-field class="col-12" 
+        label="Transaction mode" stack-label 
+        borderless
+        :dark="LAYOUT.isDark"
+        :error="errors.has('transaction')" 
+        :error-message="errors.first('transaction')"
+        v-if="this.$route.meta.mode !== 'edit'">
 
-            <q-tr slot="bottom-row" slot-scope="propItem" >
-              <q-td colspan="100%" :propItem="propItem">
-                <strong><q-btn dense  @click="addNewItem()" icon="add" color="positive"/></strong>
-              </q-td>
-            </q-tr>
-          </q-table>
-        </div>
-        <!-- COLUMN::4th Description -->
-        <div class="col-12">
-          <div class="row q-gutter-x-lg q-mb-md">
-            <q-field class="col-12" icon="rate_review">
-              <q-input name="description" type="textarea" rows="3" stack-label label="Description" v-model="rsForm.description"/>
-            </q-field>
-          </div>
+        <q-option-group name="transaction" type="radio" inline
+          v-model="rsForm.transaction" 
+          :options="$store.state.admin.CONFIG.options.transaction_mode"
+          :disable="this.$route.meta.mode == 'edit'"
+          :dark="LAYOUT.isDark"
+          v-validate="'required'"
+        />
+      </q-field>
+      <div class="col-12 col-sm-6" >
+        <div class="row q-col-gutter-x-sm">
+          <q-input name="number" class="col-12" 
+            label="No Transaction" 
+            placeholder="[Auto Generate]"
+            v-model="rsForm.number"  
+            v-validate="$route.meta.mode == 'edit' ? 'required':''"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('number')" 
+            :error-message="errors.first('number')"/>
+         
+          <select-filter name="customer" class="col-12" 
+            :label="$tc('general.customer')"
+            v-model="rsForm.customer_id" 
+            v-validate="'required'"
+            :disable="IssetItemDetails || (rsForm.request_order_id != null )" 
+            :options="CustomerOptions" filter clearable
+            @input="setCustomerReference"
+            :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
+            :error="errors.has('customer')" 
+            :error-message="errors.first('customer')" >
+          
+            <q-tooltip v-if="IssetItemDetails" :offset="[0, 10]">To change, Please remove all detail parts, first!</q-tooltip>
+          </select-filter>
+          <!-- <q-field class="col-12 col-md-6" :error="errors.has(`trans_qty`)" :error-message="errors.first(`trans_qty`)">
+            <q-input name="trans_qty" stack-label label="Qty Trans" v-model="rsForm.trans_qty" type="number" v-validate="'required'"/>
+          </q-field>
+          <q-field class="col-12 col-md-6" :error="errors.has(`rit_id`)" :error-message="errors.first(`rit_id`)">
+            <q-select name="rit_id"  stack-label label="R I T" v-model="rsForm.rit_id" v-validate="'required'"
+              :options="[{value:1,label:'Rit-1'},{value:2,label:'Rit-2'},{value:13,label:'Rit-3'}]"
+            />
+          </q-field> -->
+          <q-input name="plan_begin_date"  type="date" class="col-12 col-sm-6" 
+            stack-label label="Begin date of Plan" 
+            v-model="rsForm.plan_begin_date" 
+            v-validate="'required'"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('plan_begin_date')" 
+            :error-message="errors.first('plan_begin_date')"/>
+        
+          <q-input name="plan_until_date" type="date" class="col-12 col-sm-6" 
+            stack-label label="Until date of Plan" 
+            v-model="rsForm.plan_until_date" 
+            v-validate="'required'" 
+            :dark="LAYOUT.isDark"
+            :error="errors.has('plan_until_date')" 
+            :error-message="errors.first('plan_until_date')" />
+        
         </div>
       </div>
+      
+      <div class="col-12 col-sm-6" >
+        <div class="row q-col-gutter-x-md">
+          <q-input name="customer_name" class="col-12" 
+            stack-label label="Name" 
+            v-model="rsForm.customer_name"  
+            v-validate="'required'"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('customer_name')"/>
+            
+          <q-input name="customer_phone" class="col-12" 
+            stack-label label="phone" 
+            v-model="rsForm.customer_phone"  
+            v-validate="'required'"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('customer_phone')"/>
+            
+          <q-input name="customer_address" class="col-12" 
+            stack-label label="Address" 
+            v-model="rsForm.customer_address"  
+            type="textarea" rows="2" 
+            :dark="LAYOUT.isDark"
+            :error="errors.has('customer_address')"/>
+        </div>
+      </div>
+
+      <!-- COLUMN::3th Items lists -->
+      <div class="col-12">
+        <div class="row q-col-gutter-sm">
+          <q-select name="order_mode" radio class="col-12"
+            label="Request orders mode" 
+            v-model="rsForm.order_mode" disable
+            outlined dense hide-dropdown-icon
+            :options="$store.state.admin.CONFIG.options.order_mode"
+            :dark="LAYOUT.isDark"
+          />
+        </div>
+      </div>
+      <div class="col-12">
+        <q-table ref="table" dense hide-bottom 
+          :data="rsForm.pre_delivery_items" 
+          :dark="LAYOUT.isDark"
+          class="d-grid full-width no-shadow main-box"
+          :rows-per-page-options ="[0]"
+          :columns="[
+            { name: 'prefix', label: '',  align: 'left'},
+            { name: 'item_id', label: 'Part Item', align: 'left'},
+            { name: 'quantity', label: 'Quantity', align: 'center'},
+            { name: 'unit_id', label: 'Unit', align: 'center'},
+          ]"
+          :pagination="{rowsPerPage: 0}"
+          >
+          <template slot="body" slot-scope="propItem">
+            <q-tr :propItem="propItem">
+              <q-td key="prefix">
+                <q-btn dense  @click="removeItem(propItem.row.__index)" icon="delete" color="blue-grey-5"/>
+              </q-td>
+              <q-td key="item_id" width="50%" style="min-width:150px">
+                <select-filter :name="`pre_delivery_items.${propItem.row.__index}.item_id`" 
+                  v-model="propItem.row.item_id" 
+                  outlined dense hide-bottom-space color="blue-grey-5"
+                  :readonly="!IssetCustomerID"
+                  :options="ItemOptions" filter
+                  v-validate="`required|excluded:${rsForm.pre_delivery_items.map((x,index) => index !==propItem.row.__index ? x.item_id : -1)}`" 
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has(`pre_delivery_items.${propItem.row.__index}.item_id`)"
+                  :error-message="errors.first(`pre_delivery_items.${propItem.row.__index}.item_id`)"
+                  @input="(val)=>{ setItemReference(propItem.row.__index, val) }"
+                />
+                <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
+              </q-td>
+              <q-td style="min-width:120px" key="quantity" width="30%">
+                <q-input :name="`pre_delivery_items.${propItem.row.__index}.quantity`" 
+                  v-model="propItem.row.quantity" type="number" minimal
+                  outlined dense hide-bottom-space color="blue-grey-5"
+                  :suffix="' / ' + strUnitConvertion(propItem.row, MaxMount[propItem.row.__index])"
+                  :warning="propItem.row.quantity > MaxStock[propItem.row.__index]"
+                  :before="[{icon: 'warning', warning: true, handler () {}}]"
+                  v-validate="FORM.validator.quantity(propItem.row, numUnitConvertion(propItem.row, MaxMount[propItem.row.__index]))"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has(`pre_delivery_items.${propItem.row.__index}.quantity`)" 
+                  @input="(val)=> {propItem.row.unit_qty = (val) * (propItem.row.unit_rate)}"/>
+              </q-td>
+              <q-td key="unit_id" width="15%">
+                <q-select 
+                  minimal :name="`pre_delivery_items.${propItem.row.__index}.unit_id`" 
+                  v-model="propItem.row.unit_id" 
+                  outlined dense hide-bottom-space color="blue-grey-5"
+                  :options="ItemUnitOptions[propItem.row.__index]" 
+                  @input="(val)=> { setUnitReference(propItem.row.__index, val) }"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has(`pre_delivery_items.${propItem.row.__index}.unit_id`)" 
+                  :error-message="errors.first(`pre_delivery_items.${propItem.row.__index}.unit_id`)"
+                />
+              </q-td>
+            </q-tr>
+            <!-- <q-tr v-if="propItem.row.item">
+              <q-td></q-td>
+              <q-td >
+                <div class="text-left">
+                  <table class="table-description full-width">
+                    <tr><td>No Plate    </td><td>{{ propItem.row.item.part_number }}</td></tr>
+                    <tr><td>Plate name  </td><td>{{ propItem.row.item.part_name }}</td></tr>
+                  </table>
+                </div>
+              </q-td>
+                <q-td colspan="2">
+                <div class="text-left" >
+                  <table class="table-description full-width">
+                    <tr>
+                      <td>Quantity    </td>
+                      <td>{{ formatNumber(propItem.row.quantity * propItem.row.unit_rate) }} {{ MAPINGKEY["items"][propItem.row.item_id] ? MAPINGKEY["items"][propItem.row.item_id].unit.name :'' }}</td>
+                    </tr>
+                    <tr><td>FG #alias    </td><td>{{ propItem.row.item.part_alias }}</td></tr>
+                  </table>
+                </div>
+              </q-td>
+              <q-td colspan="100%"> </q-td>
+            </q-tr> -->
+          </template>
+
+          <q-tr slot="bottom-row" slot-scope="propItem" >
+            <q-td colspan="100%" :propItem="propItem">
+              <strong><q-btn dense  @click="addNewItem()" icon="add" color="positive"/></strong>
+            </q-td>
+          </q-tr>
+        </q-table>
+      </div>
+      <!-- COLUMN::4th Description -->
+      <q-field class="col-12" icon="rate_review">
+        <q-input name="description" type="textarea" rows="3" 
+          stack-label label="Description" 
+          :dark="LAYOUT.isDark"
+          v-model="rsForm.description"/>
+      </q-field>
+    
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-actions class="q-mx-lg">
