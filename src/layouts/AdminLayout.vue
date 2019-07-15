@@ -17,7 +17,11 @@
             PPA Play <BR/>V-{{'1.0'}}
           </div>
         </div>
-        <admin-menu></admin-menu>
+        <q-list class="menu">
+          <template v-for="(node, index) in AdminMenus">
+            <admin-menu :node="node" :isIndent="false" :prefix="`/admin/${node.path}`" :key="index" :dark="LAYOUT.isDark"/>
+          </template>
+        </q-list>
       </q-scroll-area>
     </q-drawer>
 
@@ -41,8 +45,9 @@ import { openURL } from 'quasar'
 import { mapState, mapActions } from 'vuex'
 import MixPage from '@/mixins/mix-page.vue'
 import AdminTabs from 'components/admin-tabs'
-import AdminMenu from 'components/AdminMenu'
+import AdminMenu from 'components/AdminMenuItem'
 import AdminHeader from 'components/AdminHeader'
+import AdminMenus from "@/assets/admin-menus";
 
 export default {
   mixins: [MixPage],
@@ -53,28 +58,31 @@ export default {
   },
   data () {
     return {
-      // data..
+      AdminMenus
     }
   },
   created(){
+    // this.setTime()
     console.info('[PLAY] Admin created!')
-    if(this.AUTH.access && this.AUTH.access.hasOwnProperty('token')) {
-      this.$axios.setHeader([
-        {key: 'Accept', value: 'application/json'},
-        {key: 'Authorization', value: `Bearer ${this.AUTH.access.token}`}
-      ])
-    }
+    // if(this.AUTH && this.AUTH.hasOwnProperty('token')) {
+    //   this.$axios.setHeader([
+    //     {key: 'Accept', value: 'application/json'},
+    //     {key: 'Authorization', value: `Bearer ${this.AUTH.token}`}
+    //   ])
+    // }
+
     this.$axios.validToken(
       (response) => {
         if(!response) this.setLogoff()
         else{
-          this.setAdminStore(response)
+          
         }
       }
     )
   },
   computed: {
     ...mapState('admin', [
+      'NOW',
       'PAGEMETA',
       'AUTH'
     ])
@@ -82,6 +90,7 @@ export default {
   methods: {
     openURL,
     ...mapActions( {
+      setTime: 'admin/TIMESTART'
       // setValue: 'admin/setValue',
       // setAuthClear: 'admin/setLogoff',
     }),

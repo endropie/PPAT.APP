@@ -4,26 +4,28 @@ import VeeValidate from 'vee-validate'
 export default ({ app, router, Vue }) => {
   Vue.use(VeeValidate)
 
-  Vue.directive('validate-label', {
-    error:true,
+  Vue.directive('validate-name', {
     bind: (el, binding, vnode) => {
       console.warn(vnode)
-
-      // let s = JSON.stringify(el)
-
-      let errors = vnode.componentInstance.errors
-      console.warn('label')
-
-      
-      // vnode.componentInstance.error = errors.has('code')
-      // vnode.componentInstance.$vnode.errorMessage = 'lalal'
-      // vnode.componentInstance.$emit('error', errors.has('code'))
-      // vnode.componentInstance.$emit('errorMessage', errors.first('code'))
-
-
-      // vnode.componentInstance.errorMessage = errors.first('code')
+      const ref = vnode.data.ref
+      const component = vnode.context.$refs[ref]
+      console.warn('input', component)
+      let errors = vnode.context.errors
+      vnode.componentInstance.$emit('error', errors.has('name'))
+      // component.error = errors.has('name')
+      // component.errorMessage = errors.first('name')
+      // vnode.componentInstance.innerError = errors.has('name')
+      // vnode.componentInstance.innerErrorMessage = errors.first('name')
       // componentInstance
-      
+    },
+    update: (el, binding, vnode) => {
+      // let errors = vnode.context.errors
+      // vnode.componentInstance.error = errors.has('name')
+      // vnode.componentInstance.innerError = errors.has('name')
+      // vnode.componentInstance.innerErrorMessage = errors.first('name')
+      // vnode.componentInstance.errorMessage = errors.first('name')
+      // console.warn('SET', vnode.componentOptions.propsData.error)
+      // console.warn('ERROR', errors.has('name'), errors.first('name'))
     }
   })
 }

@@ -1,72 +1,49 @@
-<template>
-  <q-list v-if="node.hide !== true">
-    <q-expansion-item v-if="node.children && node.children.length"
-      :icon="node.icon"  
-      :content-inset-level="0.2"
-      expand-separator
-      dense-toggle
-      :label="node.name || ''" 
-      :opened="$route.fullPath.startsWith(prefix)" >
-        <template slot="header">
-          <q-item-section avatar>
-            <q-icon :name="node.icon" />
-          </q-item-section>
-          <q-item-section label>
-            {{node.name || ''}}
-          </q-item-section>
 
-        </template>
-        
-        <admin-menu-item v-for="(nodeitem, index) in node.children" :node="nodeitem" :prefix="getPrefix(nodeitem)" isChildren :key="index"  />
-      
-
-    </q-expansion-item>
-    
-    <q-item v-else :to="prefix" v-bind:class="{ 'active': $route.fullPath.startsWith(prefix)}" replace 
-      :label="node.name || '- Undefine name -'">
-      <q-item-section avatar>
-        <q-icon :name="isChildren ? `keyboard_arrow_right` : node.icon"/>
-      </q-item-section>
-      <q-item-section >
-          {{node.name || '- Undefine name -'}}
-      </q-item-section>
-    </q-item>
-  
-  </q-list>
-</template>
 
 <script>
-import MixPage from '@/mixins/mix-page.vue'
-import AdminMenuItem from "@/components/AdminMenuItem.vue";
+import MenuParent from "@/components/MenuParent.vue";
+import MenuChild from "@/components/MenuChild.vue";
+
 export default {
-  mixins: [MixPage],
+  functional: true,
+  render(createElement, context) {
+    const first = createElement(MenuChild, { props: context.props });
+    const second = createElement(MenuParent, { props: context.props });
+    return [first, second];
+  },
   name: 'admin-menu-item',
   props: {
+    dark: {type: Boolean, default: false},
     node: Object,
     prefix: {type: String, default: ''},
     isIndent : {type: Boolean, default: false},
-    isChildren: {type: Boolean, default: false}
+    isChildren: {type: Boolean, default: false},
+    countChild: {type: Boolean, default: false}
   },
-  components:{
-    'admin-menu-item': AdminMenuItem
-  },
-  created() {
-    // console.log('menu', this.node)  
-  },
-  computed: {
-  },
-  methods: {
-    getPrefix(item) {  
-      let ini = this.prefix + (item.path ? ('/' + item.path) : '' )
-    //   console.log('CHECK',ini, this.$route.fullPath.startsWith(ini))
-      return this.prefix + (item.path ? ('/' + item.path) : '' )
-    },
-    isActive(prefix) {
-    // console.log(prefix, this.$route.fullPath)
-    // console.log(prefix, this.$route.fullPath.startsWith(prefix))
-      return prefix === this.$route.fullPath.startsWith(prefix)
-    }
-      
-  },
+  mounted() {
+    console.warn('BASE meta', this.node.meta)
+  }
 }
 </script>
+
+
+<style lang="stylus">
+
+.menu 
+  .q-expansion-item
+    .q-expansion-item__content .q-item
+      min-height 36px
+
+  .q-item__section--avatar
+    min-width: 38px;
+
+  .q-expansion-item--expanded > div > .q-item > .q-item__section--main
+    
+
+  .q-item.q-router-link--active
+    font-weight 500 
+
+  .q-item.q-router-link--active
+    // background lighten($primary, 90%)
+
+</style>

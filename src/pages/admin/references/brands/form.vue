@@ -22,13 +22,16 @@
           :error-message="errors.first('code')"
         />
         <q-input class="col-12 col-sm-6" 
+          ref="name"
           name="name" 
           :label="$tc('label.name')" 
           v-model="rsForm.name" 
           v-validate="'required'" 
+          v-validate-name:my-name
           :dark="LAYOUT.isDark" 
-          :error="errors.has('name')" 
-          :error-message="errors.first('name')"
+         
+         
+
         />
         <q-input class="col-12" 
           v-model="rsForm.description" 

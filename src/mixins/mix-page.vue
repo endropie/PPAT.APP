@@ -45,7 +45,7 @@ export default {
         this.$router.push('/auth')
       }, 100)
     },
-    setAdminStore (response) {
+    setLoginStore (response) {
       if (response && response.data.valid === true) {
         this.$axios.setHeader([
           {key: 'Accept', value: 'application/json'},
@@ -53,9 +53,9 @@ export default {
         ])
 
         this.$store.commit('admin/setLogin', {
-          access: {
+          auth: {
             token: response.data.access.token,
-            expires_in: response.data.access.expires_in,
+            login_in: response.data.access.expires_in,
             login_at: new Date()
           },
           user: {

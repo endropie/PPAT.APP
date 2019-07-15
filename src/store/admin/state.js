@@ -16,7 +16,9 @@ function getData () {
 }
 
 export default {
+  NOW: new Date(),
   AUTH: Object.assign({}, JSON.parse(LocalStorage.getItem('store:auth'))),
+  USER: Object.assign({}, JSON.parse(LocalStorage.getItem('store:user'))),
   CONFIG: Object.assign({}, config, JSON.parse(LocalStorage.getItem('store:config'))),
   SETTING: Object.assign({}, JSON.parse(LocalStorage.getItem('store:setting'))),
   PAGEMETA: {},

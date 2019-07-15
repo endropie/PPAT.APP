@@ -131,8 +131,10 @@ table
 
       .title
         font-size 32px
-        line-height 1.12
-        letter-spacing 0.02em
+        line-height 100%
+        span
+          line-height 1.12
+          letter-spacing 0.02em
       .subtitle
         font-size 80%
         // line-height 0.12
@@ -149,7 +151,10 @@ table
     .head-tags
       float left
       justify-content space-start
-
+  .q-table
+    th 
+      font-weight 400
+      text-transform uppercase
 @media print
   .q-page-container
     padding 5px !important

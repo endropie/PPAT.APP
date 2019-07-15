@@ -1,51 +1,43 @@
 <template>
   <q-page padding class="row justify-center" v-if="SHOW" :dark="LAYOUT.isDark">
     <page-print class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
-      <div slot="header" style="padding-bottom:45px">
-        <div class="icon">
-          <q-icon name="widgets" class="q-display-3" color="primary" />
-        </div>
-        <div class="title">
-          <div class="q-title ">Priuk Perkasa Abadi, PT</div>
-          <div class="q-caption small">Planing & Production Control Division</div>  
-        </div>
-        <div class="no-print float-right">
-          <q-chip tag outline small color="negative" v-if="rsView.revise_id">
-            Revised
-          </q-chip>
-        </div>
+     <div slot="header-tags">
+        <q-chip label="Revised" v-if="!!rsView.revise_id"
+          icon="bookmark" color="negative"
+          tag outline small dense />
       </div>
-      <div class="row  q-gutter-md" >
-        <div class="col-12">
-          <div class="row justify-around q-gutter-sm" >
-            <div class="self-center text-center">
-                <span class="q-headline">PACKING GOODS</span>
-            </div>
-            <div class="">
-              <q-table ref="table" class="top-table table-bordered d-grid no-shadow" color="secondary" separator="cell" grid dense hide-bottom :dark="LAYOUT.isDark"
-                :data="[{
-                  number: rsView.number,
-                  created_at: $app.moment(rsView.created_at).format('DD/MM/YYYY'),
-                }]" 
-                :columns="[
-                  { name: 'number', label: 'Number', align: 'center', field: 'number', classes:'text-weight-medium'},
-                  { name: 'created_at', label: 'Date', align: 'center', field:'created_at'},
-                ]"
-            />
-            </div>
+      <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
+      <span slot="header-subtitle" style="font-size:16px">Planing & Production Control Division</span>
+      
+      <div class="column  q-gutter-md" >
+        <div class="row justify-around q-col-gutter-sm" >
+          <div class="col-6 self-center text-center">
+              <span class="text-h6">PACKING GOODS</span>
+          </div>
+          <div class="col-6">
+             <q-markup-table class="bordered no-shadow" separator="cell" dense :dark="LAYOUT.isDark">
+              <tr><th>Number</th><th>Date</th></tr>
+              <tr>                               
+                <td>{{rsView.number}}</td>
+                <td>{{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }}</td>
+              </tr>
+            </q-markup-table>
           </div>
         </div>
+        <q-markup-table class="bordered no-shadow" separator="vertical" dense :dark="LAYOUT.isDark">
+          <tr>
+            <th class="text-weight-light">Worktime</th><td>{{ getWorktime(rsView.worktime) }}</td>
+    
+            <th class="text-weight-light">Customer</th><td>{{ rsView.customer.name }}</td>
+          </tr>
+          <tr>
+            <th class="text-weight-light">Operator</th><td>{{ rsView.operator.name }}</td>
+          
+            <th class="text-weight-light">Process at</th><td>{{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '' }}</td>
+          </tr>
+        </q-markup-table>
         <div class="col-12">
-          <dl class=" horizontal">                                
-            <dt class="text-weight-light">Worktime</dt><dd>{{ getWorktime(rsView.worktime) }}</dd>
-            <dt class="text-weight-light">Customer</dt><dd>{{ rsView.customer.name }}</dd>
-            <dt class="text-weight-light">Operator</dt><dd>{{ rsView.operator.name }}</dd>
-            <dt class="text-weight-light">Process at</dt><dd>{{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '' }}</dd>
-            
-          </dl>
-        </div>
-        <div class="col-12">
-          <q-table ref="table" class="main-table table-border d-grid no-shadow" color="secondary" separator="vertical" hide-bottom :dark="LAYOUT.isDark"
+          <q-table ref="table" class="bordered no-shadow" color="secondary" separator="vertical" dense hide-bottom :dark="LAYOUT.isDark"
             :data="[rsView.packing_items]" 
             no-data-label = "No Production"
             :columns="[
@@ -63,7 +55,7 @@
             <div class="q-my-xs text-italic">Description:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 group print-hide " style="padding-top:50px">
+        <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
           <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
           <q-btn color="positive" :icon-right="btnIcon('edit')" label="Edit" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
           <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>

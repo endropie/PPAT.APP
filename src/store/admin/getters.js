@@ -1,25 +1,31 @@
 import { date } from 'quasar'
 
+export const NOW = (state, getters) => state.NOW
+
 export const CONFIG = (state, getters) => state.CONFIG
 
 export const AUTH = (state, getters) => {
+  if (!state.AUTH) return null
+
   return {
-    isTokenValid: () => {
-      if (state.AUTH.access.hasOwnProperty('token')) return false
-      return state.AUTH && state.AUTH.access.token && !getters.isTokenExpired
-    },
-    isTokenExpired: () => {
-      if (state.AUTH.access.expires_in) {
-        return getters.numTokenExpired >= Number(state.AUTH.access.expires_in)
-      } else return undefined
-    },
-    numTokenExpired: () => {
-      if (state.AUTH.access.login_at && state.AUTH.access.login_at instanceof Date) {
-        return date.getDateDiff(new Date(), new Date(state.AUTH.access.login_at), 'second')
-      } else return undefined
-    },
+    isTokenValid: (state.AUTH.hasOwnProperty('token')
+      ? state.AUTH.token && !getters.isTokenExpired
+      : false
+    ),
+    isTokenExpired: (state.AUTH.login_in
+      ? getters.numTokenExpired >= Number(state.AUTH.login_in)
+      : undefined
+    ),
+    numTokenExpired: (state.AUTH.login_at
+      ? date.getDateDiff(state.NOW, new Date(state.AUTH.login_at), 'seconds')
+      : undefined
+    ),
     ...state.AUTH
   }
+}
+
+export const USER = (state, getters) => {
+  return state.USER
 }
 
 export const LAYOUT = (state) => {

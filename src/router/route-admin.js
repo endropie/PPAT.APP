@@ -1,6 +1,6 @@
 import AdminMenus from 'assets/admin-menus'
 import AdminLayout from 'layouts/AdminLayout'
-import access from '@/router/middleware/access'
+// import access from '@/router/middleware/access'
 
 let AdminPages = []
 
@@ -102,17 +102,19 @@ const routes = [
     path: '/admin',
     component: AdminLayout,
     meta: {
-      middleware: [access]
+      authenticated: true
     },
-    children: AdminPages
-  },
-  {
-    path: '/admin/403',
-    component: () => import('pages/admin/error403.vue')
-  },
-  {
-    path: '/admin/*',
-    component: () => import('pages/admin/error404.vue')
+    children: [
+      ...AdminPages,
+      {
+        path: '/admin/403',
+        component: () => import('pages/admin/error403.vue')
+      },
+      {
+        path: '/admin/*',
+        component: () => import('pages/admin/error404.vue')
+      }
+    ]
   }
 ]
 

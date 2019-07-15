@@ -1,48 +1,47 @@
 <template>
   <q-page padding class="row justify-center" v-if="SHOW" :dark="LAYOUT.isDark">
-    <page-print class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
-      <div slot="header" style="padding-bottom:45px">
-        <div class="icon">
-          <q-icon name="widgets" class="q-display-3" color="primary" />
-        </div>
-        <div class="title">
-          <div class="q-title ">Priuk Perkasa Abadi, PT</div>
-          <div class="q-caption small">Planing & Production Control Division</div>  
-        </div>
-        <div class="no-print float-right">
-          <q-chip tag outline small color="negative" v-if="rsView.revise_id">
-            Revised
-          </q-chip>
-        </div>
+    
+    <page-print class="main-box q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
+      <div slot="header-tags">
+        <q-chip label="Revised" v-if="!!rsView.revise_id"
+          icon="bookmark" color="negative"
+          tag outline small dense />
       </div>
-      <div class="row  q-gutter-md" >
-        <div class="col-12">
-          <div class="row justify-around q-gutter-sm" >
-            <div class="self-center text-center">
-                <span class="q-headline">WORK ORDERS</span>
-            </div>
-            <div class="">
-                <q-table ref="table" class="table-bordered d-grid no-shadow" color="secondary" separator="cell" grid dense hide-bottom :dark="LAYOUT.isDark"
-                :data="[{
-                number: rsView.number,
-                created_at: $app.moment(rsView.created_at).format('DD/MM/YYYY'),
-                }]" 
-                :columns="[
-                { name: 'number', label: 'Number', align: 'center', field: 'number', classes:'q-headline text-weight-medium'},
-                { name: 'created_at', label: 'Date', align: 'center', field:'created_at'},
-                ]"
-            />
-            </div>
+      <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
+      <span slot="header-subtitle" style="font-size:16px">Planing & Production Control Division</span>
+      
+      <div class="column q-gutter-md" >
+        <div class="row justify-around q-col-gutter-sm" >
+          <div class="col-auto">
+            <q-markup-table class="no-shadow"
+              :dark="LAYOUT.isDark">
+              <tr><td colspan="100%" class="text-h6 text-center">WORK ORDER</td></tr>
+              <tr>
+                <th class="text-left">Customer</th><td>{{ rsView.line.name }}</td>      
+              </tr>
+              <tr>                               
+                <th class="text-left">Material of</th><td>{{ getStockistFrom(rsView.stockist_from) }}</td>
+              </tr>
+            </q-markup-table>
+          </div>
+          <div class="col-auto">
+            <q-markup-table class="bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
+              <tr>
+                <th>Number</th>
+                <th>Date</th>      
+              </tr>
+              <tr>                               
+                <td>{{rsView.number}}</td>
+                <td>{{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }}</td>
+              </tr>
+            </q-markup-table>
           </div>
         </div>
-        <div class="col-12">
-          <dl class=" horizontal">
-            <dt class="text-weight-light">Customer</dt><dd>{{ rsView.line.name }}</dd>                                     
-            <dt class="text-weight-light">Material of</dt><dd>{{ getStockistFrom(rsView.stockist_from) }}</dd>
-          </dl>
-        </div>
-        <div class="col-12">
-          <q-table ref="table" class="table-border d-grid no-shadow" color="secondary" separator="vertical" dense hide-bottom :dark="LAYOUT.isDark"
+        <div>
+          <q-table class="bordered no-shadow" 
+            color="secondary" 
+            separator="vertical" 
+            dense hide-bottom :dark="LAYOUT.isDark"
             :data="rsView.work_order_items" 
             no-data-label = "No Production"
             :columns="[
@@ -53,37 +52,14 @@
               { name: 'ngratio', label: 'NG Ratio', align: 'right', format:(v)=> v ? `${Number(v)}%` : '-', field: (v)=> v.ngratio},
               { name: 'total', label: 'Total', align: 'right', format:(v)=> `${Math.round(v)}`, field: (v)=> Number(v.quantity)},
             ]"
-          >
-          <template slot="Xbody" slot-scope="propItem">
-            <q-tr :propItem="propItem" style="height:20px">
-              <q-td key="code" style="width:50px">
-                {{propItem.row.item.code}}
-              </q-td>
-              <q-td key="part_name" style="width:50px">
-                {{propItem.row.item.code}}
-              </q-td>
-              <q-td key="target" style="width:50px">
-                {{propItem.row.item.code}}
-              </q-td>
-              <q-td key="unit_id" style="width:50px">
-                {{propItem.row.item.code}}
-              </q-td>
-              <q-td key="ngratio" style="width:50px">
-                {{propItem.row.item.code}}
-              </q-td>
-              <q-td key="total" style="width:50px">
-                {{propItem.row.item.code}}
-              </q-td>
-            </q-tr>
-          </template>
-          </q-table>
+          />
         </div>
         
-        <div class="col-12">
+        <div>
             <div class="q-my-xs text-italic">Description:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 group print-hide " style="padding-top:50px">
+        <div class="col-12 q-gutter-sm print-hide " style="padding-top:50px">
           <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
           <q-btn color="positive" :icon-right="btnIcon('edit')" label="Edit" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
           <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>

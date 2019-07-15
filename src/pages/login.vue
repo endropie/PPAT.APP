@@ -94,6 +94,7 @@ export default {
   computed: {
     
     ...mapGetters('admin', [
+      'USER',
       'AUTH'
     ])
   },
@@ -104,7 +105,8 @@ export default {
       this.FORM.hasEmail = this.rsLogin.email ? true:false
 
       // Auto direct when auth on accessible
-      if(this.AUTH.isTokenValid && this.AUTH.user.email) {
+      console.warn('LOGIN', AUTH, USER)
+      if(this.AUTH.isTokenValid && this.USER.email) {
         this.$router.push('/admin')
       } 
     }
@@ -133,7 +135,7 @@ export default {
         this.FORM.btnLoadingSubmit = true
         this.$axios.post('/api/v1/login', this.rsLogin)
         .then((response) => { 
-          this.setAdminStore(response)
+          this.setLoginStore(response)
           setTimeout(() => {
             this.redirectToAdmin()
           }, 800);

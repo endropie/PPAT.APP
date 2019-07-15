@@ -1,28 +1,21 @@
 <template>
-  <div class="fixed-center text-center">
-    <p>
-      <q-icon class="q-display-4" name="not_interested" color="grey"></q-icon>
-    </p>
-    <p class="text-faded">Sorry, Access forbidden ...<strong>(403)</strong></p>
-    <q-btn
-      color="secondary"
-      style="width:200px;"
-      @click="goBack()"
-    >Go back</q-btn>
-  </div>
+  <q-page padding class="row justify-center content-center">
+    <div class="text-center">
+      <p>
+        <q-icon class="text-h1" name="not_interested" color="grey"></q-icon>
+      </p>
+      <p class="text-faded">Sorry, Access forbidden ...<strong>(403)</strong></p>
+      <q-btn
+        color="secondary"
+        style="min-width:200px;"
+        @click="goBack()"
+      >Go back</q-btn>
+    </div>
+  </q-page>
 </template>
 
 <script>
 export default {
-  data () {
-    return {
-     //
-    }
-  },
-  mounted() {
-    console.log()
-
-  },
   methods: {
     goBack() {
       if(this.$route.query.hasOwnProperty('redirect')) {

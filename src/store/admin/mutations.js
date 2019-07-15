@@ -1,6 +1,10 @@
 import { colors, LocalStorage } from 'quasar'
 import axios from 'axios'
 
+export const setNow = (state) => {
+  state.NOW = new Date()
+}
+
 export const setPageDrawer = (state, val) => {
   state.PAGE.drawer = val
 }
@@ -23,18 +27,22 @@ export const setPageMeta = (state, meta) => {
 }
 
 export const setLogin = (state, val) => {
-  state.AUTH = Object.assign(state.AUTH, val)
+  state.AUTH = val.auth
+  state.USER = val.user
   LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
+  LocalStorage.set('store:user', JSON.stringify(state.USER))
 }
 
 export const setLocked = (state) => {
-  state.AUTH = Object.assign(state.AUTH, { access: {} })
-  LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
+  state.AUTH = Object.assign({})
+  LocalStorage.set('store:auth', state.AUTH)
 }
 
 export const setLogoff = (state) => {
-  state.AUTH = Object.assign(state.AUTH, { access: {}, user: {} })
-  LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
+  state.AUTH = Object.assign({})
+  state.USER = Object.assign({})
+  LocalStorage.set('store:auth', state.AUTH)
+  LocalStorage.set('store:user', state.USER)
   // LocalStorage.remove('store:auth')
 }
 

@@ -15,9 +15,11 @@ export default async ({ app, Vue }) => {
     }
   }
 
-  if (AUTH.hasOwnProperty('access') && AUTH.isTokenValid()) {
+  // console.warn('[AXIOS] AUTH->', AUTH)
+
+  if (AUTH.hasOwnProperty('token')) {
     axios.defaults.headers.common['Accept'] = 'application/json'
-    // axios.defaults.headers.common['Authorization'] = `Bearer ${AUTH.access.token}`
+    axios.defaults.headers.common['Authorization'] = `Bearer ${AUTH.token}`
   }
 
   axios.set = (method, url, data) => {

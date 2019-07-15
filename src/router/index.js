@@ -22,41 +22,40 @@ export default function ({ store, ssrContext }) {
     base: process.env.VUE_ROUTER_BASE
   })
 
-  // the subsequent Middleware function.
-  function nextFactory (context, middleware, index) {
-    const subsequentMiddleware = middleware[index]
-    if (!subsequentMiddleware) return context.next
-
-    return (...parameters) => {
-      context.next(...parameters)
-      const nextMiddleware = nextFactory(context, middleware, index + 1)
-      subsequentMiddleware({ ...context, next: nextMiddleware })
-    }
-  }
-
   Router.beforeEach((to, from, next) => {
     if (to.meta) {
       store.commit('admin/setPageMeta', to.meta)
     }
 
     to.matched.forEach(Route => {
-      if (Route.meta.middleware) {
-        const middleware = Array.isArray(Route.meta.middleware)
-          ? Route.meta.middleware
-          : [Route.meta.middleware]
-
-        const context = {
-          store,
-          from,
-          next,
-          to,
-          Route,
-          Router
+      if (Route.meta.authenticated === true) {
+        if (!store.state.admin.AUTH.hasOwnProperty('token')) {
+          return next({
+            path: '/auth',
+            query: { redirect: to.fullPath }
+          })
         }
-        const nextMiddleware = nextFactory(context, middleware, 1)
-
-        return middleware[0]({ ...context, next: nextMiddleware })
       }
+
+      if (Route.meta.permission && Route.meta.permission.length > 0) {
+        const
+          userPermiss = store.state.admin.USER.permiss,
+          permiss = Route.meta.permission.split('|')
+        let forbiden = true
+
+        permiss.forEach(name => {
+          if (userPermiss.some(val => val === name)) forbiden = false
+        })
+
+        if (forbiden) {
+          return next({
+            path: '/admin/403',
+            query: { redirect: from.fullPath }
+          })
+        }
+      }
+
+      return next()
     })
 
     return next()

@@ -2,12 +2,14 @@
 import { Notify, date } from 'quasar'
 import moment from 'moment'
 import Modal from '@/components/Modal'
+import AdminMenuItem from '@/components/AdminMenuItem'
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
   // Vue.component('component-a', { /* ... */ })
   // Vue.component('component-b', { /* ... */ })
 
   Vue.component('modal', Modal)
+  Vue.component('admin-menu-item', AdminMenuItem)
 
   Vue.prototype.$app = {
     response: {
