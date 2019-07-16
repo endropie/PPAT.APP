@@ -9,31 +9,41 @@
       </form-header>
     </q-card-section>
     <q-card-section>
-      <div class="row q-gutter-sm q-gutter-x-lg q-mb-lg">
-        <!-- COLUMN::1st customer Identitity -->
-        <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-md q-mb-lg">
-            <q-field class="col-12" icon="code" :error="errors.has('number')" :error-message="errors.first('number')">
-              <q-input name="number" label="No Transaction" v-model="rsForm.number" placeholder="[Auto Generate]" autofocus v-validate="$route.meta.mode == 'edit' ? 'required':''"/>
-            </q-field>
-            <q-field class="col-12" icon="account_box" :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-              <q-select name="customer_id" v-model="rsForm.customer_id" :label="$tc('general.customer')" :disable="IssetIncomeItems" v-validate="'required'"
-                :options="CustomerOptions" filter clearable
-                @input="setCustomerReference"
-                ></q-select>
-              <q-tooltip :disable="!IssetIncomeItems" :offset="[0, 10]">To change, Please clear Delivery items first!</q-tooltip>
-            </q-field>
+      <div class="row q-col-gutter-sm q-col-gutter-x-lg q-mb-lg">
+        <!-- COLUMN::1st customer Identitity --> 
+        <div class="col-12 col-sm-6" >
+          <div class="column q-col-gutter-sm">
+            <q-input name="number" 
+              label="No Transaction" 
+              v-model="rsForm.number" 
+              placeholder="[Auto Generate]" autofocus 
+              v-validate="$route.meta.mode == 'edit' ? 'required':''"
+              :error="errors.has('number')" 
+              :error-message="errors.first('number')" />
+            
+            <select-filter name="customer_id" 
+              v-model="rsForm.customer_id" 
+              :label="$tc('general.customer')" 
+              :disable="IssetIncomeItems" 
+              v-validate="'required'"
+              :options="CustomerOptions" filter clearable
+              @input="setCustomerReference"
+              :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
+              <q-tooltip v-if="IssetIncomeItems" :offset="[0, 10]">To change, Please clear Delivery items first!</q-tooltip>
+            </select-filter>
           </div>
         </div>
         <!-- COLUMN::2nd Transaction details -->
-        <div class="col-12 col-md-6" >
-          <div class="row q-gutter-x-md q-mb-lg">
-            <q-field class="col-12" icon="calendar_today" :error="errors.has('begin_date')" :error-message="errors.first('begin_date')">
-              <q-input name="begin_date" stack-label label="Begin Date" v-model="rsForm.begin_date" type="date" v-validate="'required'"/>
-            </q-field>
-            <q-field class="col-12" icon="calendar_today" :error="errors.has('until_date')" :error-message="errors.first('until_date')">
-              <q-input name="until_date" stack-label label="Until Date" v-model="rsForm.until_date" type="date" v-validate="'required'"/>
-            </q-field>
+        <div class="col-12 col-sm-6" >
+          <div class="column q-col-gutter-sm">
+            <input-date name="begin_date" stack-label label="Begin Date" v-model="rsForm.begin_date" type="date" 
+              v-validate="'required'"
+              :error="errors.has('begin_date')" :error-message="errors.first('begin_date')"/>
+            <input-date name="until_date" 
+              stack-label label="Until Date" 
+              v-model="rsForm.until_date" type="date" 
+              v-validate="'required'"
+              :error="errors.has('until_date')" :error-message="errors.first('until_date')"/>
           </div>
         </div>
         <!-- COLUMN::3th Items lists -->
@@ -48,86 +58,93 @@
               { name: 'price', label: 'Price', align: 'center', style:'width:150px'},
               { name: 'total_price', label: 'Total price', align: 'center', style:'width:150px'},
             ]"
-            :pagination="{
-              sortBy: null, 
-              descending: false,
-              page: null,
-              rowsPerPage: 0
-            }"
+            :pagination="{sortBy: null, descending: false, page: null, rowsPerPage: 0}"
             >
-            <template slot="body" slot-scope="props">
-              <q-tr :props="props">
-                <q-td key="prefix" :props="props" style="width:50px">
-                  <q-btn dense  @click="removeItem(props.row.__index)" icon="delete" color="negative"/>
+            <template v-slot:body="rsItem">
+              <q-tr >
+                <q-td key="prefix"  style="width:50px">
+                  <q-btn dense  @click="removeItem(rsItem.row.__index)" icon="delete" color="negative"/>
                 </q-td>
-                <q-td key="item_id" :props="props" >
-                  <q-field style="min-width:150px" :error="errors.has(`item-${props.row.__index+1}`)" :error-message="errors.first(`item-${props.row.__index+1}`)">
-                    <q-select class="col-auto" :name="`item-${props.row.__index+1}`" v-model="props.row.item_id"  inverted color="blue-grey-5"
-                      v-validate="'required'" 
-                      :options="ItemOptions" filter
-                      :readonly="!IssetCustomerID"
-                      @input="(val)=>{ setItemReference(props.row.__index, val) }"
-                    />
-                    <q-tooltip :disable="IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
-                  </q-field>
+                <q-td key="item_id"  >
+                  <select-filter :name="`forecast_items.${rsItem.row.__index}.item`"  style="min-width:150px"
+                    v-model="rsItem.row.item_id"  
+                    dense hide-bottom-space 
+                    filled color="blue-grey-5"
+                    :dark="LAYOUT.isDark"
+                    v-validate="'required'" 
+                    :options="ItemOptions" filter
+                    :readonly="!IssetCustomerID"
+                    @input="(val)=>{ setItemReference(rsItem.row.__index, val) }"
+                    :error="errors.has(`forecast_items.${rsItem.row.__index}.item`)" 
+                    :error-message="errors.first(`forecast_items.${rsItem.row.__index}.item`)" >
+                    <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
+                  </select-filter>
                 </q-td>
-                <q-td key="quantity" :props="props">
-                  <q-field  style="min-width:70px" :error="errors.has(`quantity-${props.row.__index+1}`)" >
-                    <q-input :name="`quantity-${props.row.__index+1}`" v-model="props.row.quantity" type="number" align="center" inverted color="blue-grey-5"
-                      v-validate="props.row.item_id ? 'required' : ''"
-                    />
-                  </q-field>
+                <q-td key="quantity" >
+                  <q-input :name="`forecast_items.${rsItem.row.__index}.quantity`" style="min-width:50px" 
+                    v-model="rsItem.row.quantity" type="number" min="0"
+                    filled color="blue-grey-5"
+                    :dark="LAYOUT.isDark"
+                    dense hide-bottom-space
+                    v-validate="rsItem.row.item_id ? 'required' : ''"
+                    :error="errors.has(`forecast_items.${rsItem.row.__index}.quantity`)" />
                 </q-td>
-                <q-td key="unit_id" :props="props" >
-                  <q-field  style="min-width:70px" :error="errors.has(`unit_id-${props.row.__index+1}`)" >
-                    <q-select :name="`unit_id-${props.row.__index+1}`" v-model="props.row.unit_id" inverted color="blue-grey-5"
-                      v-validate="props.row.item_id ? 'required' : ''"
-                      @input="(val)=> { setUnitReference(props.row.__index, val) }"
-                      :options="ItemUnitOptions[props.row.__index]"
-                    />
-                  </q-field>
+                <q-td key="unit_id"  >
+                  <q-select :name="`forecast_items.${rsItem.row.__index}.unit_id`" style="min-width:70px" 
+                    v-model="rsItem.row.unit_id" 
+                    filled color="blue-grey-5"
+                    :dark="LAYOUT.isDark"
+                    dense hide-bottom-space 
+                    v-validate="rsItem.row.item_id ? 'required' : ''"
+                    @input="(val)=> { setUnitReference(rsItem.row.__index, val) }"
+                    :options="ItemUnitOptions[rsItem.row.__index]"
+                    map-options emit-value
+                    :error="errors.has(`forecast_items.${rsItem.row.__index}.unit_id`)" />
                 </q-td>
-                <q-td key="price" :props="props">
-                  <q-field  style="min-width:120px" :error="errors.has(`price-${props.row.__index+1}`)" >
-                    <q-numeric :name="`price-${props.row.__index+1}`" v-model="props.row.price" align="right"  inverted color="blue-grey-5"
-                      v-validate="props.row.item_id ? 'required' : ''"
-                    />
-                  </q-field>
+                <q-td key="price" >
+                  <input-numeric :name="`forecast_items.${rsItem.row.__index}.price`" style="min-width:100px"  
+                    v-model="rsItem.row.price" 
+                    filled color="blue-grey-5" align="right"
+                    :dark="LAYOUT.isDark"
+                    dense hide-bottom-space 
+                    v-validate="rsItem.row.item_id ? 'required' : ''"
+                    :error="errors.has(`forecast_items.${rsItem.row.__index}.price`)" />
                 </q-td>
-                <q-td key="total_price" :props="props" > 
-                  <q-field  style="min-width:150px" :error="errors.has(`total_price-${props.row.__index+1}`)" >
-                    <q-numeric :name="`total_price-${props.row.__index+1}`" align="right"  inverted color="blue-grey-5" readonly
-                      :value="props.row.quantity * props.row.price" 
-                    />
-                  </q-field>
+                <q-td key="total_price"  > 
+                  <input-numeric :name="`forecast_items.${rsItem.row.__index}.total_price`" 
+                    style="min-width:120px"  input-class="text-weight-bold"
+                    borderless color="blue-grey-5"
+                    dense hide-bottom-space readonly 
+                    :value="rsItem.row.quantity * rsItem.row.price" 
+                    :error="errors.has(`forecast_items.${rsItem.row.__index}.total_price`)" />
                 </q-td>
               </q-tr>
               <!-- Item detail Description -->
-              <q-tr  class="bg-grey-3" :props="props">
+              <q-tr >
                 <q-td></q-td>
                 <q-td >
                   <div class="text-left">
-                    <table class="table-min full-width">
-                      <tr><td>No Plate    </td><td>{{ props.row.item.part_number }}</td></tr>
-                      <tr><td>Plate name  </td><td>{{ props.row.item.part_name }}</td></tr>
-                    </table>
+                    <q-markup-table class="bordered no-shadow">
+                      <tr><td>No Plate    </td><td>{{ rsItem.row.item.part_number }}</td></tr>
+                      <tr><td>Plate name  </td><td>{{ rsItem.row.item.part_name }}</td></tr>
+                    </q-markup-table>
                   </div>
                 </q-td>
                   <q-td colspan="2">
                   <div class="text-left" >
-                    <table class="table-min full-width">
-                      <tr><td>Quantity    </td><td>{{ formatNumber(Number(props.row.quantity) * Number(props.row.unit_rate)) }} {{ (props.row.item.unit ? props.row.item.unit.name : '') }}</td></tr>
-                      <tr><td>FG #alias    </td><td>{{ (props.row.item.part_alias || '') }}</td></tr>
-                    </table>
+                    <q-markup-table class="bordered no-shadow">
+                      <tr><td>Quantity    </td><td>{{ formatNumber(Number(rsItem.row.quantity) * Number(rsItem.row.unit_rate)) }} {{ (rsItem.row.item.unit ? rsItem.row.item.unit.name : '') }}</td></tr>
+                      <tr><td>FG #alias    </td><td>{{ (rsItem.row.item.part_alias || '') }}</td></tr>
+                    </q-markup-table>
                   </div>
                 </q-td>
                 <q-td colspan="100%"> 
-                  <q-input v-model="props.row.note" stack-label label="Note" color="blue-grey-6" />
+                  <q-input filled v-model="rsItem.row.note" stack-label label="Note" color="blue-grey-6" />
                 </q-td>
               </q-tr>
             </template>
 
-            <q-tr slot="bottom-row" slot-scope="props" :props="props">
+            <q-tr slot="bottom-row" >
               <q-td colspan="100%">
                 <strong><q-btn dense  @click="addNewItem()" icon="add" color="positive"/></strong>
               </q-td>
@@ -135,13 +152,12 @@
           </q-table>
         </div>
         <!-- COLUMN::4th Description -->
-        <div class="col-12">
-          <div class="row q-gutter-x-lg q-mb-md">
-            <q-field class="col-12" icon="rate_review">
-              <q-input name="description" type="textarea" rows="3" stack-label label="Description" v-model="rsForm.description"/>
-            </q-field>
-          </div>
-        </div>
+        <q-input class="col-12" name="description" type="textarea" rows="3" 
+          stack-label label="Description" 
+          filled
+          v-model="rsForm.description">
+          <q-icon slot="prepend" name="rate_review" />
+        </q-input>
       </div>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
@@ -241,7 +257,7 @@ export default {
     },
     ItemOptions() {
       let ITEM = this.SHEET.items.data.filter((item) => item.customer_id === this.rsForm.customer_id)
-      return (ITEM.map(item => ({label: item.code, value: item.id})) || [])
+      return (ITEM.map(item => ({label: item.code, sublabel:item.part_name, value: item.id})) || [])
     },
     ItemUnitOptions() {
       let vars = []

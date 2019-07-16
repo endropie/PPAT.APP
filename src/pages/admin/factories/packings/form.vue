@@ -1,6 +1,6 @@
 <template>
 <q-page padding class="form-page" v-if="SHOW">
-  <q-card inline class="q-ma-sm ">
+  <q-card inline class="main-box q-ma-sm " :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
@@ -8,12 +8,18 @@
         </template>
       </form-header>
     </q-card-section>
-    <q-card-section class="row q-col-gutter-sm">
-      
+    <q-separator :dark="LAYOUT.isDark"/>
+    <q-card-section class="row q-col-gutter-x-md">
       <!-- COLUMN::Base process work time -->
-      <q-field dense borderless class="col-12" prefix="Work Time Process" label-width="3" :error="errors.has('worktime')" :error-message="errors.first('worktime')">
-        <q-option-group  name="worktime" type="radio" v-model="rsForm.worktime" inline
+      <q-field dense borderless class="col-12" 
+        :dark="LAYOUT.isDark"
+        prefix="Work Time Process" label-width="3" 
+        :error="errors.has('worktime')" :error-message="errors.first('worktime')">
+        <q-option-group name="worktime" type="radio" 
+          v-model="rsForm.worktime" 
+          inline
           v-validate="'required'"
+          :dark="LAYOUT.isDark"
           :options="[
             { label: 'Reguler', value: 'REGULER' },
             { label: 'Overtime', value: 'OVERTIME', color: 'secondary' },
@@ -28,6 +34,7 @@
             name="number" 
             placeholder="[Auto Generate]" 
             label="No Transaction" 
+            :dark="LAYOUT.isDark"
             v-model="rsForm.number" 
             v-validate="$route.meta.mode == 'edit' ? 'required':''" autofocus
             :error="errors.has('number')"
@@ -38,45 +45,93 @@
             v-model="rsForm.customer_id" 
             :label="$tc('general.customer')" 
             :disable="IssetItemID" 
+            :dark="LAYOUT.isDark"
             v-validate="'required'"
             :options="CustomerOptions" filter clearable
             @input="setCustomerReference"
             :error="errors.has('customer_id')" 
             :error-message="errors.first('customer_id')"/>
-          <q-tooltip :disable="!IssetItemID" :offset="[0, 10]">Please remove Item Part, first! </q-tooltip>
+          <q-tooltip v-if="!IssetItemID" :offset="[0, 10]">Please remove Item Part, first! </q-tooltip>
 
-          
-          <q-input class="col-8" name="date" label="Date" v-model="rsForm.date" type="date" 
-            v-validate="'required'" :error="errors.has('date')" :error-message="errors.first('date')"/>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6" >
+        <div class="row q-col-gutter-xs">
+          <q-input class="col-8" name="date" label="Date" 
+            v-model="rsForm.date" type="date" 
+            :dark="LAYOUT.isDark"
+            v-validate="'required'" 
+            :error="errors.has('date')" 
+            :error-message="errors.first('date')"/>
       
-          <q-input class="col-4" name="time" label="Time" v-model="rsForm.time" type="time" 
+          <q-input class="col-4" name="time" label="Time" 
+            v-model="rsForm.time" type="time" 
+            :dark="LAYOUT.isDark"
             v-validate="'required'"
-            :error="errors.has('time')" :error-message="errors.first('time')"/>
+            :error="errors.has('time')" 
+            :error-message="errors.first('time')"/>
         
-          <select-filter class="col-12" name="operator_id" v-model="rsForm.operator_id" label="Operator" 
-            v-validate="''" :error="errors.has('operator_id')" :error-message="errors.first('operator_id')"
+          <select-filter class="col-12" name="operator_id" 
+            v-model="rsForm.operator_id" label="Operator" 
+            :dark="LAYOUT.isDark"
+            v-validate="''" :error="errors.has('operator_id')" 
+            :error-message="errors.first('operator_id')"
             :options="OperatorOptions" filter clearable
           />
           
         </div>
       </div>
-      <!-- COLUMN::2th Items Part lists -->
-      <div class="col-12 col-sm-6" >
-        <div class="row q-col-gutter-x-xs">
+    </q-card-section>
+    <q-separator inset spaced :dark="LAYOUT.isDark" />
+    <q-card-section class="row q-col-gutter-x-md">
+      <!-- COLUMN::3th Items Part lists -->
+      <div class="col-12 col-sm-6">
+        <div class="row q-col-gutter-x-md">
+          
           <select-filter class="col-12" 
             name="packing_items.code" 
             label="Part Code"
             v-model="rsForm.packing_items.item_id" 
+            :dark="LAYOUT.isDark"
             @input="setItemReference" clearable
             :options="ItemOptions" 
             :error="errors.has('packing_items.code')" 
             :error-message="errors.first('packing_items.code')"
             />
             
+          <q-input class="col-8" 
+            name="packing_items.quantity" 
+            v-model="rsForm.packing_items.quantity" 
+            :dark="LAYOUT.isDark"
+            type="number" min="0" label="Quantity" 
+            v-validate="`required|max_value:${MaxUnit}`"
+            :suffix="rsForm.packing_items.item_id ? `/ (${MaxUnit})` : ''"
+            :error="errors.has(`packing_items.quantity`)"  
+            :error-message="errors.first(`packing_items.quantity`)"
+            :after="[
+              {icon: 'warning', warning: true, handler () {}}
+            ]" />
+          <q-select class="col-4" 
+            name="packing_items.unit_id" 
+            v-model="rsForm.packing_items.unit_id" 
+            :dark="LAYOUT.isDark"
+            label="Unit" 
+            v-validate="'required'" 
+            :options="ItemUnitOptions" filter map-options 
+            @input="setUnitReference"
+            :error="errors.has('packing_items.unit_id')" 
+            :error-message="errors.first('packing_items.unit_id')" />
+        </div>
+      </div>
+      
+      <!-- COLUMN::3th Items fault lists -->
+      <div class="col-12 col-sm-6">
+        <div class="row q-col-gutter-x-md">
           <select-filter  class="col-12" 
             name="packing_items.work_order_item_id" 
             label="Part of Work Order"
             v-model="rsForm.packing_items.work_order_item_id"  
+            :dark="LAYOUT.isDark"
             v-validate="''" 
             :options="WorkOrderItemOptions" clearable 
             @input="(val)=> { 
@@ -84,105 +139,84 @@
             }"
             :error="errors.has('packing_items.work_order_item_id')" 
             :error-message="errors.first('packing_items.work_order_item_id')" />
-          
-        
-          <q-input class="col-8" 
-            name="packing_items.quantity" 
-            v-model="rsForm.packing_items.quantity" 
-            type="number" min="0" label="Quantity" 
-            v-validate="'required'"
-            :suffix="rsForm.packing_items.item_id ? `/ (${MaxUnit})` : ''" 
-            :warning="rsForm.packing_items.quantity > getItemstock(rsForm.packing_items) ? 'warning' : false" 
-            :error="errors.has(`packing_items.quantity`) || rsForm.packing_items.quantity > MaxUnit ? 'error' : false"  
-            :error-message="errors.first(`packing_items.quantity`)"
-            :after="[
-              {icon: 'warning', warning: true, handler () {}}
-            ]" 
-            
-          />
-          <q-select class="col-4" 
-            name="packing_items.unit_id" 
-            v-model="rsForm.packing_items.unit_id" 
-            label="Unit" 
-            v-validate="'required'" 
-            :options="ItemUnitOptions" filter 
-            @input="setUnitReference"
-            :error="errors.has('packing_items.unit_id')" 
-            :error-message="errors.first('packing_items.unit_id')"
-          />
-        </div>
-      </div>
-      <!-- COLUMN::4th Items faults lists -->
-      <div class="col-12">
-        <div class="row q-col-gutter-x-sm q-mb-lg">
+
           <q-select class="col-12" 
             name="type_fault_id" 
-            v-model="rsForm.packing_items.type_fault_id" 
             label="Type of Faulty"  
-            :disable="IssetItemFaults" 
+            v-model="rsForm.packing_items.type_fault_id" 
+            :dark="LAYOUT.isDark"
             v-validate="''"
-            :options="TypeFaultOptions" 
-            map-options emit-value
-            :error="errors.has('type_fault_id')" :error-message="errors.first('type_fault_id')"
-          />
-          
-          <div class="col-12"> 
-            <q-table  color="primary" class="d-grid full-width" dense hide-bottom
-              :data="rsForm.packing_items.packing_item_faults" 
-              :rows-per-page-options ="[0]"
-              :columns="[
-                { name: 'prefix', label: '',  align: 'left', style:'width:50px'},
-                { name: 'quantity', label: 'Quantity', align: 'center', style:'width:120px'},
-                { name: 'fault_id', label: 'Fault of Part', align: 'left'},
-              ]"
-              :pagination="{sortBy: null, descending: false, page: null, rowsPerPage: 0}"
-              >
-              <q-tr slot="body" slot-scope="props" :props="props">
-                <q-td key="prefix" :props="props" >
-                  <q-btn dense  @click="removeItemFault(props.row.__index)" icon="delete" color="negative"/>
-                </q-td>
-                <q-td key="quantity" :props="props" >
-                  <q-input 
-                    :name="`packing_items.packing_item_faults.${props.row.__index}.quantity`" 
-                    type="number" min="0" align="center"
-                    outlined dense hide-bottom-space color="blue-grey" 
-                    v-model="props.row.quantity" 
-                    v-validate="props.row.fault_id ? 'required' : ''"
-                    :error="errors.has(`packing_items.packing_item_faults.${props.row.__index}.quantity`)"
-                    />
-                </q-td>
-                <q-td key="fault_id" :props="props" >
-                  <select-filter
-                    :name="`packing_items.packing_item_faults.${props.row.__index}.fault_id`" 
-                    outlined style="min-width:150px" 
-                    dense hide-bottom-space color="blue-grey"
-                    v-model="props.row.fault_id" v-validate="props.row.quantity ? 'required' : ''"
-                    :options="FaultOptions" filter
-                    :readonly="!IssetTypeFaultID || !IssetItemID"
-                    :error="errors.has(`packing_items.packing_item_faults.${props.row.__index}.fault_id`)"
-                  />
-                  <q-tooltip :disable="IssetItemID" :offset="[0, 20]">Please select The Item of Packing, first! </q-tooltip>
-                  <q-tooltip :disable="IssetTypeFaultID" :offset="[0, 10]">Please select The Fault Type, first! </q-tooltip>
-                </q-td>
-              </q-tr>
-
-              <q-tr slot="bottom-row" slot-scope="props" :props="props">
-                <q-td colspan="100%">
-                  <strong><q-btn dense  @click="addNewItemFault()" icon="add" color="positive"/></strong>
-                </q-td>
-              </q-tr>
-
-              <template slot="top-left">
-                
-              </template>
-            </q-table>
-          </div>
+            :disable="IssetItemFaults" 
+            :options="TypeFaultOptions"  map-options emit-value
+            :error="errors.has('type_fault_id')" :error-message="errors.first('type_fault_id')" />
         </div>
       </div>
-        <!-- COLUMN::4th Description -->
-        <div class="col-12">
-          <q-input class="col-12" filled name="description" type="textarea" rows="3" label="Description" v-model="rsForm.description"/>
-        </div>
+
+      <!-- COLUMN::3th Items faults lists -->
+      <div class="col-12"> 
+        <q-table  color="primary" class="d-grid full-width" dense hide-bottom
+          :data="rsForm.packing_items.packing_item_faults" 
+          :dark="LAYOUT.isDark"
+          :rows-per-page-options ="[0]"
+          :columns="[
+            { name: 'prefix', label: '',  align: 'left', style:'width:50px'},
+            { name: 'quantity', label: 'Quantity', align: 'center', style:'width:120px'},
+            { name: 'fault_id', label: 'Fault of Part', align: 'left'},
+          ]"
+          :pagination="{sortBy: null, descending: false, page: null, rowsPerPage: 0}"
+          >
+          <q-tr slot="body" slot-scope="props" :props="props">
+            <q-td key="prefix" :props="props" >
+              <q-btn dense  @click="removeItemFault(props.row.__index)" icon="delete" color="negative"/>
+            </q-td>
+            <q-td key="quantity" :props="props" >
+              <q-input 
+                :name="`packing_items.packing_item_faults.${props.row.__index}.quantity`" 
+                type="number" min="0" align="center"
+                outlined dense hide-bottom-space color="blue-grey" 
+                :dark="LAYOUT.isDark"
+                v-model="props.row.quantity" 
+                v-validate="props.row.fault_id ? 'required' : ''"
+                :error="errors.has(`packing_items.packing_item_faults.${props.row.__index}.quantity`)"
+                />
+            </q-td>
+            <q-td key="fault_id" :props="props" >
+              <select-filter
+                :name="`packing_items.packing_item_faults.${props.row.__index}.fault_id`" 
+                outlined style="min-width:150px" 
+                dense hide-bottom-space color="blue-grey"
+                :dark="LAYOUT.isDark"
+                v-model="props.row.fault_id" v-validate="props.row.quantity ? 'required' : ''"
+                :options="FaultOptions" filter
+                :readonly="!IssetTypeFaultID || !IssetItemID"
+                :error="errors.has(`packing_items.packing_item_faults.${props.row.__index}.fault_id`)"
+              />
+              <q-tooltip v-if="!IssetItemID" :offset="[0, 20]">Please select The Item of Packing, first! </q-tooltip>
+              <q-tooltip v-if="!IssetTypeFaultID" :offset="[0, 10]">Please select The Fault Type, first! </q-tooltip>
+            </q-td>
+          </q-tr>
+
+          <q-tr slot="bottom-row" slot-scope="props" :props="props">
+            <q-td colspan="100%">
+              <strong><q-btn dense  @click="addNewItemFault()" icon="add" color="positive"/></strong>
+            </q-td>
+          </q-tr>
+
+          <template slot="top-left">
+            
+          </template>
+        </q-table>
+      </div>
+    </q-card-section>
+     <q-card-section class="row q-col-gutter-x-md">
+      <!-- COLUMN::4th Description -->
+      <div class="col-12 column">
+        <q-input name="description" type="textarea" rows="3" 
+          stack-label label="Description" 
+          filled
+          v-model="rsForm.description" 
+          :dark="LAYOUT.isDark"/>
+      </div>
       
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
@@ -387,11 +421,18 @@ export default {
       if(this.WorkOrderItemOptions.length == 0) return 0
 
       const find = this.WorkOrderItemOptions.find(opt => {
-        // console.warn('opt', opt)
         return opt.data.id === rsItem.work_order_item_id
       })
 
-      return !find ? 0 : (Number(find.data.unit_amount) - Number(find.data.total_packing_item))
+      let faults = 0
+      if(this.rsForm.packing_items && this.rsForm.packing_items.packing_item_faults) {
+        faults = this.rsForm.packing_items.packing_item_faults.reduce( (calc, item ) => {
+          return calc + item.quantity
+        }, 0 )
+
+      }
+
+      return !find ? 0 : (Number(find.data.unit_amount) - Number(find.data.total_packing_item)) - faults
     },
     MAPINGKEY() {
       let variables = {
@@ -412,7 +453,7 @@ export default {
     }
   },
   watch:{
-      '$route' : 'init',
+    '$route' : 'init',
   },
   methods: {
     init() {
@@ -560,20 +601,20 @@ export default {
           return;
         }
         this.FORM.loading = true
-        let {method, mode, apiUrl} = this.FORM.meta();
+        let {method, mode, apiUrl} = this.FORM.meta()
         this.$axios.set(method, apiUrl, this.rsForm)
-        .then((response) => { 
-          let message = response.data.number + ' - #' + response.data.id
-          this.FORM.response.success({message:message})
-          this.FORM.toView(response.data.id)
-        })
-        .catch((error) => {
-          this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
-        })
-        .finally(()=>{
-          this.FORM.loading = false
-        });
+          .then((response) => { 
+            let message = response.data.number + ' - #' + response.data.id
+            this.FORM.response.success({message:message})
+            this.FORM.toView(response.data.id)
+          })
+          .catch((error) => {
+            this.FORM.response.fields(error.response)
+            this.FORM.response.error(error.response, 'Submit')
+          })
+          .finally(()=>{
+            this.FORM.loading = false
+          });
         
       });
     },

@@ -4,7 +4,7 @@ import moment from 'moment'
 import Modal from '@/components/Modal'
 import AdminMenuItem from '@/components/AdminMenuItem'
 // leave the export, even if you don't use it
-export default ({ app, router, Vue }) => {
+export default ({ store, router, Vue }) => {
   // Vue.component('component-a', { /* ... */ })
   // Vue.component('component-b', { /* ... */ })
 
@@ -12,6 +12,25 @@ export default ({ app, router, Vue }) => {
   Vue.component('admin-menu-item', AdminMenuItem)
 
   Vue.prototype.$app = {
+    can: (v = null) => {
+      console.warn('CAN', v, (v === null || (typeof v === 'string' && v === '') || (typeof v === 'object' && v.length === 0)) ? 'SKIP' : 'NEXT')
+      if (v === null || (typeof v === 'string' && v === '') || (typeof v === 'object' && v.length === 0)) return true
+
+      const UserPermiss = (store.getters['admin/USER'].permiss || [])
+      let permiss = []
+
+      if (typeof v === 'string' && v !== '') permiss = v.split('|')
+      if (typeof v === 'object' && v.length > 0) permiss = v
+
+      for (const i in permiss) {
+        if (UserPermiss.some(x => x === permiss[i])) {
+          return true
+        }
+      }
+
+      console.warn('CAN', false, v)
+      return false
+    },
     response: {
       error: function (ErrRes, title = null) {
         if (!ErrRes) {

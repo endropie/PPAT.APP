@@ -1,64 +1,73 @@
 <template>
-  <q-page padding>
-    <q-list highlight class="main-box" :dark="LAYOUT.isDark">
-      <q-item-label header>User setting</q-item-label>
-      <q-item>
-        <q-item-section avatar>
-          <q-avatar rounded color="purple" text-color="white" icon="people" />
-        </q-item-section>
-        <q-item-section label>
-          <q-item-label>{{rsUser.name}}</q-item-label>
-          <q-item-label caption>{{rsUser.email}}</q-item-label>
-        </q-item-section>
-        <!-- <q-item-section side right icon="settings" /> -->
-      </q-item>
+  <q-page padding style="max-width:900px">
+    <div class="row q-col-gutter-md">
+      <div class="col-12 col-md-6">
+        <q-list class="main-box " bordered :dark="LAYOUT.isDark">
+          <q-item-label header>User Setting</q-item-label>
+          <q-item>
+            <q-item-section avatar>
+              <q-avatar rounded color="purple" text-color="white" icon="people" />
+            </q-item-section>
+            <q-item-section label>
+              <q-item-label>{{rsUser.name}}</q-item-label>
+              <q-item-label caption>{{rsUser.email}}</q-item-label>
+            </q-item-section>
+          </q-item>
 
-      <q-item-label header>Change Password</q-item-label>
-      <q-item>
-        <q-item-section>
-          <form class="form" novalidate @submit.prevent="validateForm('form-pass')" data-vv-scope="form-pass">
-            <div class="row q-col-gutter-xs" >
-              <q-input  class="col-12 col-sm-4" 
-                name="newpassword" 
-                label="New password" 
-                type="password" 
-                v-model="rsPass.newpassword" 
-                v-validate="'required|min:8'" 
-                :dark="LAYOUT.isDark" 
-                :error="errors.has('form-pass.newpassword')" 
-                :error-message="errors.first('form-pass.newpassword')"
-              />
-              <q-input  class="col-12 col-sm-4" 
-                name="c_newpassword" 
-                label="Confirm New password" 
-                type="password" 
-                no-pass-toggle 
-                v-model="rsPass.c_newpassword" 
-                v-validate="'required'"
-                :dark="LAYOUT.isDark" 
-                :error="errors.has('form-pass.c_newpassword')" 
-                :error-message="errors.first('form-pass.c_newpassword')"
-              />
-              <q-input class="col-12 col-sm-4" 
-                name="password" 
-                label="Current password" 
-                type="password" 
-                v-model="rsPass.password" 
-                v-validate="'required|min:8'" 
-                :dark="LAYOUT.isDark" 
-                :error="errors.has('form-pass.password')" 
-                :error-message="errors.first('form-pass.password')"
-              />
-              <div class="col-12" align="right">
-                <!-- <q-btn color="light" size="sm" @click="setForm(FORM.data)">Reset</q-btn> -->
-                <q-btn color="positive" size="sm" @click="onChangePassword()">Save</q-btn>
-              </div>
-            </div>
-          </form>
-        </q-item-section>
-      </q-item>
+          <q-item-label header>Change Password</q-item-label>
+          <q-item>
+            <q-item-section>
+              <form class="form" novalidate @submit.prevent="validateForm('form-pass')" data-vv-scope="form-pass">
+                <div class="row q-col-gutter-xs" >
+                  <q-input  class="col-12 col-sm-4" 
+                    name="newpassword" 
+                    label="New password" 
+                    type="password" 
+                    v-model="rsPass.newpassword" 
+                    v-validate="'required|min:8'" 
+                    :dark="LAYOUT.isDark" 
+                    :error="errors.has('form-pass.newpassword')" 
+                    :error-message="errors.first('form-pass.newpassword')"
+                  />
+                  <q-input  class="col-12 col-sm-4" 
+                    name="c_newpassword" 
+                    label="Confirm New password" 
+                    type="password" 
+                    no-pass-toggle 
+                    v-model="rsPass.c_newpassword" 
+                    v-validate="'required'"
+                    :dark="LAYOUT.isDark" 
+                    :error="errors.has('form-pass.c_newpassword')" 
+                    :error-message="errors.first('form-pass.c_newpassword')"
+                  />
+                  <q-input class="col-12 col-sm-4" 
+                    name="password" 
+                    label="Current password" 
+                    type="password" 
+                    v-model="rsPass.password" 
+                    v-validate="'required|min:8'" 
+                    :dark="LAYOUT.isDark" 
+                    :error="errors.has('form-pass.password')" 
+                    :error-message="errors.first('form-pass.password')"
+                  />
+                  <div class="col-12" align="right">
+                    <!-- <q-btn color="light" size="sm" @click="setForm(FORM.data)">Reset</q-btn> -->
+                    <q-btn color="positive" size="sm" @click="onChangePassword()">Save</q-btn>
+                  </div>
+                </div>
+              </form>
+            </q-item-section>
+          </q-item>
 
-    </q-list>
+        </q-list>
+      </div>
+      <div class="col-12 col-md-6">
+        <q-list class="main-box " bordered :dark="LAYOUT.isDark">
+          <q-item-label header>System</q-item-label>
+
+        </q-list>
+      </div>
+    </div>
   </q-page>
 </template>
 

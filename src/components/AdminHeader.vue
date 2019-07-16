@@ -13,7 +13,7 @@
       <template v-slot:label>
         <div class="row items-center no-wrap">
           <q-icon v-if="$q.screen.lt.sm" name="person" />
-          <span v-else>{{$t('general.administrator')}}</span>
+          <span v-else>{{ USER.name || $t('general.administrator')}}</span>
         </div>
       </template>
       <div class="row no-wrap q-pa-md">
@@ -47,7 +47,9 @@
               <!-- <img src="https://cdn.quasar.dev/img/avatar4.jpg"> -->
               <q-icon name="person_outline" size="78px" color="primary" class="bg-light"></q-icon>
           </q-avatar>
-          <div class="text-subtitle1 q-mt-md q-mb-xs">Administrator</div>
+          <div class="text-subtitle2 text-capitalize q-mt-md q-mb-xs">
+            {{ USER.name || $t('general.administrator')}}
+          </div>
           <q-btn color="primary" label="Logout" push size="sm" v-close-popup @click="setLogout()" />
         </div>
       </div>
@@ -101,6 +103,7 @@ export default {
     ...mapState('admin', [
       'PAGEMETA',
       'AUTH',
+      'USER',
     ])
   },
   methods: {

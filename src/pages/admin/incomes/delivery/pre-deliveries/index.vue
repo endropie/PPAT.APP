@@ -71,8 +71,8 @@
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
-          <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden': rs.row.is_relationship === true}" />
-          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden': rs.row.is_relationship === true}" />
+          <q-btn v-if="isCanUpdate" dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden': rs.row.is_relationship === true}" />
+          <q-btn v-if="isCanDelete" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden': rs.row.is_relationship === true}" />
         </q-td>
         
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
@@ -145,6 +145,12 @@ export default {
     this.INDEX.load()
   },
   computed: {
+    isCanUpdate(){
+      return this.$app.can('items-update')
+    },
+    isCanDelete(){
+      return this.$app.can('items-delete')
+    },
     CustomerOptions() {
       return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
     },

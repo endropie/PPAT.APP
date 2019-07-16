@@ -133,5 +133,9 @@ export default {
     height 36px
   .q-field__control:before
     border-color rgba(0,0,0,0)
+    
+.table-header
+  .q-chip
+    margin: 2px 4px;
 </style>
 

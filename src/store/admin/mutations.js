@@ -35,14 +35,14 @@ export const setLogin = (state, val) => {
 
 export const setLocked = (state) => {
   state.AUTH = Object.assign({})
-  LocalStorage.set('store:auth', state.AUTH)
+  LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
 }
 
 export const setLogoff = (state) => {
   state.AUTH = Object.assign({})
   state.USER = Object.assign({})
-  LocalStorage.set('store:auth', state.AUTH)
-  LocalStorage.set('store:user', state.USER)
+  LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
+  LocalStorage.set('store:user', JSON.stringify(state.USER))
   // LocalStorage.remove('store:auth')
 }
 

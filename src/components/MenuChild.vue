@@ -39,7 +39,7 @@ export default {
       if (this.node.children && this.node.children.length > 0) return false
 
       if (this.permission && this.permission.length > 0) {
-        let userPermiss = this.$store.state.admin.USER.permiss
+        let userPermiss = this.$store.state.admin.USER.permiss || []
         let permissions = this.permission.split('|')
         let valid = false
 

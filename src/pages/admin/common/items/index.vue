@@ -26,15 +26,15 @@
               <q-icon name="search" />
             </template>
             <template v-slot:append>
-              <q-btn  dense flat color="grey" icon="add"  @click="$router.push(`${TABLE.resource.uri}/create`)"/>
-              <q-btn  dense flat color="grey" icon="more_vert" />
+              <q-btn dense flat color="grey" icon="add"  @click="$router.push(`${TABLE.resource.uri}/create`)"/>
+              <q-btn dense flat color="grey" icon="more_vert" />
             </template>
           </q-input>
         </template>
         
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
-          <q-btn dense flat color="grey" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`"/>
-          <q-btn dense flat color="grey" icon="delete" @click.native="TABLE.delete(rs.row)" />
+          <q-btn v-if="isCanUpdate" dense flat color="grey" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`"/>
+          <q-btn v-if="isCanDelete" dense flat color="grey" icon="delete" @click.native="TABLE.delete(rs.row)" />
         </q-td>
       </q-table>
     </q-pull-to-refresh>
@@ -88,6 +88,12 @@ export default {
     this.INDEX.load()
   },
   computed: {
+    isCanUpdate(){
+      return this.$app.can('items-update')
+    },
+    isCanDelete(){
+      return this.$app.can('items-delete')
+    },
     MAPINGKEY() {
       let variables = {
         'itemstocks': {},

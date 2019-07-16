@@ -75,8 +75,8 @@
 
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`"/>
-          <q-btn dense flat color="light" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden':  !isEditable(rs.row)}" />
-          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden':  !isEditable(rs.row)}" />
+          <q-btn v-if="isCanUpdate" dense flat color="light" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden':  !isEditable(rs.row)}" />
+          <q-btn v-if="isCanDelete" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden':  !isEditable(rs.row)}" />
         </q-td>
 
         <q-td slot="body-cell-date" slot-scope="rs" :props="rs">
@@ -160,6 +160,12 @@ export default {
     this.INDEX.load()
   },
   computed: {
+    isCanUpdate(){
+      return this.$app.can('request-orders-update')
+    },
+    isCanDelete(){
+      return this.$app.can('request-orders-delete')
+    },
     CustomerOptions() {
       return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
     },

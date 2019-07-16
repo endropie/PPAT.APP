@@ -1,6 +1,6 @@
 <template>
 <q-page padding class="form-page" v-if="SHOW">
-  <q-card inline class="q-ma-sm ">
+  <q-card inline class="main-box q-ma-sm" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
@@ -10,7 +10,7 @@
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark"></q-separator>
     <!-- ROW::1st Customer Identitity -->
-    <q-card-section class="row q-col-gutter-x-sm">
+    <q-card-section class="row q-col-gutter-x-md">
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-md">
           <q-input name="code" class="col-8"
@@ -81,31 +81,40 @@
       </div>
       <!-- COLUMN::2nd Customer Coporation details -->
       <div class="col-12 col-sm-6" >
-        <div class="column q-mb-lg">
-        
-          <q-input name="pkp" class="col-12"
-            label="No. PKP" 
-            v-model="rsForm.pkp" 
-            v-validate="''" 
-            :dark="LAYOUT.isDark"
-            :error="errors.has('pkp')" 
-            :error-message="errors.first('pkp')" />
+        <div class="column q-gutter-sm">
+          <q-list bordered :dark="LAYOUT.isDark" dense>
+            <q-item-label header>Reference Account</q-item-label>
+            <q-separator :dark="LAYOUT.isDark"></q-separator>
+             <q-item>
+              <q-item-section >
+                <div class="column">
+                  <q-input name="pkp"
+                    label="No. PKP" 
+                    v-model="rsForm.pkp" 
+                    v-validate="''" 
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('pkp')" 
+                    :error-message="errors.first('pkp')" />
 
-          <q-input name="npwp" class="col-12" 
-            label="NPWP" 
-            v-model="rsForm.npwp" 
-            v-validate="''" 
-            :dark="LAYOUT.isDark"
-            :error="errors.has('npwp')" 
-            :error-message="errors.first('npwp')"/>
+                  <q-input name="npwp" 
+                    label="NPWP" 
+                    v-model="rsForm.npwp" 
+                    v-validate="''" 
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('npwp')" 
+                    :error-message="errors.first('npwp')"/>
 
-          <q-input name="bank_account" class="col-12" 
-              label="Bank Account" 
-              v-model="rsForm.bank_account" 
-              v-validate="''" 
-              :dark="LAYOUT.isDark"
-              :error="errors.has('bank_account')" 
-              :error-message="errors.first('bank_account')" />
+                  <q-input name="bank_account" 
+                      label="Bank Account" 
+                      v-model="rsForm.bank_account" 
+                      v-validate="''" 
+                      :dark="LAYOUT.isDark"
+                      :error="errors.has('bank_account')" 
+                      :error-message="errors.first('bank_account')" />
+                </div>
+              </q-item-section>
+             </q-item>
+          </q-list>
           
           <q-list bordered :dark="LAYOUT.isDark">
             <q-item-label header>Taxes</q-item-label>
@@ -175,6 +184,7 @@
                 <q-input :name="`customer_contacts.${index}.name`" class="col-12 col-sm-5"
                   label="Name"  stack-label 
                   placeholder="Enter fullname ..." 
+                  :dark="LAYOUT.isDark"
                   dense filled hide-bottom-space
                   v-model="rsForm.customer_contacts[index].name" 
                   v-validate="rsForm.customer_contacts[index].phone ? 'required' : ''"
@@ -185,6 +195,7 @@
                   v-model="rsForm.customer_contacts[index].label" 
                   stack-label label="Position" 
                   placeholder="Enter Position ..."
+                  :dark="LAYOUT.isDark"
                   dense filled  hide-bottom-space
                   :error="errors.has(`customer_contacts.${index}.label`)" 
                   :error-message="errors.first(`customer_contacts.${index}.label`)"/>
@@ -193,6 +204,7 @@
                   v-model="rsForm.customer_contacts[index].phone" 
                   label="Phone" stack-label 
                   placeholder="xxx-xxxx-xxxx" 
+                  :dark="LAYOUT.isDark"
                   dense filled hide-bottom-space
                   v-validate="rsForm.customer_contacts[index].name ? 'required' : ''"
                   :error="errors.has(`customer_contacts.${index}.phone`)"  
@@ -214,15 +226,14 @@
       <!-- COLUMN::4th Reference Mode Picker -->
       <div class="col-12">
         <div class="row items-start q-col-gutter-md q-mb-md" :class="{'text-white': LAYOUT.isDark}">
+
           <q-field class="col-12 col-sm-4" 
-            label="Invoice Type" stack-label
             :error="errors.has('invoice_mode')" 
             :error-message="errors.first('invoice_mode')"
             :dark="LAYOUT.isDark"
-            hint="Pick the mode for bill of customers">
-            
-              <q-option-group 
-                name="invoice_mode" type="radio" class="q-pa-sm"
+            filled
+            hint="Pick the mode Invoice Type">
+              <q-option-group name="invoice_mode" type="radio" class="q-pa-md q-gutter-sm"
                 v-model="rsForm.invoice_mode" 
                 v-validate="'required'"
                 :dark="LAYOUT.isDark" dense
@@ -230,12 +241,13 @@
             
           </q-field>
           <q-field class="col-12 col-sm-4" 
-            label="Delivery Type"  stack-label
-            hint="Pick the mode for Delivery documents"
+            filled
+            :dark="LAYOUT.isDark"
+            hint="Pick the mode Delivery Type"
             :error="errors.has('delivery_mode')" 
             :error-message="errors.first('delivery_mode')">
             
-            <q-option-group name="delivery_mode" type="radio" class="q-pa-sm"
+            <q-option-group name="delivery_mode" type="radio" class="q-pa-md q-gutter-sm"
               v-model="rsForm.delivery_mode" 
               v-validate="'required'"
               :dark="LAYOUT.isDark" dense
@@ -243,13 +255,13 @@
 
           </q-field>
           <q-field class="col-12 col-sm-4" 
-            label="PO type"  stack-label
-            hint="Pick the mode for Sales documents"
+            hint="Pick the mode PO Type"
+            :dark="LAYOUT.isDark"
+            filled
             :error="errors.has('order_mode')" 
             :error-message="errors.first('order_mode')">
             
-            <q-option-group 
-              name="order_mode" type="radio" class="q-pa-sm"
+            <q-option-group name="order_mode" type="radio" class="q-pa-md q-gutter-sm"
               v-model="rsForm.order_mode" 
               v-validate="'required'"
               :dark="LAYOUT.isDark" dense

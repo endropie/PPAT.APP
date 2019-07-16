@@ -31,8 +31,8 @@
 
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
-          <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
-          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" />
+          <q-btn v-if="isCanUpdate" dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
+          <q-btn v-if="isCanDelete" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" />
 
           <!-- Resource show -->
           <!-- <q-btn :to="`${TABLE.resource.uri}/${rs.row.id}`"  flat round color="light" size="sm" icon="menu" /> -->
@@ -88,6 +88,15 @@ export default {
   },
   created() {
     this.INDEX.load()
+  },
+  computed:{
+    
+    isCanUpdate(){
+      return this.$app.can('customers-update')
+    },
+    isCanDelete(){
+      return this.$app.can('customers-delete')
+    },
   }
 }
 </script>

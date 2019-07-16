@@ -32,7 +32,7 @@
         </template>
 
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
-          <q-btn dense flat color="light" icon="edit"  :class="{'hidden': rs.row.is_relationship === true}">
+          <q-btn v-if="isCanUpdate" dense flat color="light" icon="edit"  :class="{'hidden': rs.row.is_relationship === true}">
             <q-popup-edit v-if="!rs.row.ship_delivery_id" v-model="rs.row" title="Update Quantity" buttons 
               @save="(val, initialValue) => saveRow(val, initialValue)"
               @cancel="(val, initialValue) => cancelRow(val, initialValue)">
@@ -45,7 +45,7 @@
               </q-field>
             </q-popup-edit>
           </q-btn>
-          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden': rs.row.ship_delivery_id}"/>
+          <q-btn v-if="isCanDelete" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden': rs.row.ship_delivery_id}"/>
         </q-td>
 
         <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px">
@@ -122,6 +122,12 @@ export default {
     this.INDEX.load()
   },
   computed: {
+    isCanUpdate(){
+      return this.$app.can('ship-delivery-items-update')
+    },
+    isCanDelete(){
+      return this.$app.can('ship-delivery-items-delete')
+    },
     CustomerOptions() {
       return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
     },

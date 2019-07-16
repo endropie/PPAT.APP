@@ -100,11 +100,12 @@
                 <select-filter 
                   :name="`workin_production_items.${propItem.row.__index}.work_order_item_id`" 
                   v-model="propItem.row.work_order_item_id" 
+                  v-validate="'required'" 
                   outlined hide-bottom-space dense color="blue-grey-5"
                   :readonly="!IssetLineID" 
                   :options="WorkOrderItemOptions" filter clearable
-                  @input="(val)=>{ setWorkOrderItemReference(propItem.row.__index, val) }"
                   :error="errors.has(`workin_production_items.${propItem.row.__index}.work_order_item_id`)"
+                  @input="(val)=>{ setWorkOrderItemReference(propItem.row.__index, val) }"
                 />
                 <q-tooltip :disable="IssetLineID" :offset="[0, 10]">Select The Line Production, first! </q-tooltip>
                 

@@ -13,17 +13,52 @@
         @request="TABLE.compute"
         :loading="TABLE.loading">
 
-        <template slot="top-right" slot-scope="props" :props="props">
-          <q-search hide-underline v-model="TABLE.filter" slot="right" :dark="LAYOUT.isDark"/>
+        <!-- Table Header -->
+        <template v-slot:top>
+          <table-header hide-search
+            :title="TABLE.getTitle()"
+            :TABLE.sync="TABLE"
+            :filter.sync="TABLE.filter" >
+
+            <template v-slot:menu-item>
+              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
+                <q-item-section>Add new</q-item-section>
+                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
+              </q-item>
+              <q-separator :dark="LAYOUT.isDark"/>
+            </template>
+
+            <div class="row q-col-gutter-xs" >
+              <select-filter class="col-12 col-sm-6" style="min-width:150px"
+                name="customer_id" 
+                v-model="FILTERABLE.fill.customer_id.value" 
+                stack-label :label="$tc('general.customer')" 
+                dense hide-bottom-space
+                :dark="LAYOUT.isDark"
+                :options="CustomerOptions" filter clearable />               
+
+              <q-select class="col-12 col-sm-6" 
+                multiple use-chips use-input new-value-mode="add"
+                dense hide-dropdown-icon
+                name="filterable" 
+                v-model="FILTERABLE.search" emit-value
+                placeholder="Searching..." 
+                :dark="LAYOUT.isDark">
+                <template slot="append">
+                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit"/>
+                </template>
+              </q-select> 
+              
+            </div>
+          </table-header>
         </template>
 
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
-          <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
-          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" />
+          <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
+          <q-btn v-if="isCanUpdate" dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden':  !isEditable(rs.row)}"/>
+          <q-btn v-if="isCanDelete" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden':  !isEditable(rs.row)}"/>
 
-          <!-- Resource show -->
-          <!-- <q-btn :to="`${TABLE.resource.uri}/${rs.row.id}`"  flat round color="light" size="sm" icon="menu" /> -->
         </q-td>
         
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
@@ -48,13 +83,8 @@
           </span>
         </q-td>
 
-        <q-td slot="body-cell-created_date" slot-scope="rs" :props="rs">
-          <span v-if="rs.row.created_at"> {{ $app.moment(rs.row.created_at).format('DD/MM/YYYY') }}</span>
-          <span v-else>- undifined -</span>
-        </q-td>
-
-        <q-td slot="body-cell-created_time" slot-scope="rs" :props="rs">
-          <span v-if="rs.row.created_at"> {{ $app.moment(rs.row.created_at).format('HH:mm') }}</span>
+        <q-td slot="body-cell-created" slot-scope="rs" :props="rs">
+          <span v-if="rs.row.created_at"> {{ $app.moment(rs.row.created_at).format('DD/MM/YY HH:mm') }}</span>
           <span v-else>- undifined -</span>
         </q-td>
 
@@ -71,6 +101,18 @@ export default {
   mixins: [MixIndex],
   data () {
     return {
+      SHEET: {
+        customers: {data:[], api:'/api/v1/incomes/customers?mode=all'}
+      },
+      FILTERABLE: {
+        fill: {
+          customer_id: {
+            value: null,
+            type: 'integer',
+            transform: (value) => { return null }
+          }
+        }
+      },
       TABLE: {
         mode: 'index',
         resource:{
@@ -84,15 +126,32 @@ export default {
           { name: 'customer_id', label: 'Customer', field: 'customer_id', align: 'left', sortable: true },
           { name: 'begin_date', label: 'Begin Date', field: 'begin_date', align: 'center'},
           { name: 'until_date', label: 'Until Date', field: 'until_date', align: 'center'},
-          { name: 'created_date', label: 'Date', field: 'created_at', align: 'center', sortable: true},
-          { name: 'created_time', label: 'Time', field: 'created_at', align: 'center'},
+          { name: 'created', label: 'Created at', field: 'created_at', align: 'center', sortable: true},
           
         ]
       },
     }
   },
+  computed: {
+    isCanUpdate(){
+      return this.$app.can('forecasts-update')
+    },
+    isCanDelete(){
+      return this.$app.can('forecasts-delete')
+    },
+    CustomerOptions() {
+      return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
+    },
+  },
   created () {
     this.INDEX.load()
+  },
+  methods: {
+    isEditable(row) {
+      if(row.hasOwnProperty('status') && row.status !== 'OPEN') return false
+      if(row.hasOwnProperty('is_relationship') && row.is_relationship) return false
+      return true
+    }
   }
 }
 </script>

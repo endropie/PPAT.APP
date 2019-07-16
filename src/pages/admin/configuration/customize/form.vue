@@ -43,10 +43,6 @@
             </div>
           </q-item-section>
         </q-item>
-        <p>
-            {{ $t('failed') }}
-            {{$q.lang.label.close}}
-        </p>
       </q-list>
     </div>
 

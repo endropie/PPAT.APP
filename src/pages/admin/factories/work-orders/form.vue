@@ -1,6 +1,6 @@
 <template>
 <q-page padding class="form-page" v-if="SHOW">
-  <q-card inline class="q-ma-sm ">
+  <q-card inline class="main-box q-ma-sm" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
@@ -8,6 +8,7 @@
         </template>
       </form-header>
     </q-card-section>
+    <q-separator :dark="LAYOUT.isDark" />
     <q-card-section class="row q-col-gutter-x-sm">
       <!-- COLUMN::1st customer Identitity -->
       <q-input class="col-12 col-sm-6"
@@ -15,6 +16,7 @@
         label="No Transaction" 
         v-model="rsForm.number" 
         placeholder="[Auto Generate]" 
+         :dark="LAYOUT.isDark"
         v-validate="$route.meta.mode == 'edit' ? 'required':''" 
         :error="errors.has('number')" 
         :error-message="errors.first('number')"
@@ -25,6 +27,7 @@
         v-model="rsForm.line_id" 
         label="Line Production" 
         :disable="IssetWorkOrderItems" 
+        :dark="LAYOUT.isDark"
         v-validate="'required'"
         :options="LineOptions" clearable
         :error="errors.has('line_id')" 
@@ -33,9 +36,13 @@
 
         
       <!-- COLUMN::2th Detail Items & Lines -->
-      <q-field class="col-12" prefix="Material production" borderless dense :error="errors.has(`stockist_from`)" :error-message="errors.first('stockist_from')">
-        <q-option-group :name="`stockist_from`" type="radio" v-model="rsForm.stockist_from" inline
-          
+      <q-field class="col-12" prefix="Material production" borderless dense 
+        :dark="LAYOUT.isDark"
+        :error="errors.has(`stockist_from`)" 
+        :error-message="errors.first('stockist_from')">
+        <q-option-group :name="`stockist_from`" type="radio" 
+          v-model="rsForm.stockist_from" inline
+          :dark="LAYOUT.isDark"
           :options="[
             {value: 'FM', label: 'FRESH MATERIAL'},
             {value: 'NG', label: 'NOT GOOD',  color: 'warning' },
@@ -48,6 +55,7 @@
       <div class="col-12">
         <q-table ref="table-items" dense hide-bottom
           class="no-shadow inline full-width no-hightlight" color="secondary"  style="display:grid"
+          :dark="LAYOUT.isDark"
           :data="rsForm.work_order_items" 
           :rows-per-page-options ="[0]"
           :columns="[
@@ -67,24 +75,26 @@
               <q-td key="item_id" width="40%" >
                 <select-filter
                   :name="`work_order_items.${rsItem.row.__index}.item_id`" 
+                  :dark="LAYOUT.isDark"
                   v-model="rsItem.row.item_id" 
+                  v-validate="'required'"
                   filled dense hide-bottom-space color="blue-grey-4"
-                  v-validate="'required'" clearable
                   :disable="!rsForm.line_id"
-                  :options="ItemOptions"
+                  :options="ItemOptions" clearable
                   @input="(val) => setItemReference(rsItem.row.__index, val)"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.item_id`)"
                 />
-                <q-tooltip :disable="!!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
+                <q-tooltip v-if="!rsForm.line_id" :offset="[0, 10]">Select a Pre-Line , first! </q-tooltip>
                 
               </q-td>
               <q-td key="target"  width="15%">
                 <q-input
                   :name="`work_order_items.${rsItem.row.__index}.target`" type="number"
                   :min="0" align="center" 
+                  :dark="LAYOUT.isDark"
                   v-model="rsItem.row.target"  
                   filled dense hide-bottom-space color="blue-grey-4"
-                  v-validate="rsItem.row.item_id ? FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index]) : ''"
+                  v-validate="FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index])"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.target`)"
                   :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                   @input="() => { rsItem.row.quantity = calcQuantity(rsItem.row)}"
@@ -93,6 +103,7 @@
               <q-td key="unit_id"  width="15%">
                 <q-select 
                   :name="`work_order_items.${rsItem.row.__index}.unit_id`" 
+                  :dark="LAYOUT.isDark"
                   v-model="rsItem.row.unit_id" 
                   filled dense hide-bottom-space color="blue-grey-4"
                   :options="ItemUnitOptions[rsItem.row.__index]"
@@ -105,12 +116,13 @@
               </q-td>
               <q-td key="ngratio"  width="15%">
                 <q-input 
-                  :name="`work_order_items.${rsItem.row.__index}.ngration`" 
+                  :name="`work_order_items.${rsItem.row.__index}.ngratio`" 
                   suffix="%" type="number" 
+                  :dark="LAYOUT.isDark"
                   v-model="rsItem.row.ngratio" 
                   filled dense hide-bottom-space align="center" color="blue-grey-4" 
                   v-validate="'required'"
-                  :error="errors.has(`work_order_items.${rsItem.row.__index}.ngration`)"
+                  :error="errors.has(`work_order_items.${rsItem.row.__index}.ngratio`)"
                   :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                   @input="() => { rsItem.row.quantity = calcQuantity(rsItem.row) }"
                   />
@@ -118,8 +130,10 @@
               <q-td key="quantity"  width="15%">
                 <q-input 
                   :name="`work_order_items.${rsItem.row.__index}.quantity`" type="number"
+                  :dark="LAYOUT.isDark"
                   v-model="rsItem.row.quantity" 
                   filled dense hide-bottom-space disable align="right" color="blue-grey-6"
+                  no-error-icon
                   v-validate="rsItem.row.item_id ? FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index]) : ''"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.quantity`)"
                   :suffix="' / '+ convertStock(rsItem.row, loadItemStock[rsItem.row.__index])"
@@ -130,82 +144,81 @@
             <q-tr  :rsItem="rsItem">
               <q-td></q-td>
               <q-td colspan="100%">
-                <div class="row ">
-                  <div class="col-12 q-pb-md">
-                    <q-table ref="table-itemlines" dense hide-bottom color="secondary" separator="none" class="no-shadow inline full-width" style="display:grid" 
-                      :data="rsItem.row.work_order_item_lines" 
-                      :rows-per-page-options ="[0]"
-                      :columns="[
-                        { name: 'prefix', label: '',  align: 'left', visibility:false},
-                        { name: 'line_id', label: 'Line production', align: 'left'},
-                        { name: 'begin_date', label: 'Starting', align: 'center'},
-                        { name: 'until_date', label: 'Finished', align: 'center'},
-                      ]"
-                      :pagination="{sortBy: null, descending: false, page: null, rowsPerPage: 0}">
-                      <template slot="body" slot-scope="propLine">
-                        <q-tr :propLine="propLine" style="height:20px">
-                          <q-td key="prefix" style="width:50px">
-                            <q-btn dense flat @click="removeItemLine(rsItem.row.__index, propLine.row.__index)" icon="delete" color="blue-grey-2 no-shadow" text-color="grey-8"
-                              v-if="SETTING.work_orders.item_lines_customize"
-                            />
-                          </q-td>
-                          <q-td key="line_id" width="50%" >
-                            <select-filter class="field-auto-hight"
-                              :name="`work_order_item_lines.${propLine.row.__index}.line_id`" 
-                              borderless dense hide-bottom-space hide-dropdown-icon readonly color="blue-grey-1" 
-                              v-model="propLine.row.line_id" 
-                              v-validate="'required'"
-                              :error="errors.has(`work_order_item_lines.${propLine.row.__index}.line_id`)"
-                              :options="LineOptions" filter
-                            />
-                            <q-tooltip v-if="!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
-                      
-                          </q-td>
-                          <q-td key="begin_date" width="25%">
-                            
-                            <q-input class="field-auto-hight"
-                              v-model="propLine.row.begin_date" type="date" 
-                              filled dense hide-bottom-space color="blue-grey-1" 
-                              :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
-                            />
-                          </q-td>
-                          <q-td key="until_date"  width="25%">
-                            <q-input class="field-auto-hight"
-                              v-model="propLine.row.until_date" type="date" 
-                              filled dense hide-bottom-space color="blue-grey-1"  
-                              :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
-                            />
-                          </q-td>
-                        </q-tr>
-                      </template>
-                      <q-tr slot="bottom-row" slot-scope="propLine" :rsItem="propLine"  v-if="SETTING.work_orders.item_lines_customize">
-                        <q-td colspan="100%">
-                          <q-btn dense  @click="addNewItemLine(rsItem.row.__index)" icon="add" color="positive" />
-                        </q-td>
-                      </q-tr>
-                    </q-table>
-                  </div>
-                </div>
+                <q-table ref="table-itemlines" class="no-shadow inline full-width" style="display:grid"
+                  dense hide-bottom color="secondary" separator="none" 
+                  :dark="LAYOUT.isDark" 
+                  :data="rsItem.row.work_order_item_lines" 
+                  :rows-per-page-options ="[0]"
+                  :columns="[
+                    { name: 'prefix', label: '',  align: 'left', visibility:false},
+                    { name: 'line_id', label: 'Line production', align: 'left'},
+                    { name: 'begin_date', label: 'Starting', align: 'center'},
+                    { name: 'until_date', label: 'Finished', align: 'center'},
+                  ]"
+                  :pagination="{sortBy: null, descending: false, page: null, rowsPerPage: 0}">
+                  <template slot="body" slot-scope="propLine">
+                    <q-tr :propLine="propLine" style="height:20px">
+                      <q-td key="prefix" style="width:50px">
+                        <q-btn dense flat @click="removeItemLine(rsItem.row.__index, propLine.row.__index)" icon="delete" color="blue-grey-2 no-shadow" text-color="grey-8"
+                          v-if="SETTING.work_orders.item_lines_customize"
+                        />
+                      </q-td>
+                      <q-td key="line_id" width="50%" >
+                        <select-filter class="field-auto-hight"
+                          :name="`work_order_item_lines.${propLine.row.__index}.line_id`" 
+                          borderless dense hide-bottom-space hide-dropdown-icon readonly color="blue-grey-1" 
+                          :dark="LAYOUT.isDark"
+                          v-model="propLine.row.line_id" 
+                          v-validate="'required'"
+                          :error="errors.has(`work_order_item_lines.${propLine.row.__index}.line_id`)"
+                          :options="LineOptions" filter
+                        />
+                        <q-tooltip v-if="!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
+                  
+                      </q-td>
+                      <q-td key="begin_date" width="25%">
+                        
+                        <q-input class="field-auto-hight"
+                          v-model="propLine.row.begin_date" type="date" 
+                          :dark="LAYOUT.isDark"
+                          filled dense hide-bottom-space color="blue-grey-1" 
+                          :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
+                        />
+                      </q-td>
+                      <q-td key="until_date"  width="25%">
+                        <q-input class="field-auto-hight"
+                          v-model="propLine.row.until_date" type="date" 
+                          :dark="LAYOUT.isDark"
+                          filled dense hide-bottom-space color="blue-grey-1"  
+                          :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
+                        />
+                      </q-td>
+                    </q-tr>
+                  </template>
+                  <q-tr slot="bottom-row" slot-scope="propLine" :rsItem="propLine"  v-if="SETTING.work_orders.item_lines_customize">
+                    <q-td colspan="100%">
+                      <q-btn dense  @click="addNewItemLine(rsItem.row.__index)" icon="add" color="positive" />
+                    </q-td>
+                  </q-tr>
+                </q-table>
               </q-td>
             </q-tr>
           </template>
           <q-tr slot="bottom-row" slot-scope="rsItem" :rsItem="rsItem">
             <q-td colspan="100%">
-              <q-btn dense class="full-width" @click="addNewItem()"  icon="add" color="positive"/>
+              <q-btn dense @click="addNewItem()"  icon="add" color="positive"/>
             </q-td>
           </q-tr>
         </q-table>
       </div>
       <!-- COLUMN::4th Description -->
-      <div class="col-12 q-mt-lg">
-        <div class="row q-gutter-x-lg q-mb-md">
-            <q-input class="col-12" 
-              name="description" 
-              type="textarea" rows="3" 
-              stack-label label="Description" 
-              filled
-              v-model="rsForm.description"/>
-        </div>
+      <div class="col-12 cloumn q-mt-md">
+        <q-input name="description" type="textarea" rows="3" 
+          stack-label label="Description" 
+          filled
+          :dark="LAYOUT.isDark"
+          v-model="rsForm.description"/>
+    
       </div>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
