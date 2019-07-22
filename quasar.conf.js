@@ -7,9 +7,10 @@ module.exports = function (ctx) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     boot: [
-      'i18n',
-      'axios',
       'app',
+      'apollo',
+      'axios',
+      'i18n',
       'vee-validate'
     ],
 
@@ -73,6 +74,12 @@ module.exports = function (ctx) {
         //   loader: 'eslint-loader',
         //   exclude: /node_modules/
         // })
+
+        cfg.module.rules.push({
+          test: /\.(graphql|gql)$/,
+          exclude: /node_modules/,
+          loader: 'graphql-tag/loader'
+        })
 
         cfg.module.rules.push({
           test: /\.md$/,

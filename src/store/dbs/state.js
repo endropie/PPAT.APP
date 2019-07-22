@@ -1,24 +1,8 @@
-const std = {
-  data: [],
-  loading: false,
-  error: false,
-  message: null
-}
+// import { LocalStorage } from 'quasar'
+
 export default {
-  common: {
-    items: {
-      api: 'api/v1/common/items',
-      ...std
-    }
+  contacts: {
+    data: []
   },
-  references: {
-    brands: {
-      api: 'api/v1/references/brands',
-      ...std
-    },
-    spesifications: {
-      api: 'api/v1/references/spesifications',
-      ...std
-    }
-  }
+  messages: Object.assign({})
 }

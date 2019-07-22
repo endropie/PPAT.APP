@@ -40,17 +40,58 @@
         </q-td>
       </q-table>
     </q-pull-to-refresh>
+    <q-input v-model="partnerID" label="partner" />
+    <q-input v-model="userID" label="partner" />
+    <apollo-query
+      :query="QUE" 
+      :variables="{
+        user: userID,
+        partner: partnerID
+      }"
+    >
+      <template v-slot="{ result: { error, data }, isLoading }">
+        <!-- Loading -->
+        <div v-if="isLoading" class="loading apollo">Loading...</div>
+
+        <!-- Error -->
+        <div v-else-if="error" class="error apollo">An error occurred</div>
+
+        <!-- Result -->
+        <div v-else-if="data" class="result apollo">{{ data }}</div>
+
+        <!-- No result -->
+        <div v-else class="no-result apollo">No result :(</div>
+      </template>
+    </apollo-query>
   </q-page>
 </template>
 
 <script>
 import MixIndex from '@/mixins/mix-index.vue'
+import gql from 'graphql-tag'
 
+const QUE = gql`
+        query nodeMessages($user: ID, $partner:ID){
+          messages
+          (
+            user: $user
+            partner: $partner
+          )
+          {
+            id to from
+            text
+          }
+        }
+      `
 export default {
   mixins: [MixIndex],
   data () {
     return {
-      TABLE:{
+      QUE: QUE,
+      userID: 1,
+      partnerID: 2,
+      name: '',
+      TABLE: {
         show:false,
         resource:{
           api: '/api/v1/references/brands',
@@ -78,6 +119,13 @@ export default {
     }
   },
   computed:{
+    
+    comBetween(){
+      return {
+        sender: this.UserID, 
+        receiver: this.partnerID
+      }
+    },
     isCanUpdate(){
       return this.$app.can('brands-update')
     },
@@ -88,6 +136,9 @@ export default {
   mounted () {
     // Page Component mounted!  
     this.INDEX.load()
+    console.info(this)
+  },
+  methods:{
   }
 }
 </script>
