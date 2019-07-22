@@ -1,4 +1,4 @@
-import AdminMenus from 'assets/admin-menus'
+import AdminMenus from 'assets/data-menu'
 import AdminLayout from 'layouts/AdminLayout'
 // import access from '@/router/middleware/access'
 

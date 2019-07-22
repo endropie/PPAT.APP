@@ -1,16 +1,28 @@
 // import MixGlobal from '../mixins/mix-global'
 import { Notify, date } from 'quasar'
+import _lodash from 'lodash'
 import moment from 'moment'
 import Modal from '@/components/Modal'
 import AdminMenuItem from '@/components/AdminMenuItem'
-// leave the export, even if you don't use it
-export default ({ store, router, Vue }) => {
-  // Vue.component('component-a', { /* ... */ })
-  // Vue.component('component-b', { /* ... */ })
+import AdminPanel from '@/components/AdminPanel'
+import AdminMessage from '@/components/AdminMessage'
+import AdminMessagePanel from '@/components/AdminMessagePanel'
+import AdminContact from '@/components/AdminContact'
+import AdminTabs from 'components/AdminTabs'
+import AdminHeader from 'components/AdminHeader'
 
+// leave the export, even if you don't use it
+export default async ({ app, store, router, Vue }) => {
   Vue.component('modal', Modal)
+  Vue.component('admin-panel', AdminPanel)
+  Vue.component('admin-message', AdminMessage)
+  Vue.component('admin-message-panel', AdminMessagePanel)
+  Vue.component('admin-contact', AdminContact)
+  Vue.component('AdminTabs', AdminTabs)
+  Vue.component('admin-header', AdminHeader)
   Vue.component('admin-menu-item', AdminMenuItem)
 
+  Vue.prototype.$_ = _lodash
   Vue.prototype.$app = {
     can: (v = null) => {
       console.warn('CAN', v, (v === null || (typeof v === 'string' && v === '') || (typeof v === 'object' && v.length === 0)) ? 'SKIP' : 'NEXT')
@@ -128,7 +140,6 @@ export default ({ store, router, Vue }) => {
         Notify.create(Object.assign(this.prevent, mode, values))
       }
     },
-
     moment: moment,
     date: date
   }

@@ -5,8 +5,16 @@ export const setNow = (state) => {
   state.NOW = new Date()
 }
 
-export const setPageDrawer = (state, val) => {
-  state.PAGE.drawer = val
+export const SetLeftDrawer = (state, val) => {
+  state.PAGE.leftDrawer = val
+}
+
+export const SetRightDrawer = (state, val) => {
+  state.PAGE.rightDrawer = val
+}
+
+export const SetSideTab = (state, val) => {
+  state.PAGE.sidetab = val
 }
 
 export const setPageShow = (state, val) => {

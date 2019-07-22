@@ -1,11 +1,11 @@
 <template>
-  <q-layout view="lhh Lpr lFf" :class="LAYOUT.isDark ? 'bg-grey-10 text-white' : 'bg-white text-dark'">
+  <q-layout view="lHh LpR lFf" :class="LAYOUT.isDark ? 'bg-grey-10 text-white' : 'bg-white text-dark'">
     <q-header class="header print-hide" elevated>
       <admin-header :class="LAYOUT.isDark ? ' ': ''" />
     </q-header>
 
     <q-drawer class="print-hide"
-      v-model="DRAWER"
+      v-model="LEFTDRAWER"
       bordered
       content-class="bg-grey-2">
       <q-scroll-area :class="LAYOUT.isDark ? 'bg-black text-primary' : 'bg-white text-primary'" style="width: 100%; height: 100%;">
@@ -18,11 +18,17 @@
           </div>
         </div>
         <q-list class="menu">
-          <template v-for="(node, index) in AdminMenus">
-            <admin-menu :node="node" :isIndent="false" :prefix="`/admin/${node.path}`" :key="index" :dark="LAYOUT.isDark"/>
+          <template v-for="(node, index) in DataMenu">
+            <admin-menu-item :node="node" :isIndent="false" :prefix="`/admin/${node.path}`" :key="index" :dark="LAYOUT.isDark"/>
           </template>
         </q-list>
       </q-scroll-area>
+    </q-drawer>
+    <q-drawer class="print-hide " side="right"
+      v-model="RIGHTDRAWER"
+      bordered 
+      :width="300" content-class="bg-lime-2">
+       <admin-panel :dark="LAYOUT.isDark" />
     </q-drawer>
 
     <q-page-container>
@@ -42,34 +48,22 @@
 
 <script>
 import { openURL } from 'quasar'
+import gql from 'graphql-tag'
 import { mapState, mapActions } from 'vuex'
 import MixPage from '@/mixins/mix-page.vue'
-import AdminTabs from 'components/admin-tabs'
-import AdminMenu from 'components/AdminMenuItem'
-import AdminHeader from 'components/AdminHeader'
-import AdminMenus from "@/assets/admin-menus";
+import DataMenu from "@/assets/data-menu"
 
 export default {
   mixins: [MixPage],
-  components: {
-    AdminTabs,
-    AdminMenu,
-    AdminHeader,
-  },
   data () {
     return {
-      AdminMenus
+      DataMenu,
+      PANELTAB:'messages'
     }
   },
-  created(){
-    // this.setTime()
+  created() {
     console.info('[PLAY] Admin created!')
-    // if(this.AUTH && this.AUTH.hasOwnProperty('token')) {
-    //   this.$axios.setHeader([
-    //     {key: 'Accept', value: 'application/json'},
-    //     {key: 'Authorization', value: `Bearer ${this.AUTH.token}`}
-    //   ])
-    // }
+    this.$store.dispatch('dbs/FETCH_CONTACTS')
 
     this.$axios.validToken(
       (response) => {
@@ -84,15 +78,14 @@ export default {
     ...mapState('admin', [
       'NOW',
       'PAGEMETA',
-      'AUTH'
+      'AUTH',
+      'USER'
     ])
   },
   methods: {
     openURL,
     ...mapActions( {
       setTime: 'admin/TIMESTART'
-      // setValue: 'admin/setValue',
-      // setAuthClear: 'admin/setLogoff',
     }),
     resetScroll (el, done) {
       document.documentElement.scrollTop = 0

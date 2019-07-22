@@ -26,7 +26,7 @@
 
 <script>
 import MixPage from '@/mixins/mix-page.vue'
-import AdminMenus from '@/assets/admin-menus'
+import AdminMenus from '@/assets/data-menu'
 
 export default {
   mixins:[MixPage],

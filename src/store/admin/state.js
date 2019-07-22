@@ -24,7 +24,9 @@ export default {
   PAGEMETA: {},
   PAGE: {
     show: true,
-    drawer: true
+    sidetab: 'messages',
+    leftDrawer: true,
+    rightDrawer: false
   },
   LAYOUT: {
     isDark: false,

@@ -15,12 +15,29 @@ export default {
     title() {
       return this.$route.meta.title || ''
     },
-    DRAWER: {
+    SIDETAB: {
       get () {
-        return this.$store.state.admin.PAGE.drawer
+        return this.$store.state.admin.PAGE.sideTab
       },
       set (val) {
-        this.$store.commit('admin/setPageDrawer', val)
+        this.$store.commit('admin/SetSideTab', val)
+
+      }
+    },
+    LEFTDRAWER: {
+      get () {
+        return this.$store.state.admin.PAGE.leftDrawer
+      },
+      set (val) {
+        this.$store.commit('admin/SetLeftDrawer', val)
+      }
+    },
+    RIGHTDRAWER: {
+      get () {
+        return this.$store.state.admin.PAGE.rightDrawer
+      },
+      set (val) {
+        this.$store.commit('admin/SetRightDrawer', val)
       }
     },
     SHOW: {
