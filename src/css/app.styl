@@ -1,4 +1,6 @@
 import('./quasar.variables.styl')
+@import 'quasar.custom'
+
 
 // app global css
 .main-box
@@ -14,6 +16,9 @@ import('./quasar.variables.styl')
   border-top: none
   border-bottom: none
 
+.no-highlight .q-table tbody tr:hover
+  background-color inherit
+
 .inset-md { margin-left: 25%; margin-right: 25%; width: 50%;}
 
 .inset-sm { margin-left: 30%; margin-right: 30%; width: 40%;}
@@ -24,15 +29,52 @@ import('./quasar.variables.styl')
   .q-btn-dropdown__arrow
     display none
 
+.text-small
+  font-size 90%
+  line-height 100%
+  font-weight 500
 
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
-// input[type="date"]::-webkit-clear-button
-input[type="date"]::-webkit-inner-spin-button,
-input[type="date"]::-webkit-calendar-picker-indicator {
-    display: none;
-    -webkit-appearance: none;
-}
+.th-uppercase .q-table
+   th
+    font-weight: 400;
+    text-transform: uppercase;
+
+.th-text-left .q-table
+  th
+    text-align left
+
+.th-text-right .q-table
+  th
+    text-align right
+
+.table-sticky-column
+  max-width 100%
+
+  /* bg color is important for th; just specify one */
+  thead tr:first-child th:first-child
+    background-color #fff
+    opacity 1
+
+  td:first-child
+    background-color #f9f9f9
+
+  thead tr:first-child th:first-child,
+  td:first-child
+    position sticky
+    left 0
+    z-index 1
+
+.table-sticky-column.q-table--dark
+  thead tr:first-child th:first-child
+    background-color #2d2d2d
+
+  td:first-child
+    background-color #323232
+
+// .table-sticky-column.cols-2
+//   thead tr:first-child th:nth-child(2),
+//   td:nth-child(2)
+//     background-color #f9f9f9
+//     position sticky
+//     left 90px
+//     z-index 2

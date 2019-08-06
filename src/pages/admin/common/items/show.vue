@@ -1,7 +1,7 @@
 <template>
   <q-page padding class="docs-btn row justify-center">
     <div style="width: 500px; max-width: 90vw;">
-        This SHOW 
+        This VIEW
     </div>
   </q-page>
 </template>

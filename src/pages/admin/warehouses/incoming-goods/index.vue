@@ -1,11 +1,11 @@
 <template>
-  <q-page padding class="page-index"  v-if="SHOW">
+  <q-page padding class="page-index" >
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table ref="table" inline class="table-index" color="primary" :dark="LAYOUT.isDark"
+      <q-table ref="table" inline class="table-index th-uppercase" color="primary" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
@@ -17,52 +17,74 @@
           <table-header hide-search
             :title="TABLE.getTitle()"
             :TABLE.sync="TABLE"
-            :filter.sync="TABLE.filter" >
-
-            <template v-slot:menu-item>
-              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
-                <q-item-section>Add new</q-item-section>
-                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
-              </q-item>
-              <q-separator :dark="LAYOUT.isDark"/>
-            </template>
+            :filter.sync="TABLE.filter"
+            :menus="[
+              { label: $tc('form.add'),
+                detail: $tc('messages.form_new'),
+                icon: 'add',
+                shortcut: true,
+                hidden:!$app.can('incoming-goods-create'),
+                to: `${TABLE.resource.uri}/create`
+              },
+              { label: $tc('label.trash'),
+                detail:  $tc('messages.show_deleted'),
+                shortcut: true,
+                icon: Boolean(FILTERABLE.fill.withTrashed.value)? 'mdi-cup' : 'mdi-cup-off',
+                closePopup: false,
+                outline: true,
+                actions:() => {
+                  FILTERABLE.toggleTrash()
+                  FILTERABLE.submit()
+                }
+              }
+            ]">
 
             <div class="row q-col-gutter-xs" >
-              <select-filter class="col-12 col-md-6" style="min-width:150px"
-                name="customer_id" 
-                v-model="FILTERABLE.fill.customer_id.value" 
-                stack-label :label="$tc('general.customer')" 
-                dense hide-bottom-space
-                :dark="LAYOUT.isDark"
-                :options="CustomerOptions" filter clearable />
-              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
-                stack-label label="Begin Date" 
-                v-model="FILTERABLE.fill.begin_date.value" 
-                type="date"
-                dense hide-bottom-space 
-                :dark="LAYOUT.isDark" />
-              <q-input class="col-12 col-sm-6 col-md-3" style="min-width:120px"
-                stack-label label="Until Date" 
-                v-model="FILTERABLE.fill.until_date.value" 
-                type="date" 
-                dense hide-bottom-space
-                :dark="LAYOUT.isDark" />
-               
+              <ux-select-filter class="col-12 col-sm-6"
+                v-model="FILTERABLE.fill.customer_id.value" clearable
+                :label="$tc('general.customer')"
+                dense hide-bottom-space hide-dropdown-icon
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
+                :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
+                :options="CustomerOptions"
+                @input="FILTERABLE.submit" />
 
-              <q-select class="col-12 col-md-12" 
-                new-value-mode="add" use-chips use-input multiple hide-dropdown-icon
-                dense input-debounce="0"
-                name="filterable" 
-                v-model="FILTERABLE.search" 
-                placeholder="Searching..." 
-                emit-value
+              <ux-date class="col-12 col-sm-3"
+                stack-label :label="$tc('label.begin')"
+                v-model="FILTERABLE.fill.begin_date.value" type="date"  clearable
+                dense hide-bottom-space
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
+                :dark="LAYOUT.isDark"
+                @input="FILTERABLE.submit"/>
+
+              <ux-date class="col-12 col-sm-3"
+                stack-label :label="$tc('label.until')"
+                v-model="FILTERABLE.fill.until_date.value" type="date"  clearable
+                dense hide-bottom-space
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
+                :dark="LAYOUT.isDark"
+                @input="FILTERABLE.submit"/>
+
+
+              <q-select class="col-12" autocomplete="off"
+                multiple use-chips use-input new-value-mode="add"
+                dense hide-dropdown-icon
+                v-model="FILTERABLE.search" emit-value
+                :placeholder="`${$tc('form.search',2)}...`"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark">
 
-                <template slot="append">
-                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit()"/>
+                <template slot="before">
                 </template>
-              </q-select> 
-              
+                <template slot="append">
+                  <q-btn flat dense icon="search" dark-percentage color="fadded" @click="FILTERABLE.submit"/>
+                </template>
+              </q-select>
+
             </div>
           </table-header>
         </template>
@@ -70,27 +92,33 @@
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn flat dense color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
-          <q-btn v-if="isCanUpdate" flat dense color="light" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden':  !isEditable(rs.row)}" />
-          <q-btn v-if="isCanDelete" flat dense color="light" icon="delete"  @click.native="TABLE.delete(rs.row)" :class="{'hidden':  !isEditable(rs.row)}" />
+          <q-btn v-if="isCanUpdate && isEditable(rs.row)" flat dense color="light" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
+          <q-btn v-if="isCanDelete && isEditable(rs.row)" flat dense color="light" icon="delete"  @click.native="TABLE.delete(rs.row)" />
         </q-td>
-        
+
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
-          <span v-if="rs.row.number"> {{ rs.row.number + (rs.row.transaction == 'RETURN' ? '.RET' : '') }} 
-            
-            <q-chip dense tag color="faded" text-color="white" label="RET" v-if="rs.row.transaction == 'RETURN' "/>
-            <q-chip dense tag class="bg-red-10 text-white"  :label="rs.row.status" v-if="rs.row.status !== 'OPEN' "/>
+          <span v-if="rs.row.number" class="text-weight-medium ">
+            {{ rs.row.number }}
+            <!-- <span v-if="rs.row.transaction == 'RETURN'" v-text="'RET'" /> -->
+            <q-badge dense color="dark" text-color="white" label="RET"
+              class=""
+              v-if="rs.row.transaction == 'RETURN'"
+            />
+            <ux-badge-status :row="rs.row"
+              class=" on-right shadow-0"
+            />
           </span>
           <span v-else>- undifined -</span>
         </q-td>
-        
+
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
           <span v-if="rs.row.customer"> {{ rs.row.customer.name }}</span>
           <span v-else>- undifined -</span>
         </q-td>
       </q-table>
     </q-pull-to-refresh>
-    
-    
+
+
   </q-page>
 </template>
 
@@ -131,12 +159,13 @@ export default {
         },
         columns: [
           { name: 'prefix', label: '', align: 'left'},
-          { name: 'number', label: 'Number', field: 'number', align: 'left', sortable: true },
-          { name: 'date', label: 'Date', field: 'date', align: 'center', sortable: true},
-          { name: 'time', label: 'Time', field: 'time', align: 'center'},
-          { name: 'customer_id', label: 'Customer', field: 'customer_id', align: 'left', sortable: true },
-          { name: 'reference_number', label: 'Reference number', field: 'reference_number', align: 'left', sortable: true },
-          { name: 'created_at', label: 'Created at', field: 'created_at', align: 'center', sortable: true },
+          { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
+          { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
+          { name: 'date', label: this.$tc('label.date'), field: 'date', align: 'center', sortable: true},
+          // { name: 'time', label: 'Time', field: 'time', align: 'center'},
+          { name: 'reference_number', label: this.$tc('warehouses.reference_number'), field: 'reference_number', align: 'left', sortable: true },
+          { name: 'reference_date', label: this.$tc('warehouses.reference_date'), field: 'reference_date', align: 'center', sortable: true },
+          { name: 'created_at', label: this.$tc('form.create', 2), field: 'created_at', align: 'center', sortable: true },
         ],
       },
     }
@@ -157,7 +186,8 @@ export default {
   },
   methods:{
     isEditable(row) {
-      if(row.hasOwnProperty('status') && row.status !== 'OPEN') return false
+      if(row.deleted_at) return false
+      if(row.status !== 'OPEN') return false
       if(row.hasOwnProperty('is_relationship') && row.is_relationship) return false
       return true
     }

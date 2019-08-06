@@ -24,17 +24,15 @@
         </q-list>
       </q-scroll-area>
     </q-drawer>
-    <q-drawer class="print-hide " side="right"
+    <q-drawer class="hidden print-hide " side="right"
       v-model="RIGHTDRAWER"
-      bordered 
+      bordered
       :width="300" content-class="bg-lime-2">
-       <admin-panel :dark="LAYOUT.isDark" />
     </q-drawer>
 
     <q-page-container>
-      <!-- <router-view /> -->
-      <transition enter-active-class="animated bounceInLeft" leave-active-class="animated bounceOutLeft"
-        appear :duration="400" @leave="resetScroll">
+      <transition enter-active-class="animated fadeInLeft" leave-active-class="animated fadeInRight"
+        :duration="1500" @leave="resetScroll">
         <router-view />
       </transition>
       <q-page v-if="!SHOW" >
@@ -48,10 +46,10 @@
 
 <script>
 import { openURL } from 'quasar'
-import gql from 'graphql-tag'
 import { mapState, mapActions } from 'vuex'
 import MixPage from '@/mixins/mix-page.vue'
 import DataMenu from "@/assets/data-menu"
+import { type } from 'os';
 
 export default {
   mixins: [MixPage],
@@ -63,13 +61,11 @@ export default {
   },
   created() {
     console.info('[PLAY] Admin created!')
-    this.$store.dispatch('dbs/FETCH_CONTACTS')
-
     this.$axios.validToken(
       (response) => {
-        if(!response) this.setLogoff()
-        else{
-          
+        if(process.env.DEV) console.warn('$axios.validToken', (typeof response).toUpperCase(), response)
+        if(response.status === 401) {
+          this.setLogoff()
         }
       }
     )
@@ -116,7 +112,7 @@ export default {
 }
 </script>
 <style lang="stylus">
-header.header 
+header.header
   // background-image: linear-gradient(145deg, ()$primary 11%, ()$dark-primary 75%)
   background-image: linear-gradient(145deg, rgba(255,255,255,0) 10%,  rgba(0, 0, 0, 0.5) 90%)
 

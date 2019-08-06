@@ -1,10 +1,10 @@
 <template>
-<q-page padding class="main-page justify-center" v-if="SHOW">
+<q-page padding class="form-page justify-center" v-if="FORM.show">
   <q-card inline class="q-ma-sm ">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -12,20 +12,20 @@
     <q-card-section class="row q-col-gutter-sm q-col-gutter-x-md">
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm q-mb-md">
-          <q-input name="number" class="col-12" 
-            label="No Transaction" 
-            placeholder="[Auto Generate]" 
-            v-model="rsForm.number" 
+          <q-input name="number" class="col-12"
+            label="No Transaction"
+            placeholder="[Auto Generate]"
+            v-model="rsForm.number"
             v-validate="$route.meta.mode == 'edit' ? 'required':''"
-            :error="errors.has('number')" 
+            :error="errors.has('number')"
             :error-message="errors.first('number')"/>
-            
-          <select-filter name="customer_id" class="col-12" 
+
+          <ux-select-filter name="customer_id" class="col-12"
             v-model="rsForm.customer_id"
-            :label="$tc('general.customer')" 
+            :label="$tc('general.customer')"
             :options="CustomerOptions" filter clearable
             v-validate="'required'"
-            :error="errors.has('customer_id')" 
+            :error="errors.has('customer_id')"
             :error-message="errors.first('customer_id')"
             @input="setCustomerReference" />
         </div>
@@ -33,96 +33,110 @@
       <!-- COLUMN::2nd Transaction details -->
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm">
-          
+
           <q-input name="customer_name" class="col-12"
-            stack-label label="Name" 
-            v-model="rsForm.customer_name" 
+            stack-label label="Name"
+            v-model="rsForm.customer_name"
             v-validate="'required'"/>
-            
+
           <q-input name="customer_phone" class="col-12"
-            stack-label label="phone" 
-            v-model="rsForm.customer_phone" 
+            stack-label label="phone"
+            v-model="rsForm.customer_phone"
             v-validate="'required'"/>
-            
+
           <q-input name="customer_address" class="col-12"
             type="textarea" rows="2"
-            stack-label label="Address" 
+            stack-label label="Address"
             v-model="rsForm.customer_address" />
         </div>
       </div>
       <!-- COLUMN::3th Part items lists -->
-      <div class="col-12 q-my-md" v-if="ShipDeliveryItemOptions.length > 0">
-        <q-table ref="table" :data="rsForm.ship_delivery_items" dense hide-bottom class="table d-grid full-width shadow-1"
+      <div class="col-12 q-my-md" >
+        <q-table ref="table" v-if="ShipDeliveryItemOptions.length > 0"
+          :data="rsForm.outgoing_good_items"
+          dense hide-bottom
+          class="table d-grid full-width shadow-1 no-highlight"
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'prefix', label: '', field:'id', align: 'left'},
             { name: 'code', label: '#code', align: 'left', field:(v)=> v.item.code, style:'padding:10px 7px'},
-            { name: 'item_id', label: 'Part item', align: 'left', field:(v)=> v.item.part_name},
-            { name: 'quantity', label: 'Quantity', align: 'center', field: 'quantity'},
-            { name: 'unit_id', label: 'unit', align: 'center', field:(v)=> v.unit.name},
+            { name: 'item_id', label: $tc('label.part'), align: 'left', field:(v)=> v.item.part_name},
+            { name: 'quantity', label: $tc('label.quantity'), align: 'center', field: 'quantity'},
+            { name: 'unit_id', label: $tc('label.unit'), align: 'center', field:(v)=> v.unit.name},
           ]"
           :pagination="{ rowsPerPage: 0}"
           >
-          
+
         </q-table>
+         <q-banner v-else class="bg-grey-2 text-faded" inline-actions>
+            <template v-slot:avatar>
+              <q-icon v-if="rsForm.customer_id" name="warning" color="warning" />
+            </template>
+            <span class="text-caption">
+              {{ rsForm.customer_id ? 'No Part Available!' : 'Please Pick a Customer!' }}
+            </span>
+            <template v-slot:action>
+              <q-btn v-if="rsForm.customer_id" flat color="primary" label="Cancel" dark-percentage  @click="FORM.toBack()" />
+            </template>
+         </q-banner>
       </div>
       <!-- COLUMN::4th Description -->
       <div class="col-12">
         <div class="row q-col-gutter-x-sm q-mb-md">
-          
-          <select-filter name="operator_id" class="col-12"
-            stack-label label="Operator" 
-            v-model="rsForm.operator_id" 
-            :options="OperatorOptions" 
+
+          <ux-select-filter name="operator_id" class="col-12"
+            stack-label label="Operator"
+            v-model="rsForm.operator_id"
+            :options="OperatorOptions"
             v-validate="'required'"
-            :error="errors.has(`operator_id`)" 
+            :error="errors.has(`operator_id`)"
             :error-message="errors.first(`operator_id`)"/>
-            
+
           <q-input name="date" type="date" class="col-12 col-sm-8 col-md-4"
-            stack-label label="Date" 
-            v-model="rsForm.date" 
+            stack-label label="Date"
+            v-model="rsForm.date"
             v-validate="'required'"
-            :error="errors.has('date')" 
+            :error="errors.has('date')"
             :error-message="errors.first('date')"/>
-            
+
           <q-input name="time" type="time" class="col-12 col-sm-4 col-md-2"
-            stack-label label="Time" 
-            v-model="rsForm.time" 
+            stack-label label="Time"
+            v-model="rsForm.time"
             v-validate="'required'"
-            :error="errors.has(`time`)" 
+            :error="errors.has(`time`)"
             :error-message="errors.first(`time`)"/>
-            
+
           <q-input name="due_date" type="date" class="col-12 col-sm-8 col-md-4"
-            stack-label label="Due Date" 
-            v-model="rsForm.due_date" 
-            v-validate="'required'" 
-            :error="errors.has('due_date')" 
-            :error-message="errors.first('due_date')"/>
-            
-          <q-input name="due_time" type="time" class="col-12 col-sm-4 col-md-2"
-            stack-label label="Due Time" 
-            v-model="rsForm.due_time"  
+            stack-label label="Due Date"
+            v-model="rsForm.due_date"
             v-validate="'required'"
-            :error="errors.has('due_time')" 
+            :error="errors.has('due_date')"
+            :error-message="errors.first('due_date')"/>
+
+          <q-input name="due_time" type="time" class="col-12 col-sm-4 col-md-2"
+            stack-label label="Due Time"
+            v-model="rsForm.due_time"
+            v-validate="'required'"
+            :error="errors.has('due_time')"
             :error-message="errors.first('due_time')"/>
-            
-          <q-input name="description"  class="col-12" 
+
+          <q-input name="description"  class="col-12"
             filled type="textarea" rows="3"
-            stack-label label="Description" 
+            stack-label :label="$tc('label.description')"
             v-model="rsForm.description"/>
 
         </div>
       </div>
-    
+
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-actions class="group">
-      <q-btn :label="$tc('label.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
-      <q-btn :label="$tc('label.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
-      <q-btn :label="$tc('label.save')" icon="save" color="positive" @click="onSave()" v-if="IS_EDITABLE"></q-btn>     
+      <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
+      <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
+      <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()" v-if="IS_EDITABLE" :loading="FORM.loading"/>
     </q-card-actions>
   </q-card>
-  <q-inner-loading :visible="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
+  <q-inner-loading :showing="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
 </q-page>
 </template>
 
@@ -135,7 +149,7 @@ export default {
   data () {
     return {
       SHEET: {
-        ship_delivery_items: {autoload:false, api:'/api/v1/incomes/ship-delivery-items?mode=all&--scope=wait'},
+        outgoing_good_items: {autoload:false, api:'/api/v1/warehouses/outgoing-good-items?mode=all&isWait=true'},
         customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
         operators: {data:[], api:'/api/v1/references/operators?mode=all'},
         vehicles: {data:[], api:'/api/v1/references/vehicles?mode=all'},
@@ -145,8 +159,8 @@ export default {
       },
       FORM:{
         resource:{
-          api: '/api/v1/incomes/ship-deliveries',
-          uri: '/admin/incomes/delivery/ship-deliveries',
+          api: '/api/v1/warehouses/outgoing-goods',
+          uri: '/admin/warehouses/outgoing-goods',
         }
       },
       rsForm: {},
@@ -170,7 +184,7 @@ export default {
 
           description: null,
           revise_id: 0,
-          ship_delivery_items:[]
+          outgoing_good_items:[]
 
         }
       }
@@ -190,9 +204,9 @@ export default {
     },
     ShipDeliveryItemOptions() {
       if (!this.rsForm.customer_id) return []
-      
-      let data = this.SHEET['ship_delivery_items'].data.slice()
-      this.rsForm.ship_delivery_items = data
+
+      let data = this.SHEET['outgoing_good_items'].data.slice()
+      this.rsForm.outgoing_good_items = data
       return data
     },
     CustomerOptions() {
@@ -217,9 +231,9 @@ export default {
     },
     ItemUnitOptions() {
       let vars = []
-      for (const i in this.rsForm.ship_delivery_items) {
-        if (this.rsForm.ship_delivery_items.hasOwnProperty(i)) {
-          let rsItem = this.rsForm.ship_delivery_items[i]
+      for (const i in this.rsForm.outgoing_good_items) {
+        if (this.rsForm.outgoing_good_items.hasOwnProperty(i)) {
+          let rsItem = this.rsForm.outgoing_good_items[i]
           vars[i] = ( this.UnitOptions || [])
           vars[i] = vars[i].filter((unit)=> {
             if(!rsItem.item_id) return false
@@ -242,7 +256,7 @@ export default {
         'units': {},
         'items': {},
       }
-      
+
       this.SHEET['customers'].data.map(value => { variables['customers'][value.id] = value })
       this.SHEET['units'].data.map(value => { variables['units'][value.id] = value })
       this.SHEET['items'].data.map(value => { variables['items'][value.id] = value })
@@ -255,15 +269,9 @@ export default {
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.FORM.load(
-        (data) => {
-          this.setForm(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.FORM.load((data) => {
+        this.setForm(data || this.setDefault())
+      })
     },
     setCustomerReference(val) {
       if(this.rsForm.customer_id) {
@@ -271,7 +279,7 @@ export default {
         this.rsForm.customer_phone = this.MAPINGKEY['customers'][val].phone
         this.rsForm.customer_address = this.MAPINGKEY['customers'][val].address_raw
 
-        this.SHEET.load('ship_delivery_items', 'customer_id='+val)
+        this.SHEET.load('outgoing_good_items', 'customer_id='+val)
       }
       else {
         this.rsForm.customer_name = null
@@ -282,55 +290,56 @@ export default {
     setForm(data) {
       this.rsData =  JSON.parse(JSON.stringify(data))
       this.rsForm =  JSON.parse(JSON.stringify(data))
-      if(data.hasOwnProperty('has_relationship') && Object.keys(data['has_relationship']).length > 0) {  
+      if(data.hasOwnProperty('has_relationship') && Object.keys(data['has_relationship']).length > 0) {
         this.FORM.response.relationship({
           title: 'Ship-Delivery has relations!',
           messages: data['has_relationship'],
           then: () => this.$router.push(`${this.FORM.resource.uri}/${data.id}`)
         })
       }
-      
+
     },
 
     addNewItem(autofocus = true){
-      let newEntri = this.setDefault().ship_delivery_items[0] // {id:null, item_id: null, quantity: null};
-      
-      this.rsForm.ship_delivery_items.push(newEntri)
+      let newEntri = this.setDefault().outgoing_good_items[0] // {id:null, item_id: null, quantity: null};
+
+      this.rsForm.outgoing_good_items.push(newEntri)
     },
     removeItem(index) {
-        this.rsForm.ship_delivery_items.splice(index, 1)
-        // if(this.rsForm.ship_delivery_items.length < 1) this.addNewItem()
+        this.rsForm.outgoing_good_items.splice(index, 1)
+        // if(this.rsForm.outgoing_good_items.length < 1) this.addNewItem()
     },
-    
+
     onSave() {
       this.$validator.validate().then(result => {
-        
+
         if (!result) {
           this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:'Please complete the form fields'
-          }); 
-          
+            message:this.$tc('messages.to_complete_form')
+          });
+
           return;
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();
 
         this.$axios.set(method, apiUrl, this.rsForm)
-        .then((response) => { 
+        .then((response) => {
           let message = response.data.number + ' - #' + response.data.id
           this.FORM.response.success({message:message})
           this.FORM.toView(response.data.id)
         })
-        .catch((error) => { 
-          console.warn('SAVE-ERROR', error.response)
+        .catch((error) => {
           this.FORM.response.fields(error.response)
           this.FORM.response.error(error.response, 'Submit')
         })
         .finally(()=>{
-          this.FORM.loading = false
+          setTimeout(() => {
+            this.FORM.loading = false
+          }, 2000)
         });
-        
+
       });
     },
   },

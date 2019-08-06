@@ -1,64 +1,95 @@
 <template>
-  <q-scroll-area horizontal style="height:110vh;max-width:100vw">
-    <q-page padding class="row justify-center"  v-if="SHOW">
-      <page-print class="q-pa-md q-pr-lg shadow-2">
-        <div slot="header-tags">
-          <q-chip tag outline small color="negative" icon="assignment" label="Revised"
-            v-if="rsView.revise_id" />
-          <q-chip tag outline small color="negative" icon="bookmark" label="void" 
-            v-if="rsView.status == 'VOID'" />
-        </div>
-        <div class="row justify-around q-gutter-y-sm" >
-          <div class="text-center">
-            <div class="q-headline">REQUEST ORDER</div>
-          </div>
-          <div class="text-center">
-            <table class="q-table table table-bordered" style="width:300px">
-              <tr class="bg-grey-3"><th> Number </th><th> Date</th></tr>
-              <tr><td> {{ rsView.number }} </td><td> {{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }} </td></tr>
-            </table>
-          </div>
-          <div class="col-12">
-              <table class="q-table table table-vertical table-dense ">
-                <tr><td class="text-right text-weight-light"> Customer </td><td class="">{{ rsView.customer.name }} ({{ rsView.customer.code }})</td></tr>
-                <tr><td class="text-right text-weight-light"> PO / MoU </td><td class="">{{ rsView.reference_number || 'N/A' }}</td></tr>
-                <tr><td class="text-right text-weight-light"> Date </td><td class=""> {{ rsView.date ? $app.moment(rsView.date).format('DD/MM/YYYY') : '' }}</td></tr>
-              </table>
-          </div>
-          <div class="col-12">
-            <q-table ref="table" class="d-grid bordered no-shadow" color="secondary" separator="vertical" dense hide-bottom
-              :data="rsView.request_order_items" 
-              no-data-label = "No Production"
-              :columns="[
-                { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code},
-                { name: 'part_name', label: 'Part name', align: 'left', field: (v)=> v.item.part_name},
-                { name: 'part_number', label: 'Part number', align: 'left', field: (v)=> v.item.part_number},
-                { name: 'quantity', label: 'Quantity', align: 'right', field: (v)=> v.quantity},
-                { name: 'unit_id', label: 'Unit', align: 'center', field: (v)=> v.unit.code},
-              ]"
-            >
-            
-            </q-table>
-          </div>
-          <div class="col-12 text-weight-light text-italic" v-if="rsView.begin_date || rsView.until_date">
-              From date {{ rsView.begin_date ? $app.moment(rsView.begin_date).format('DD/MM/YYYY') : '' }}
-              until then {{ rsView.until_date ? $app.moment(rsView.until_date).format('DD/MM/YYYY') : '' }}
-          </div>
-          <div class="col-12">
-              <div class="q-my-xs text-italic">Description:</div>
-              <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
-          </div>
-          <div class="col-12 q-gutter-sm print-hide " style="padding-top:50px">
-            <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
-            <q-btn label="Edit" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`"  />
-            <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
-            <q-btn label="Delete" :icon-right="btnIcon('delete')" color="negative" v-if="IS_EDITABLE" @click="VIEW.delete" outline 
-              :class="{'float-right':$q.screen.gt.md}" />
+  <q-page padding class="row justify-center"  v-if="VIEW.show">
+    <page-print class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
+      <div slot="header-tags">
+        <q-chip tag outline small color="negative" icon="assignment" label="Revised"
+          v-if="rsView.revise_id" />
+        <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
+      </div>
+      <div class="row justify-around q-col-gutter-y-sm" >
+
+        <div class="col-12">
+          <div class="row justify-between q-gutter-sm" >
+            <div class="items-end q-pt-lg">
+              <div class="text-h6">REQUEST ORDER</div>
+              <q-markup-table class="super-dense no-shadow" :dark="LAYOUT.isDark">
+                <tr>
+                  <th class="text-left">{{$tc('general.customer')}}</th>
+                  <td>{{ rsView.customer.name }}</td>
+                </tr>
+                <tr>
+                  <th class="text-left">{{$tc('label.reference')}} PO/SJ</th>
+                  <td>{{ rsView.reference_number || '-'}}</td>
+                </tr>
+              </q-markup-table>
+            </div>
+            <div>
+              <q-markup-table class="super-dense bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
+                <tr>
+                  <th>{{$tc('label.number')}}</th>
+                  <td>{{rsView.number}}</td>
+                </tr>
+                <tr>
+                  <th>{{$tc('label.date')}}</th>
+                  <td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td>
+                </tr>
+              </q-markup-table>
+            </div>
           </div>
         </div>
-      </page-print>
-    </q-page>
-  </q-scroll-area>
+        <div class="col-12">
+          <q-table ref="table" class="d-grid bordered no-shadow" color="secondary" separator="vertical" dense hide-bottom
+            :data="rsView.request_order_items"
+            no-data-label = "No Production"
+            :columns="[
+              { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code},
+              { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
+              { name: 'part_number', label: this.$tc('label.number', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_number},
+              { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
+              { name: 'quantity', label: $tc('label.quantity'), align: 'right', field: (v)=> v.quantity},
+              { name: 'delivery', label: $tc('general.delivery'), align: 'right', field: (v)=> v.total_delivery_order_item},
+            ]"
+          >
+          <q-td slot="body-cell-delivery" slot-scope="rs" :props="rs">
+            {{rs.row.total_delivery_order_item}}
+          </q-td>
+
+          </q-table>
+        </div>
+        <div class="col-12 text-weight-light text-italic" v-if="rsView.begin_date || rsView.until_date">
+            From date {{ rsView.begin_date ? $app.moment(rsView.begin_date).format('DD/MM/YYYY') : '' }}
+            until then {{ rsView.until_date ? $app.moment(rsView.until_date).format('DD/MM/YYYY') : '' }}
+        </div>
+        <div class="col-12">
+            <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
+            <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
+        </div>
+        <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
+          <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
+          <q-btn :label="$tc('form.edit')" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`"  />
+          <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
+          <!-- <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" v-if="IS_EDITABLE" @click="VIEW.delete" outline
+            :class="{'float-right':$q.screen.gt.md}" /> -->
+          <ux-btn-dropdown :label="$tc('label.others')" :split="false" color="blue-grey" class="float-right"
+            :options="[
+              { label: 'DELETE', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
+                detail: $tc('messages.process_delete'),
+                actions: () => {
+                  VIEW.delete()
+                }
+              },
+              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+                detail: $tc('messages.process_void'),
+                actions: () => {
+                  VIEW.void(()=> init() )
+                }
+              }
+            ]">
+          </ux-btn-dropdown>
+        </div>
+      </div>
+    </page-print>
+  </q-page>
 </template>
 
 <script>
@@ -90,24 +121,26 @@ export default {
       '$route' : 'init',
   },
   computed: {
+    IS_VOID() {
+      if (this.IS_EDITABLE) return false
+      if (['VOID'].find(x => x === this.rsView.status)) return false
+      return true
+    },
     IS_EDITABLE() {
       if (this.rsView.revise_id) return false
+      if (this.rsView.order_mode === 'NONE') return false
+      if (this.rsView.status !== 'OPEN') return false
+      if (this.rsView.deleted_at) return false
       if (this.rsView.hasOwnProperty('has_relationship') && Object.keys(this.rsView.has_relationship).length > 0) return false
-      
+
       return true
     },
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.VIEW.onLoad(
-        (data) => {
-          this.setView(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.VIEW.load((data) => {
+        this.setView(data || {})
+      })
     },
     btnIcon (str) {
       return !this.$q.screen.lt.sm ? str : ''

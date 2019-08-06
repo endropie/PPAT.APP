@@ -5,15 +5,13 @@ import MixPage from '@/mixins/mix-page.vue'
 
 import TableHeader from '@/components/TableHeader'
 import TablePreferences from '@/components/TablePreferences'
-import SelectFilter from '@/components/SelectFilter'
 import '@/css/index-page.styl'
 
 export default {
-  mixins: [GlobalMix, MixPage, MixSheet],
+  mixins: [MixPage, MixSheet],
   components: {
     TableHeader,
     TablePreferences,
-    SelectFilter
   },
   data () {
     return {
@@ -25,6 +23,7 @@ export default {
         show: false,
         loading: false,
         resource: {},
+        hideColumns: [],
         columns: [],
         rowData: [],
         resData: [],
@@ -58,12 +57,21 @@ export default {
         value: null,
         model: [],
         search: [],
-        fill: {},
+        fill: {
+
+          withTrashed: {
+            value: null,
+            type: 'integer',
+            transform: (value) => { return null }
+          }
+        },
         transform: {},
         params: '',
         // init: () => this.__onFilterable(),
+
         setCreate: ({val}) => this.FILLABEL__setCreate({val}),
         setRemove: ({index, value}) => this.FILLABEL__setRemove({index, value}),
+        toggleTrash: () => this.FILLABEL__toggleTrash(),
         submit: () => {
           let apiParamlink = this.TABLE__getParams().join('&')
           this.TABLE.pagination.page = 1
@@ -73,7 +81,6 @@ export default {
     }
   },
   beforeRouteEnter (to, from, next) {
-    // console.error('beforeRouteEnter', to.fullPath)
     if (!to.query.hasOwnProperty('return')) {
       to.meta.lastest = {
         query: to.query,
@@ -81,26 +88,40 @@ export default {
       }
     }
     next(vm => {
-      if (to.query.hasOwnProperty('return') && to.meta.hasOwnProperty('lastest')) {
-        vm.$router.replace(to.meta.lastest.fullPath)
+      if (to.query.hasOwnProperty('return')) {
+        const link = to.meta.hasOwnProperty('lastest')
+          ? to.meta.lastest.fullPath
+          : vm.$route.path
+
+        vm.$router.replace(link)
         return false
       }
     })
   },
   beforeRouteUpdate (to, from, next) {
-    // console.error('beforeRouteUpdate', to.fullPath)
     to.meta.lastest = {
       query: to.query,
       fullPath: to.fullPath
     }
-    if (this.TABLE.mode === 'datagrid') {
-      next()
-    }
-    else {
+    if (this.TABLE.mode !== 'datagrid' && to.fullPath !== from.fullPath) {
       this.DATAINDEX__getData(next)
     }
+
+    next()
   },
   computed: {
+    COLUMNS () {
+      let columns = this.TABLE.columns.filter(col => {
+        if (col.hidden) return false
+        if (this.TABLE.hideColumns.length) {
+          if(this.TABLE.hideColumns.find(x =>  x === col.name)) return false
+        }
+        return true
+      })
+      columns = columns.map(col => col.name)
+
+      return columns
+    },
     FILLABEL () {
       let value = [], indexes = []
 
@@ -135,7 +156,6 @@ export default {
   methods: {
     INDEX__load (callbacks = null) {
       const callBase = () => {
-        
         if (this.TABLE.mode === 'datagrid') {
           this.TABLE__init()
           this.DATAGRID__getData(null, callbacks)
@@ -145,10 +165,10 @@ export default {
           this.DATAINDEX__getData(callbacks)
         }
       }
-      
+
       this.SHEET.assign()
       this.SHEET.request(callBase)
-      
+
     },
     DATAINDEX__compute (props) {
       setTimeout(() => {
@@ -162,11 +182,18 @@ export default {
       this.$router.push(paramUrl)
     },
     DATAINDEX__getData (callback = null) {
+
+      if(this.$route.query.hasOwnProperty('return')) {
+
+        if (callback !== null) callback()
+        return
+      }
+
       let pagination = this.TABLE.pagination
       this.TABLE.loading = true
       let apiParamlink = this.TABLE__getParams().join('&')
-      
-      console.log('[PLAY] $get = "'+ (this.TABLE.resource.api + `?` + apiParamlink) +'"')
+
+      if (process.env.DEV) console.info('[PLAY] $get = "'+ (this.TABLE.resource.api + `?` + apiParamlink) +'"')
       this.$axios
         .get(this.TABLE.resource.api + `?` + apiParamlink)
         .then(response => {
@@ -178,14 +205,15 @@ export default {
           this.TABLE.pagination.rowsPerPage = Number(response.data.per_page)
 
           setTimeout(() => {
-            if (callback !== null) setTimeout(() => { callback() }, 800)
+            // if (callback !== null) setTimeout(() => { callback() }, 800)
           }, 500)
         })
         .catch(error => {
-          this.$app.response.error(error.response, 'Load Items')
+          this.$app.response.error(error.response)
         })
         .finally(() => {
           setTimeout(() => {
+            if (callback !== null) callback()
             this.TABLE.loading = false
             this.TABLE.show = true
           }, 500)
@@ -211,7 +239,6 @@ export default {
           rows = table.filterMethod(rows, props.filter)
         }
 
-        // console.warn(table, page, rowsPerPage, sortBy, descending)
         if (table && sortBy) {
           rows = table.sortMethod(rows, sortBy, descending)
         }
@@ -240,6 +267,7 @@ export default {
       return JSON.parse(JSON.stringify(data))
     },
     DATAGRID__getData (refresh = null, callbacks) {
+
       this.$axios
         .get(this.TABLE.resource.api + '?mode=datagrid')
         .then(response => {
@@ -267,8 +295,8 @@ export default {
 
     // ************** TABLE ********************
     TABLE__init (to) {
+      // if(process.env.DEV) console.warn('TABLE__init')
       if (!to) to = this.$route
-      // console.error('TABLE__init', to.meta.lastest)
       const params = (to.query.hasOwnProperty('return') && to.meta.hasOwnProperty('lastest'))
         ? to.meta.lastest.query
         : to.query
@@ -302,6 +330,7 @@ export default {
       }
     },
     TABLE__refresh (done = null) {
+      // if(process.env.DEV) console.warn('TABLE__refresh')
       if (this.TABLE.mode === 'datagrid') {
         this.DATAGRID__getData(done)
       }
@@ -310,6 +339,7 @@ export default {
       }
     },
     TABLE__compute (prop) {
+      // if(process.env.DEV) console.warn('TABLE__compute')
       if (this.TABLE.mode === 'datagrid') {
         this.DATAGRID__compute(prop)
       }
@@ -319,19 +349,20 @@ export default {
     },
     TABLE__delete (row) {
       this.$q.dialog({
-        title: 'Delete Confirm',
-        message: 'Are you sure to delete the record ?',
+       title: 'DELETE',
+        message: this.$tc('messages.to_sure', 1,{v:this.$tc('form.delete',2)}),
         preventClose: true,
-        ok: 'Yes, please!',
-        cancel: 'Cancel'
+        ok: this.$tc('messages.yes_to', 1,{v:this.$tc('form.delete')}),
+        cancel: this.$tc('form.cancel')
       }).onOk(() => {
         this.$axios.delete(`${this.TABLE.resource.api}/${row.id}`)
           .then((response) => {
-          // console.warn(response)
             if (response.data.success) {
-              this.TABLE__rowDelete(row.id)
-              let txtMessage = 'The record has been deleted!'
-              this.$q.notify({message: txtMessage, color: 'positive', icon: 'check', position: 'top-right', timeout: 3000})
+              this.$app.notify.success({
+                message: this.$tc('messages.success_deleted'),
+                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${this.$route.params.id}`}),
+              })
+              this.TABLE__refresh()
             }
           })
           .catch(error => {
@@ -389,8 +420,12 @@ export default {
       if (search) params.push('search=' + search)
       return params
     },
+    FILLABEL__toggleTrash (values) {
+      this.FILTERABLE.fill.withTrashed.value = this.FILTERABLE.fill.withTrashed.value === 1 ? null : 1
+
+    },
     FILLABEL__setChange (values) {
-      // console.log(values)
+      // code..
     },
     FILLABEL__setCreate ({val}) {
       this.FILTERABLE.search.push(val)

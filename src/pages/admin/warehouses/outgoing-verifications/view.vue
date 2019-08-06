@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="row justify-center"  v-if="SHOW">
+  <q-page padding class="row justify-center"  v-if="VIEW.show">
     <page-print class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
       <div slot="header" class="row no-wrap" style="margin-bottom:30px">
         <div class="icon">
@@ -7,7 +7,7 @@
         </div>
         <div class="title" style="max-width: calc(100vw - 100px);">
           <div class="q-title ">Priuk Perkasa Abadi, PT</div>
-          <div class="q-caption small">Jalan Jati Raya Blok J3 No.7, Cikarang Selatan, Bekasi, Jawa Barat 17530</div>  
+          <div class="q-caption small">Jalan Jati Raya Blok J3 No.7, Cikarang Selatan, Bekasi, Jawa Barat 17530</div>
         </div>
         <div class="no-print float-right">
           <q-chip tag outline small color="negative" v-if="rsView.revise_id">
@@ -31,14 +31,14 @@
         </div>
         <div class="col-12">
           <q-table ref="table" class="table-border d-grid no-shadow no-radius" color="secondary" separator="vertical" dense hide-bottom
-            :data="rsView.ship_delivery_items" 
+            :data="rsView.outgoing_items"
             no-data-label = "No Production"
             :columns="[
               { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code},
-              { name: 'part_name', label: 'Part name', align: 'left', field: (v)=> v.item.part_name},
-              { name: 'part_number', label: 'Part number', align: 'left', field: (v)=> v.item.part_number},
-              { name: 'quantity', label: 'Quantity', align: 'right', field: (v)=> v.quantity},
-              { name: 'unit_id', label: 'Unit', align: 'center', field: (v)=> v.unit.code},
+              { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
+              { name: 'part_number', label: this.$tc('label.number', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_number},
+              { name: 'quantity', label: $tc('label.quantity'), align: 'right', field: (v)=> v.quantity},
+              { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
             ]">
           </q-table>
         </div>
@@ -47,14 +47,14 @@
             until then {{ rsView.plan_until_date ? $app.moment(rsView.plan_until_date).format('DD/MM/YYYY') : '' }}
         </div>
         <div class="col-12">
-            <div class="q-my-xs text-italic">Description:</div>
+            <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
         <div class="col-12 group print-hide " style="padding-top:50px">
-          <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
-          <q-btn label="Edit" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`"  />
-          <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
-          <q-btn label="Delete" :icon-right="btnIcon('delete')" color="negative" v-if="IS_EDITABLE" @click="VIEW.delete" outline 
+          <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
+          <q-btn :label="$tc('form.edit')" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`"  />
+          <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
+          <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" v-if="IS_EDITABLE" @click="VIEW.delete" outline
             :class="{'float-right':$q.screen.gt.md}" />
         </div>
       </div>
@@ -98,15 +98,9 @@ export default {
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.VIEW.onLoad(
-        (data) => {
-          this.setView(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.VIEW.load((data) => {
+        this.setView(data || {})
+      })
     },
     btnIcon (str) {
       return !this.$q.screen.lt.sm ? str : ''

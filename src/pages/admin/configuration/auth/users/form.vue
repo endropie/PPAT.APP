@@ -1,78 +1,78 @@
 <template>
-<q-page padding class="form-page row justify-center" v-if="SHOW">
-  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark">
+<q-page padding class="form-page row justify-center" >
+  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark" v-if="FORM.show">
     <q-card-section>
      <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
     <q-card-section>
       <div class="row q-col-gutter-sm " >
         <q-input class="col-sm-6"
-          name="name" 
-          label="Name" 
+          name="name"
+          label="Name"
           :readonly="IS_ADMIN"
-          v-model="rsForm.name" 
-          v-validate="'required|min:5'" 
-          :dark="LAYOUT.isDark" 
-          :error="errors.has('name')" 
-          :error-message="errors.first('name')" 
+          v-model="rsForm.name"
+          v-validate="'required|min:5'"
+          :dark="LAYOUT.isDark"
+          :error="errors.has('name')"
+          :error-message="errors.first('name')"
         />
-        <q-input class="col-sm-6" 
-          name="email" 
-          label="Email" 
-          type="email" 
-          v-model="rsForm.email" 
-          v-validate="'required|email'" 
-          :dark="LAYOUT.isDark" 
-          :error="errors.has('email')" 
+        <q-input class="col-sm-6"
+          name="email"
+          label="Email"
+          type="email"
+          v-model="rsForm.email"
+          v-validate="'required|email'"
+          :dark="LAYOUT.isDark"
+          :error="errors.has('email')"
           :error-message="errors.first('email')"
         />
         <q-input class="col-sm-6"
-          name="password" 
-          label="Password" 
-          type="password" 
-          v-model="rsForm.password" 
-          v-validate="'required|min:8'" 
+          name="password"
+          label="Password"
+          type="password"
+          v-model="rsForm.password"
+          v-validate="'required|min:8'"
           v-if="$route.meta.mode !== 'edit'"
-          :dark="LAYOUT.isDark" 
-          :error="errors.has('password')" 
+          :dark="LAYOUT.isDark"
+          :error="errors.has('password')"
           :error-message="errors.first('password')"
         />
-        <q-input class="col-sm-6" 
-          name="password_confirmation" 
-          label="Confirm Password" 
-          type="password" 
-          v-model="rsForm.password_confirmation" 
-          v-validate="'required'" 
+        <q-input class="col-sm-6"
+          name="password_confirmation"
+          label="Confirm Password"
+          type="password"
+          v-model="rsForm.password_confirmation"
+          v-validate="'required'"
           v-if="$route.meta.mode !== 'edit'"
-          :dark="LAYOUT.isDark" 
-          :error="errors.has('password_confirmation')" 
+          :dark="LAYOUT.isDark"
+          :error="errors.has('password_confirmation')"
           :error-message="errors.first('password_confirmation')"
         />
         <div  class="col-12">
           <q-list>
             <q-expansion-item label="RULES" expand-separator >
               <div class="row q-gutter-sm ">
-                <q-checkbox v-for="(role, index) in RoleOptions" :key="index" 
+                <q-checkbox v-for="(role, index) in RoleOptions" :key="index"
                   class="col-12 col-sm-6 col-md-3" :dark="LAYOUT.isDark"
                   v-model="rsForm.has_role" :val="role.value" :label="role.value"
                   :readonly="IS_ADMIN"
                 />
               </div>
             </q-expansion-item>
-            
+
             <q-expansion-item label="PERMISSION" expand-separator>
               <div class="row q-gutter-sm ">
-                <q-checkbox v-for="(permission, index) in PermissionOptions" 
+                <q-checkbox v-for="(permission, index) in PermissionOptions"
                   class="col-12 col-sm-6 col-md-3" :dark="LAYOUT.isDark"
-                  v-model="rsForm.has_permission" 
-                  :val="permission.value" 
+                  v-model="rsForm.has_permission"
+                  :val="permission.value"
                   :label="permission.value"
                   :readonly="IS_ADMIN"
-                  :key="index" 
+                  :key="index"
                 />
               </div>
             </q-expansion-item>
@@ -102,7 +102,7 @@ export default {
         roles: {data:[], api:'/api/v1/auth/roles?mode=all'},
         permissions: {data:[], api:'/api/v1/auth/permissions?mode=all'},
       },
-      FORM: {    
+      FORM: {
         resource:{
           api: '/api/v1/auth/users',
           uri: '/admin/configuration/auth/users',
@@ -141,40 +141,35 @@ export default {
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.FORM.load(
-        (data) => {
-          this.setForm(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.FORM.load((data) => {
+        console.warn('DATA', data, this)
+        this.setForm(data || this.setDefault())
+      })
     },
     setForm(data) {
       this.rsForm = JSON.parse(JSON.stringify(data))
     },
-    
+
     onSave() {
 
       this.$validator.validate().then(result => {
         if (!result) {
           this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:'Please complete the form fields'
-          }); 
-          
+            message:this.$tc('messages.to_complete_form')
+          });
+
           return;
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();
         this.$axios.set(method, apiUrl, this.rsForm)
-        .then((response) => { 
+        .then((response) => {
           let message = response.data.name + ' - #' + response.data.id
           this.FORM.response.success({message:message})
           this.FORM.toIndex()
         })
-        .catch((error) => { 
+        .catch((error) => {
 
           this.FORM.response.fields(error.response)
           this.FORM.response.error(error.response, 'Submit')
@@ -182,7 +177,7 @@ export default {
         .finally(()=>{
           this.FORM.loading = false
         });
-        
+
       });
     },
   },

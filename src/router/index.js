@@ -39,8 +39,8 @@ export default function ({ store, ssrContext }) {
 
       if (Route.meta.permission && Route.meta.permission.length > 0) {
         const
-          userPermiss = store.state.admin.USER.permiss,
-          permiss = Route.meta.permission.split('|')
+          userPermiss = store.state.admin.USER.permiss || [],
+          permiss = Route.meta.permission.split(';')
         let forbiden = true
 
         permiss.forEach(name => {

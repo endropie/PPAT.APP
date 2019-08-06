@@ -1,13 +1,13 @@
 <template>
-  <q-page padding class="page-index" v-if="SHOW">
+  <q-page padding class="page-index">
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table ref="table" class="table-index" :dark="LAYOUT.isDark"
+      <q-table ref="table" class="table-index th-uppercase" :dark="LAYOUT.isDark"
         color="primary"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
         :filter="TABLE.filter"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
@@ -32,62 +32,24 @@
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn v-if="isCanUpdate"
-            dense flat color="light" icon="edit" 
+            dense flat color="light" icon="edit"
             :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
-          <q-btn v-if="isCanDelete" 
+          <q-btn v-if="isCanDelete"
             dense flat color="light" icon="delete"
             @click.native="TABLE.delete(rs.row)" />
         </q-td>
       </q-table>
     </q-pull-to-refresh>
-    <q-input v-model="partnerID" label="partner" />
-    <q-input v-model="userID" label="partner" />
-    <apollo-query
-      :query="QUE" 
-      :variables="{
-        user: userID,
-        partner: partnerID
-      }"
-    >
-      <template v-slot="{ result: { error, data }, isLoading }">
-        <!-- Loading -->
-        <div v-if="isLoading" class="loading apollo">Loading...</div>
-
-        <!-- Error -->
-        <div v-else-if="error" class="error apollo">An error occurred</div>
-
-        <!-- Result -->
-        <div v-else-if="data" class="result apollo">{{ data }}</div>
-
-        <!-- No result -->
-        <div v-else class="no-result apollo">No result :(</div>
-      </template>
-    </apollo-query>
   </q-page>
 </template>
 
 <script>
 import MixIndex from '@/mixins/mix-index.vue'
-import gql from 'graphql-tag'
 
-const QUE = gql`
-        query nodeMessages($user: ID, $partner:ID){
-          messages
-          (
-            user: $user
-            partner: $partner
-          )
-          {
-            id to from
-            text
-          }
-        }
-      `
 export default {
   mixins: [MixIndex],
   data () {
     return {
-      QUE: QUE,
       userID: 1,
       partnerID: 2,
       name: '',
@@ -98,10 +60,10 @@ export default {
           uri: '/admin/references/brands',
         },
         columns: [
-          { name: 'prefix', label: ''},
+          { name: 'prefix', label: '', align: 'left'},
           { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true},
           { name: 'name', field: 'name', label: 'Brand', align: 'left', sortable: true},
-          { name: 'description', field: 'description', label: 'Description', align: 'left'},
+          { name: 'description', field: 'description', label: this.$tc('label.description'), align: 'left'},
         ],
         rowData:[],
         resData:[],
@@ -119,13 +81,6 @@ export default {
     }
   },
   computed:{
-    
-    comBetween(){
-      return {
-        sender: this.UserID, 
-        receiver: this.partnerID
-      }
-    },
     isCanUpdate(){
       return this.$app.can('brands-update')
     },
@@ -134,11 +89,8 @@ export default {
     },
   },
   mounted () {
-    // Page Component mounted!  
+    // Page Component mounted!
     this.INDEX.load()
-    console.info(this)
-  },
-  methods:{
   }
 }
 </script>

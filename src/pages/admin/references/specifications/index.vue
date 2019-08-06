@@ -1,12 +1,12 @@
 <template>
-  <q-page padding class="page-index"  v-if="SHOW">
+  <q-page padding class="page-index" >
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table  ref="table" class="table-index" :dark="LAYOUT.isDark"
+      <q-table  ref="table" class="table-index th-uppercase" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
         :filter="TABLE.filter"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
@@ -40,12 +40,12 @@
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn v-if="isCanUpdate"
-            dense flat color="light" icon="edit" 
+            dense flat color="light" icon="edit"
             :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
-          <q-btn v-if="isCanDelete" 
+          <q-btn v-if="isCanDelete"
             dense flat color="light" icon="delete"
             @click.native="TABLE.delete(rs.row)" />
-        
+
         </q-td>
         <q-td slot="body-cell-description" slot-scope="rs" :props="rs" class="ellipsis" style="max-width:200px">
           {{ rs.row.description }}
@@ -74,8 +74,8 @@ export default {
           uri: '/admin/references/specifications',
         },
         columns: [
-          { name: 'prefix', label: ''},
-          
+          { name: 'prefix', label: '', align: 'left'},
+
           { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true },
           {
             name: 'name', width: '200px',
@@ -88,15 +88,15 @@ export default {
           // { name: 'thick', label: 'Thickness (mm)', field: 'thick', sortable: true },
           { name: 'times_spray_white', label: 'White spray (h)', field: 'times_spray_white', sortable: true },
           { name: 'times_spray_red', label: 'Red spray (h)', field: 'times_spray_red', sortable: true },
-          { name: 'description', label: 'Description', field: 'description', align: 'left'},
+          { name: 'description', label: this.$tc('label.description'), field: 'description', align: 'left'},
         ]
       }
     }
   },
   created () {
-    // Page Component mounted! 
+    // Page Component mounted!
     this.INDEX.load()
-  },  
+  },
   computed:{
     isCanUpdate(){
       return this.$app.can('specifications-update')

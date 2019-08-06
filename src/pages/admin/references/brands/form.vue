@@ -1,42 +1,42 @@
 <template>
-<q-page padding class="form-page row justify-center" v-if="SHOW">
+<q-page padding class="form-page row justify-center" v-if="FORM.show">
   <q-card inline class="main-box self-start" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
     <q-card-section>
       <div class="row q-col-gutter-md">
         <q-input class="col-12 col-sm-6"
-          name="code" 
-          :label="$tc('label.intern_code')" 
+          name="code"
+          :label="$tc('label.intern_code')"
           icon="code"
           autocomplete="off"
-          v-model="rsForm.code" 
-          v-validate="'required'" 
-          :dark="LAYOUT.isDark" 
-          :error="errors.has('code')" 
+          v-model="rsForm.code"
+          v-validate="'required'"
+          :dark="LAYOUT.isDark"
+          :error="errors.has('code')"
           :error-message="errors.first('code')"
         />
-        <q-input class="col-12 col-sm-6" 
+        <q-input class="col-12 col-sm-6"
           ref="name"
-          name="name" 
-          :label="$tc('label.name')" 
-          v-model="rsForm.name" 
-          v-validate="'required'" 
+          name="name"
+          :label="$tc('label.name')"
+          v-model="rsForm.name"
+          v-validate="'required'"
           v-validate-name:my-name
-          :dark="LAYOUT.isDark" 
-         
-         
+          :dark="LAYOUT.isDark"
+
+
 
         />
-        <q-input class="col-12" 
-          v-model="rsForm.description" 
-          type="textarea" 
-          rows="3"  
+        <q-input class="col-12"
+          v-model="rsForm.description"
+          type="textarea"
+          rows="3"
           :label="$tc('label.description')"  stack-label
           :dark="LAYOUT.isDark"
         />
@@ -44,9 +44,9 @@
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-actions class="group">
-      <q-btn :label="$tc('label.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
-      <q-btn :label="$tc('label.reset')" icon="refresh" color="light" @click="FORM.reset()"></q-btn>
-      <q-btn :label="$tc('label.save')" icon="save" color="positive" @click="onSave()"></q-btn>
+      <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
+      <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="FORM.reset()"></q-btn>
+      <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()"></q-btn>
     </q-card-actions>
   </q-card>
   <q-inner-loading :showing="FORM.loading" :dark="LAYOUT.isDark">
@@ -62,7 +62,7 @@ export default {
   mixins: [MixForm],
   data () {
     return {
-      FORM: {    
+      FORM: {
         resource: {
           uri: '/admin/references/brands',
           api: '/api/v1/references/brands',
@@ -90,15 +90,9 @@ export default {
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.FORM.load(
-        (data) => {
-          this.setForm(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 1000) 
-        }
-      )
+      this.FORM.load((data) => {
+        this.setForm(data || this.setDefault())
+      })
     },
     setForm(data) {
       this.rsForm = JSON.parse(JSON.stringify(data))
@@ -115,27 +109,27 @@ export default {
         if (!result) {
           this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:'Please complete the form fields'
-          }); 
-          
+            message:this.$tc('messages.to_complete_form')
+          });
+
           return;
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();
         this.$axios.set(method, apiUrl, this.rsForm)
-        .then((response) => { 
+        .then((response) => {
           const label = response.data.name + ' - #' + response.data.id
           this.FORM.response.success({message:label})
           this.FORM.toIndex()
         })
-        .catch((error) => { 
+        .catch((error) => {
           this.FORM.response.fields(error.response)
           this.FORM.response.error(error.response, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false
         });
-        
+
       });
     },
   },

@@ -19,35 +19,35 @@
             <q-item-section>
               <form class="form" novalidate @submit.prevent="validateForm('form-pass')" data-vv-scope="form-pass">
                 <div class="row q-col-gutter-xs" >
-                  <q-input  class="col-12 col-sm-4" 
-                    name="newpassword" 
-                    label="New password" 
-                    type="password" 
-                    v-model="rsPass.newpassword" 
-                    v-validate="'required|min:8'" 
-                    :dark="LAYOUT.isDark" 
-                    :error="errors.has('form-pass.newpassword')" 
+                  <q-input  class="col-12 col-sm-4"
+                    name="newpassword"
+                    label="New password"
+                    type="password"
+                    v-model="rsPass.newpassword"
+                    v-validate="'required|min:8'"
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('form-pass.newpassword')"
                     :error-message="errors.first('form-pass.newpassword')"
                   />
-                  <q-input  class="col-12 col-sm-4" 
-                    name="c_newpassword" 
-                    label="Confirm New password" 
-                    type="password" 
-                    no-pass-toggle 
-                    v-model="rsPass.c_newpassword" 
+                  <q-input  class="col-12 col-sm-4"
+                    name="c_newpassword"
+                    label="Confirm New password"
+                    type="password"
+                    no-pass-toggle
+                    v-model="rsPass.c_newpassword"
                     v-validate="'required'"
-                    :dark="LAYOUT.isDark" 
-                    :error="errors.has('form-pass.c_newpassword')" 
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('form-pass.c_newpassword')"
                     :error-message="errors.first('form-pass.c_newpassword')"
                   />
-                  <q-input class="col-12 col-sm-4" 
-                    name="password" 
-                    label="Current password" 
-                    type="password" 
-                    v-model="rsPass.password" 
-                    v-validate="'required|min:8'" 
-                    :dark="LAYOUT.isDark" 
-                    :error="errors.has('form-pass.password')" 
+                  <q-input class="col-12 col-sm-4"
+                    name="password"
+                    label="Current password"
+                    type="password"
+                    v-model="rsPass.password"
+                    v-validate="'required|min:8'"
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('form-pass.password')"
                     :error-message="errors.first('form-pass.password')"
                   />
                   <div class="col-12" align="right">
@@ -78,7 +78,7 @@ export default {
   mixins: [MixForm],
   data () {
     return {
-      FORM:{    
+      FORM:{
         resource:{
           api: '/api/v1/auth',
           uri: '/admin/configuration/profile'
@@ -131,25 +131,25 @@ export default {
       })))
       console.log('user', this.rsUser)
       setTimeout(() => {
-        this.FORM.loading = true  
+        this.FORM.loading = true
       }, 800);
-      
+
     },
-    
+
     onChangePassword() {
 
       this.$validator.validateAll('form-pass').then(result => {
         if (!result) {
           this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:'Please complete the form fields'
-          }); 
-          
+            message:this.$tc('messages.to_complete_form')
+          });
+
           return;
         }
         this.FORM.loading = true
         this.$axios.set('POST', `${this.FORM.resource.api}/change-password`, this.rsPass)
-          .then((response) => { 
+          .then((response) => {
             this.FORM.response.success({ mode:'edit', label:'change password'})
             this.rsPass = {
               password:null,
@@ -158,8 +158,8 @@ export default {
             }
             this.$nextTick(() => this.$validator.reset())
           })
-          .catch((error) => { 
-            
+          .catch((error) => {
+
             this.FORM.response.fields(error.response)
           this.FORM.response.error(error.response, 'Submit')
             this.FORM.onError(error.response, 'form-pass')
@@ -168,7 +168,7 @@ export default {
           .finally(()=>{
             this.FORM.loading = false
           });
-        
+
           console.warn('$validator', this.$validator)
       });
     },

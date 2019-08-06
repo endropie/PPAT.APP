@@ -1,12 +1,12 @@
 <template>
   <q-page padding class="page-index">
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table ref="table" class="table-index" :dark="LAYOUT.isDark"
+      <q-table ref="table" class="table-index th-uppercase" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
         :filter="TABLE.filter"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
@@ -18,7 +18,7 @@
             :title="TABLE.getTitle()"
             :TABLE.sync="TABLE"
             :filter.sync="TABLE.filter">
-            
+
             <template v-slot:menu-item>
               <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
                 <q-item-section>Add new</q-item-section>
@@ -52,9 +52,9 @@ export default {
           uri: '/admin/references/category_items',
         },
         columns: [
-          { name: 'prefix', label: ''},
+          { name: 'prefix', label: '', align: 'left'},
           { name: 'name', field: 'name', label: 'Name', align: 'left', sortable: true},
-          { name: 'description', field: 'description', label: 'Description', align: 'left'},
+          { name: 'description', field: 'description', label: this.$tc('label.description'), align: 'left'},
         ],
         rowData:[],
         resData:[],

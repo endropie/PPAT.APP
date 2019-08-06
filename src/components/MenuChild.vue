@@ -2,9 +2,9 @@
 <template>
   <q-item v-if="show" :ref="node.name"
     :dark="dark"
-    :to="prefix" 
+    :to="getLink(prefix, node)"
     exact
-    :class="{ 'active': $route.fullPath.startsWith(prefix)}" 
+    :class="{ 'active': $route.fullPath.startsWith(prefix)}"
     :label="node.name || '- Undefine name -'">
 
     <q-item-section avatar v-if="!node.children">
@@ -13,7 +13,7 @@
     <q-item-section  v-if="!node.children">
       {{node.name || '- noname -'}}
     </q-item-section>
-  </q-item>  
+  </q-item>
 </template>
 
 
@@ -39,24 +39,27 @@ export default {
       if (this.node.children && this.node.children.length > 0) return false
 
       if (this.permission && this.permission.length > 0) {
-        let userPermiss = this.$store.state.admin.USER.permiss || []
-        let permissions = this.permission.split('|')
-        let valid = false
-
-        for (let i = 0; i < permissions.length; i++) {
-          if (userPermiss.some(x => x === permissions[i])) valid = true
-        }
-        return valid
+        return this.$app.can(this.permission)
       }
-      
+
       return true
     },
     permission() {
-        let menu = this.$router.resolve({ 
+        let menu = this.$router.resolve({
             path: this.prefix,
         });
         return menu.route.meta.permission
     },
+  },
+  methods: {
+    getLink(prefix, node) {
+      if(node.param) {
+        return `${prefix}${node.param}`
+      }
+
+      return prefix
+
+    }
   }
 }
 </script>

@@ -1,6 +1,5 @@
 import AdminMenus from 'assets/data-menu'
 import AdminLayout from 'layouts/AdminLayout'
-// import access from '@/router/middleware/access'
 
 let AdminPages = []
 
@@ -20,7 +19,6 @@ function parseMenuNode (node, __path) {
       if (tab.resources !== void 0) {
         tab.resources.forEach(tabres => {
           const hashres = setUrl(hash, tabres.path)
-          // console.warn('hash', hash, hashres, `@/pages/${hash.substring(1)}/${tabres.page}`)
           AdminPages.push({
             path: hashres,
             meta: {
@@ -70,11 +68,6 @@ function parseMenuNode (node, __path) {
       })
     })
   } else {
-    // let file = `@/pages/${prefix.substring(1)}`
-    // if (node.file) file = node.file
-    // console.error(`@/pages/${prefix.substring(1)}`)
-    // console.warn(file)
-
     AdminPages.push({
       path: prefix,
       meta: {
@@ -83,7 +76,6 @@ function parseMenuNode (node, __path) {
         tabs: node.tabs || [],
         hash: prefix
       },
-      // component: () => import(`${file}`)
       component: () => import(`@/pages/${prefix.substring(1)}`)
     })
   }
@@ -106,6 +98,11 @@ const routes = [
     },
     children: [
       ...AdminPages,
+      {
+        path: '/admin/error',
+        component: () => import('pages/admin/error.vue'),
+        meta: { counter: 10 }
+      },
       {
         path: '/admin/403',
         component: () => import('pages/admin/error403.vue')

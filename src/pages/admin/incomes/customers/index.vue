@@ -1,12 +1,12 @@
 <template>
-  <q-page padding class="page-index"  v-if="SHOW">
+  <q-page padding class="page-index" >
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table  ref="table" class="table-index" color="primary" :dark="LAYOUT.isDark"
+      <q-table  ref="table" class="table-index th-uppercase" color="primary" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
         :filter="TABLE.filter"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
@@ -19,6 +19,11 @@
             :TABLE.sync="TABLE"
             :filter.sync="TABLE.filter"
           >
+            <template v-slot:menu-prepend>
+              <q-btn dense rounded icon="add" color="primary" class="q-mx-sm"
+                :to="`${TABLE.resource.uri}/create`"
+                v-if="$app.can('customers-create') && $q.screen.gt.sm" />
+            </template>
             <template v-slot:menu-item>
               <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
                 <q-item-section>Add new</q-item-section>
@@ -37,7 +42,7 @@
           <!-- Resource show -->
           <!-- <q-btn :to="`${TABLE.resource.uri}/${rs.row.id}`"  flat round color="light" size="sm" icon="menu" /> -->
         </q-td>
-        
+
         <q-td slot="body-cell-enable" slot-scope="rs" :props="rs">
           <q-icon :name=" rs.row.enable ? `check`: `times`"></q-icon>
         </q-td>
@@ -62,8 +67,8 @@ export default {
           uri: '/admin/incomes/customers',
         },
         columns: [
-          { name: 'prefix', label: ''},
-          
+          { name: 'prefix', label: '', align: 'left'},
+
           { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true },
           { name: 'name', field: 'name', label: 'Name', align: 'left', sortable: true},
           { name: 'phone', label: 'Phone', field: 'phone', align: 'left'},
@@ -90,7 +95,7 @@ export default {
     this.INDEX.load()
   },
   computed:{
-    
+
     isCanUpdate(){
       return this.$app.can('customers-update')
     },

@@ -13,31 +13,31 @@
           </p>
           <div class="q-body ">
             <div class="row q-col-gutter-x-md">
-              <q-input 
-                name="email" 
-                class="col-12" 
-                v-model="rsLogin.email" 
-                type="email" 
-                label="Username" 
-                placeholder="Username or valid email" 
+              <q-input
+                name="email"
+                class="col-12"
+                v-model="rsLogin.email"
+                type="email"
+                label="Username"
+                placeholder="Username or valid email"
                 :disable="FORM.hasEmail"
                 v-validate="'required'"
-                icon="person" 
-                :error="errors.has('email')" 
+                icon="person"
+                :error="errors.has('email')"
                 :error-message="errors.first('email')"
               >
                 <q-btn icon="edit" size="md" dense flat  color='grey-6' v-if="FORM.hasEmail" @click="FORM.hasEmail = false" :tabindex="5000"></q-btn>
               </q-input>
-              <q-input 
+              <q-input
                 name="password"
-                label="Password" 
-                type="password" 
-                class="col-12" 
-                icon="lock" 
-                v-model="rsLogin.password" 
+                label="Password"
+                type="password"
+                class="col-12"
+                icon="lock"
+                v-model="rsLogin.password"
                 v-validate="'required'"
-                :error="errors.has('password')" 
-                :error-message="errors.first('password')" 
+                :error="errors.has('password')"
+                :error-message="errors.first('password')"
                 @keyup="(event) => {
                   if (event.keyCode === 13) {
                     event.preventDefault();
@@ -55,7 +55,7 @@
               </div>
               <div class="col-12 col-sm-6 q-py-xs">
                 <q-btn class="full-width" label="Register" color="secondary"
-                  @click="setAuth()" 
+                  @click="setAuth()"
                 />
               </div>
             </div>
@@ -92,7 +92,7 @@ export default {
     }
   },
   computed: {
-    
+
     ...mapGetters('admin', [
       'USER',
       'AUTH'
@@ -108,7 +108,7 @@ export default {
       console.warn('LOGIN', AUTH, USER)
       if(this.AUTH.isTokenValid && this.USER.email) {
         this.$router.push('/admin')
-      } 
+      }
     }
   },
   methods: {
@@ -119,7 +119,7 @@ export default {
       this.$refs.privacy.show()
     },
     redirectToAdmin () {
-      const redirUrl = this.$route.query.redirect || '/admin' 
+      const redirUrl = this.$route.query.redirect || '/admin'
       this.$router.push(redirUrl)
     },
     onLoginSubmit() {
@@ -127,22 +127,21 @@ export default {
         if (!result) {
           this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:'Please complete the form fields'
-          }); 
-          
+            message:this.$tc('messages.to_complete_form')
+          });
+
           return
         }
         this.FORM.btnLoadingSubmit = true
         this.$axios.post('/api/v1/login', this.rsLogin)
-        .then((response) => { 
+        .then((response) => {
           this.setLoginStore(response)
           setTimeout(() => {
             this.redirectToAdmin()
           }, 800);
         })
-        .catch(error => { 
-          // this.$app.response.error(error.response, 'test')
-          console.warn('ERROR->', error.response || error)
+        .catch(error => {
+          this.$app.response.error(error.response)
         })
         .finally(()=>{
           setTimeout(() => {

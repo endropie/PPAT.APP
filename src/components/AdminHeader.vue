@@ -1,14 +1,15 @@
 <template>
   <q-toolbar color="primary" >
     <q-btn aria-label="Menu" class="within-iframe-hide" icon="menu" flat round dense @click="LEFTDRAWER = !LEFTDRAWER" />
+    <q-separator vertical spaced color="primary"></q-separator>
     <q-btn class="cordova-only electron-only" icon="arrow_back" aria-label="Go back" flat round dense v-go-back.single="PAGEMETA.backRoute" />
     <q-toolbar-title>
         <q-icon v-show="$route.meta.icon" style="font-size: 2rem; margin-right: 5px;" :name="$route.meta.icon" />
-        {{ $route.meta.title }} 
+        {{ $route.meta.title }}
     </q-toolbar-title>
-    <q-btn-dropdown 
-      flat stretch 
-      :align="align" 
+    <q-btn-dropdown
+      flat stretch
+      :align="align"
       :class="{'hide-arrow': $q.screen.lt.sm}"
       :content-class="{'bg-faded text-white':LAYOUT.isDark}">
       <template v-slot:label>
@@ -22,19 +23,19 @@
           <div class="no-wrap">
             <q-btn size="sm" flat @click="LANG='id'" label="ID" />
             <q-btn size="sm" flat @click="LANG='en-US'" label="EN" />
-            <q-btn size="sm" flat 
-              @click="$q.fullscreen.toggle()" 
+            <q-btn size="sm" flat
+              @click="$q.fullscreen.toggle()"
               :icon-right="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'" />
           </div>
-          <q-toggle left-label label="NIGHT MODE" class="text-weight-medium" v-model="NIGHMODE" />
-          <q-btn-dropdown 
-            :label="'Themes'" 
+          <q-toggle left-label label="NIGHT MODE" class="text-weight-light text-subtitle" v-model="NIGHMODE" />
+          <q-btn-dropdown
+            :label="'Themes'"
             color="primary"
             size="sm">
-            <div class="row q-gutter-sm justify-around q-my-sm" style="max-width:150px">
-              <div class="" 
-                v-for="(name, index) in LAYOUT.themes" 
-                :key="index"> 
+            <div class="row q-gutter-sm justify-around q-my-sm" style="max-width:170px">
+              <div class=""
+                v-for="(name, index) in LAYOUT.themes"
+                :key="index">
                 <q-btn :label="name" :color="name" size="sm" dense @click.native="$store.commit('admin/setTheme', name)" />
               </div>
             </div>
@@ -55,7 +56,7 @@
         </div>
       </div>
     </q-btn-dropdown>
-    <q-btn aria-label="Menu" class="within-iframe-hide" icon="assignment" flat round dense @click="RIGHTDRAWER = !RIGHTDRAWER" />
+    <q-btn v-show="false" aria-label="Menu" class="within-iframe-hide" icon="assignment" flat round dense @click="RIGHTDRAWER = !RIGHTDRAWER" />
   </q-toolbar>
 </template>
 

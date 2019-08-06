@@ -1,74 +1,103 @@
 <template>
-  <q-page padding class="row justify-center" v-if="SHOW" :dark="LAYOUT.isDark">
-    
-    <page-print class="main-box q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
+  <q-page padding class="row justify-center" :dark="LAYOUT.isDark" style="min-width:210mm;">
+    <page-print class="q-ma-md shadow-2" v-if="VIEW.show" style="max-width:210mm;">
       <div slot="header-tags">
-        <q-chip label="Revised" v-if="!!rsView.revise_id"
-          icon="bookmark" color="negative"
-          tag outline small dense />
+        <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
       </div>
       <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
       <span slot="header-subtitle" style="font-size:16px">Planing & Production Control Division</span>
-      
-      <div class="column q-gutter-md" >
-        <div class="row justify-around q-col-gutter-sm" >
-          <div class="col-auto">
-            <q-markup-table class="no-shadow"
-              :dark="LAYOUT.isDark">
-              <tr><td colspan="100%" class="text-h6 text-center">WORK ORDER</td></tr>
-              <tr>
-                <th class="text-left">Customer</th><td>{{ rsView.line.name }}</td>      
-              </tr>
-              <tr>                               
-                <th class="text-left">Material of</th><td>{{ getStockistFrom(rsView.stockist_from) }}</td>
-              </tr>
-            </q-markup-table>
-          </div>
-          <div class="col-auto">
-            <q-markup-table class="bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
-              <tr>
-                <th>Number</th>
-                <th>Date</th>      
-              </tr>
-              <tr>                               
-                <td>{{rsView.number}}</td>
-                <td>{{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }}</td>
-              </tr>
-            </q-markup-table>
+
+      <div class="row q-col-gutter-xs" >
+        <div class="col-12">
+          <div class="row justify-between q-col-gutter-sm" >
+            <div class="col-auto self-end">
+              <span class="text-h6 text-center q-pt-lg q-pl-sm">WORK ORDER</span>
+
+              <q-markup-table class="super-dense no-shadow"
+                :dark="LAYOUT.isDark">
+                <tr>
+                  <th class="text-left">{{$tc('general.customer')}}</th><td>{{ rsView.line.name }}</td>
+                </tr>
+                <tr>
+                  <th class="text-left">Material of</th><td>{{ getStockistFrom(rsView.stockist_from) }}</td>
+                </tr>
+              </q-markup-table>
+            </div>
+            <div class="col-auto">
+              <q-markup-table class="super-dense bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
+                <tr>
+                  <th>{{$tc('label.number')}}</th>
+                  <td>{{rsView.number}}</td>
+                </tr>
+                <tr>
+                  <th>{{$tc('label.date')}}</th>
+                  <td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td>
+                </tr>
+                <tr>
+                  <th>{{$tc('label.shift')}}</th>
+                  <td>{{rsView.shift.name}}</td>
+                </tr>
+              </q-markup-table>
+            </div>
           </div>
         </div>
-        <div>
-          <q-table class="bordered no-shadow" 
-            color="secondary" 
-            separator="vertical" 
+        <div class="col-12">
+        </div>
+        <div class="col-12">
+          <q-table class="no-highlight bordered no-shadow"
+            color="secondary"
+            separator="vertical"
             dense hide-bottom :dark="LAYOUT.isDark"
-            :data="rsView.work_order_items" 
+            :data="rsView.work_order_items"
             no-data-label = "No Production"
             :columns="[
               { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code},
-              { name: 'part_name', label: 'Part name', align: 'left', field: (v)=> v.item.part_name},
-              { name: 'target', label: 'Quantity', align: 'right', field: (v)=> v.target},
-              { name: 'unit_id', label: 'Unit', align: 'center', field: (v)=> v.unit.code},
+              { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
+              { name: 'target', label: $tc('label.quantity'), align: 'right', field: (v)=> v.target},
+              { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
               { name: 'ngratio', label: 'NG Ratio', align: 'right', format:(v)=> v ? `${Number(v)}%` : '-', field: (v)=> v.ngratio},
               { name: 'total', label: 'Total', align: 'right', format:(v)=> `${Math.round(v)}`, field: (v)=> Number(v.quantity)},
             ]"
           />
         </div>
-        
-        <div>
-            <div class="q-my-xs text-italic">Description:</div>
+        <div class="col-12">
+            <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 q-gutter-sm print-hide " style="padding-top:50px">
-          <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <q-btn color="positive" :icon-right="btnIcon('edit')" label="Edit" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
-          <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
-          <q-btn color="negative" :icon-right="btnIcon('delete')" label="Delete" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn>
+      </div>
+      <div class="row q-col-gutter-xs" >
+        <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
+          <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
+          <q-btn :label="$tc('form.edit')" color="positive" :icon-right="btnIcon('edit')" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
+          <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
+          <!-- <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn> -->
+          <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
+            :options="[
+              { label: $tc('form.add_new'), color:'primary', icon: 'add',
+                detail: $tc('messages.process_create'),
+                actions: () => {
+                  $router.push(`${VIEW.resource.uri}/create`)
+                }
+              },
+              { label: 'Delete', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
+                detail: $tc('messages.process_delete'),
+                actions: () => {
+                  VIEW.delete()
+                }
+              },
+              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+                detail: $tc('messages.process_void'),
+                actions: () => {
+                  VIEW.void(()=> init() )
+                }
+              },
+            ]">
+          </ux-btn-dropdown>
         </div>
       </div>
     </page-print>
-    
-    <q-inner-loading :visible="VIEW.loading">
+
+    <q-inner-loading :showing="VIEW.loading">
         <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
   </q-page>
@@ -100,7 +129,15 @@ export default {
     this.init()
   },
   computed: {
+    IS_VOID() {
+      if (this.IS_EDITABLE) return false
+      if (this.rsView.deleted_at) return false
+      if (['VOID'].find(x => x === this.rsView.status)) return false
+      return true
+    },
     IS_EDITABLE() {
+      if (this.rsView.deleted_at) return false
+      if (this.rsView.status !== 'OPEN') return false
       if (this.rsView.hasOwnProperty('has_relathinship') && this.rsView.has_relationship.length > 0) return false
 
       return true
@@ -108,15 +145,9 @@ export default {
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.VIEW.onLoad(
-        (data) => {
-          this.setView(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.VIEW.load((data) => {
+        this.setView(data || {})
+      })
     },
     btnIcon (str) {
       return !this.$q.screen.lt.sm ? str : ''

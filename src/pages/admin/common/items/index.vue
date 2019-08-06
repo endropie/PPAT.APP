@@ -1,40 +1,55 @@
 <template>
-  <q-page padding class="page-index" v-if="SHOW">
+  <q-page padding class="page-index">
     <q-pull-to-refresh @refresh="TABLE.refresh">
-      <q-table 
-        ref="table" 
+      <q-table
+        ref="table"
         inline dense
-        class="table-index" 
+        class="table-index table-sticky-column th-uppercase"
         separator="horizontal"
-        color="primary" 
+        color="primary"
         :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
+        :visible-columns="COLUMNS"
         :filter="TABLE.filter"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
-        row-key="id"
+        row-key="code"
         :rows-per-page-options="[10,25,50,100,200,500,0]"
         :pagination.sync="TABLE.pagination"
         @request="TABLE.compute"
         :loading="TABLE.loading"
       >
-        <template v-slot:top-right>
-          <q-input type="search" borderless dense debounce="300" v-model="TABLE.filter" :dark="LAYOUT.isDark">
-            <template v-slot:prepend>
-              <q-icon name="search" />
-            </template>
-            <template v-slot:append>
-              <q-btn dense flat color="grey" icon="add"  @click="$router.push(`${TABLE.resource.uri}/create`)"/>
-              <q-btn dense flat color="grey" icon="more_vert" />
-            </template>
-          </q-input>
+         <template v-slot:top>
+          <table-header
+            :title="TABLE.getTitle()"
+            :TABLE.sync="TABLE"
+            :filter.sync="TABLE.filter"
+            :menus="[
+              { label: $tc('form.add'),
+                detail: $tc('messages.form_new'),
+                icon: 'add',
+                shortcut: true,
+                hidden:!$app.can('incoming-goods-create'),
+                to: `${TABLE.resource.uri}/create`
+              }
+            ]">
+          </table-header>
         </template>
-        
+
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn v-if="isCanUpdate" dense flat color="grey" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`"/>
           <q-btn v-if="isCanDelete" dense flat color="grey" icon="delete" @click.native="TABLE.delete(rs.row)" />
+        </q-td>
+
+        <q-td slot="body-cell-enable" slot-scope="rs" :props="rs" style="width:35px">
+          <!-- <q-icon
+            :name="rs.row.enable ? 'mdi-check-outline' : 'mdi-close-circle'"
+            :color="rs.row.enable ? 'primary' : 'red'"/> -->
+          <q-avatar size="24px" class="shadow-1"
+            :color="rs.row.enable ? 'green' : 'red'" text-color="white"
+            :icon="rs.row.enable ? 'mdi-check-outline' : 'block'" />
         </q-td>
       </q-table>
     </q-pull-to-refresh>
@@ -58,33 +73,55 @@ export default {
           uri: '/admin/common/items',
         },
         columns: [
-          { name: 'prefix', label: '', align: 'left'},
-          
-          { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true },
-          { name: 'part_number', label: 'Part number', field: 'part_number', align: 'left', sortable: true },
-          { name: 'part_name', label: 'Part name', field: 'part_name', align: 'left', sortable: true },
+          { name: 'prefix', label: '', align: 'left', required: true,},
+
+          { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true, required: true, },
+          { name: 'part_number', label: this.$tc('label.number', 1, {v:this.$tc('label.part')}), field: 'part_number', align: 'left', sortable: true },
+          { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), field: 'part_name', align: 'left', sortable: true },
+          { name: 'enable', label:this.$tc('label.active'), field: 'enable', align: 'center', sortable: true },
 
           // Item stocks
-          { name: 'incoming_good', field: (item)=> item.totals['FM'], label: 'FM', sortable: true },
-          { name: 'work_order', field: (item)=> item.totals['WO'], label: 'WO', sortable: true },
-          { name: 'packing_item', field: (item)=> item.totals['FG'], label: 'FG', sortable: true },
-          { name: 'not_good', field: (item)=> item.totals['NG'], label: 'NG', sortable: true },
-          { name: 'not_good_repair', field: (item)=> item.totals['NGR'], label: 'NGR', sortable: true },
+          { name: 'ALL', label: 'ALL', sortable: true, style:'text-weight-medium',
+            field: (item)=> (
+              Number(item.totals['FM'])
+              + Number(item.totals['WO'])
+              + Number(item.totals['WIP'])
+              + Number(item.totals['FG'])
+              + Number(item.totals['NG'])
+              + Number(item.totals['NGR'])
+            )
+          },
+          { name: 'FM', field: (item)=> item.totals['FM'] || '-', label: 'FM', sortable: true },
+          { name: 'WO', field: (item)=> item.totals['WO'] || '-', label: 'WO', sortable: true },
+          { name: 'WIP', field: (item)=> item.totals['WIP'] || '-', label: 'WIP', sortable: true },
+          { name: 'FG', field: (item)=> item.totals['FG'] || '-', label: 'FG', sortable: true },
+          { name: 'NC', field: (item)=> item.totals['NG'] || '-', label: 'NC', sortable: true },
+          { name: 'NCR', field: (item)=> item.totals['NGR'] || '-', label: 'RET', sortable: true },
+
+          { name: 'RO', field: (item)=> item.totals['RO'] || '-', label: 'RO', sortable: true, hidden: !process.env.DEV },
+          { name: 'PDO', field: (item)=> item.totals['PDO'] || '-', label: 'PDO', sortable: true, hidden: !process.env.DEV },
 
           { name: 'price', label: 'Price', field: 'price', sortable: true },
           { name: 'price_dm', label: 'Price in DM', field: 'price', sortable: true },
           { name: 'price_brl', label: 'Price in BRL', field: 'price', sortable: true },
           { name: 'brand_id', label: 'Brand', field: (item)=> (item.brand.name || 'Undefined'), align: 'left', sortable: true},
-          { name: 'customer_id', label: 'Customer', field: (item)=> (item.customer.name || 'Undefined'), align: 'left', sortable: true},
+          { name: 'customer_id', label: this.$tc('general.customer'), field: (item)=> (item.customer.name || 'Undefined'), align: 'left', sortable: true},
           { name: 'specification_id', label: 'Specification', field: (item)=> (item.specification.code || 'Undefined'), align: 'left', sortable: true},
           { name: 'part_alias', label: 'Part alias', field: 'part_alias', sortable: true },
-        ]
+        ],
+        hideColumns: ['code']
       }
     }
   },
   created () {
-    // this.SHOW = false
-    // this.SHOW = false
+    if (!this.$app.can('items-price')) {
+      this.TABLE.visibleColumns = this.TABLE.columns.filter(x => {
+        return ['price', 'price_dm', 'price_brl'].indexOf(x.name) < 0
+      }).map(x=>{
+        return x.name
+      })
+    }
+
     this.INDEX.load()
   },
   computed: {

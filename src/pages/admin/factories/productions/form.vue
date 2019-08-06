@@ -1,10 +1,10 @@
 <template>
-<q-page padding class="form-page" v-if="SHOW">
-  <q-card inline class="q-ma-sm" >
+<q-page padding class="form-page">
+  <q-card inline class="q-ma-sm"  v-if="FORM.show">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -24,24 +24,24 @@
       <!-- COLUMN::1st customer Identitity -->
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-md q-mb-lg">
-          <q-input class="col-12" 
-            name="number" 
-            label="No Transaction" 
-            placeholder="[Auto Generate]" 
-            v-model="rsForm.number" 
-            v-validate="$route.meta.mode == 'edit' ? 'required':''" 
-            :error="errors.has('number')" 
+          <q-input class="col-12"
+            name="number"
+            label="No Transaction"
+            placeholder="[Auto Generate]"
+            v-model="rsForm.number"
+            v-validate="$route.meta.mode == 'edit' ? 'required':''"
+            :error="errors.has('number')"
             :error-message="errors.first('number')"
             autofocus/>
 
-          <select-filter class="col-12" 
-            name="line_id" 
-            v-model="rsForm.line_id" 
-            label="Line Production" 
-            :disable="IssetLineItems" 
+          <ux-select-filter class="col-12"
+            name="line_id"
+            v-model="rsForm.line_id"
+            label="Line Production"
+            :disable="IssetLineItems"
             :options="LineOptions" clearable
             v-validate="'required'"
-            :error="errors.has('line_id')" 
+            :error="errors.has('line_id')"
             :error-message="errors.first('line_id')"
             />
         </div>
@@ -50,36 +50,36 @@
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm">
           <q-input class="col-12"
-            name="date" 
-            label="Date" stack-label 
-            v-model="rsForm.date" 
-            type="date" 
+            name="date"
+            label="Date" stack-label
+            v-model="rsForm.date"
+            type="date"
             v-validate="'required'"
             :error="errors.has('date')"/>
-            
+
           <q-select class="col-12"
-            name="shift_id" 
-            label="Shift" stack-label 
-            v-model="rsForm.shift_id"  
-            v-validate="'required'" 
-            :options="ShiftOptions" filter 
+            name="shift_id"
+            label="Shift" stack-label
+            v-model="rsForm.shift_id"
+            v-validate="'required'"
+            :options="ShiftOptions" filter
             map-options emit-value
             :error="errors.has('shift_id')"
           />
         </div>
       </div>
-        
+
       <!-- COLUMN::3nd Item details -->
       <div class="col-12">
-        <q-table color="primary" class="d-grid full-width no-shadow" dense hide-bottom
-          :data="rsForm.workin_production_items" 
+        <q-table color="primary" class="d-grid full-width no-shadow no-highlight" dense hide-bottom
+          :data="rsForm.production_items"
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'prefix', label: '',  align: 'left'},
             { name: 'work_order_item_id', label: 'Work Order Part', align: 'left'},
             { name: 'item_id', label: 'Item Part', align: 'left'},
-            { name: 'quantity', label: 'Quantity', align: 'center'},
-            { name: 'unit_id', label: 'unit', align: 'center', },
+            { name: 'quantity', label: $tc('label.quantity'), align: 'center'},
+            { name: 'unit_id', label: $tc('label.unit'), align: 'center', },
           ]"
           :pagination="{rowsPerPage: 0}"
           >
@@ -97,56 +97,56 @@
                 </div>
               </q-td>
               <q-td key="work_order_item_id"  >
-                <select-filter 
-                  :name="`workin_production_items.${propItem.row.__index}.work_order_item_id`" 
-                  v-model="propItem.row.work_order_item_id" 
-                  v-validate="'required'" 
+                <ux-select-filter
+                  :name="`production_items.${propItem.row.__index}.work_order_item_id`"
+                  v-model="propItem.row.work_order_item_id"
+                  v-validate="'required'"
                   outlined hide-bottom-space dense color="blue-grey-5"
-                  :readonly="!IssetLineID" 
+                  :readonly="!IssetLineID"
                   :options="WorkOrderItemOptions" filter clearable
-                  :error="errors.has(`workin_production_items.${propItem.row.__index}.work_order_item_id`)"
+                  :error="errors.has(`production_items.${propItem.row.__index}.work_order_item_id`)"
                   @input="(val)=>{ setWorkOrderItemReference(propItem.row.__index, val) }"
                 />
                 <q-tooltip :disable="IssetLineID" :offset="[0, 10]">Select The Line Production, first! </q-tooltip>
-                
+
               </q-td>
               <q-td key="item_id"  width="35%">
-                <select-filter 
-                  :name="`workin_production_items.${propItem.row.__index}.item_id`" 
-                  v-model="propItem.row.item_id" class="full-width" 
+                <ux-select-filter
+                  :name="`production_items.${propItem.row.__index}.item_id`"
+                  v-model="propItem.row.item_id" class="full-width"
                   outlined hide-bottom-space dense color="blue-grey-5"
-                  :readonly="!IssetLineID || (propItem.row.work_order_item_id ? true : false)" 
-                  :options="ItemOptions" 
-                  v-validate="'required'" 
-                  :error="errors.has(`workin_production_items.${propItem.row.__index}.item_id`)"
+                  :readonly="!IssetLineID || (propItem.row.work_order_item_id ? true : false)"
+                  :options="ItemOptions"
+                  v-validate="'required'"
+                  :error="errors.has(`production_items.${propItem.row.__index}.item_id`)"
                   @input="(val)=>{ setItemReference(propItem.row.__index, val) }"
                 />
                 <q-tooltip :disable="IssetLineID" :offset="[0, 10]">Select The Line Production, first! </q-tooltip>
-              
+
               </q-td>
               <q-td key="quantity"  width="20%">
-                <q-input 
-                  :name="`workin_production_items.${propItem.row.__index}.quantity`" 
-                  v-model="propItem.row.quantity" type="number" min="0" align="center" 
+                <q-input
+                  :name="`production_items.${propItem.row.__index}.quantity`"
+                  v-model="propItem.row.quantity" type="number" min="0" align="center"
                   outlined hide-bottom-space dense color="blue-grey-5"
-                  :warning="propItem.row.quantity > numUnitConvertion(propItem.row, LoadUnitAvailable[propItem.row.__index]) ? 'warning' : false" 
+                  :warning="propItem.row.quantity > numUnitConvertion(propItem.row, LoadUnitAvailable[propItem.row.__index]) ? 'warning' : false"
                   :suffix="' / ' + strUnitConvertion(propItem.row, LoadUnitAvailable[propItem.row.__index])"
                   v-validate="propItem.row.item_id ? 'required' : ''"
-                  :error="errors.has(`workin_production_items.${propItem.row.__index}.quantity`)"
+                  :error="errors.has(`production_items.${propItem.row.__index}.quantity`)"
                 />
               </q-td>
               <q-td key="unit_id"  width="15%">
-                <q-select 
-                  :name="`workin_production_items.${propItem.row.__index}.unit_id`" 
-                  v-model="propItem.row.unit_id" 
+                <q-select
+                  :name="`production_items.${propItem.row.__index}.unit_id`"
+                  v-model="propItem.row.unit_id"
                   outlined hide-bottom-space dense color="blue-grey-5"
                   @input="(val)=> { setUnitReference(propItem.row.__index, val) }"
                   :options="ItemUnitOptions[propItem.row.__index]"
                   map-options emit-value
                   v-validate="propItem.row.item_id ? 'required' : ''"
-                  :error="errors.has(`workin_production_items.${propItem.row.__index}.unit_id`)"
+                  :error="errors.has(`production_items.${propItem.row.__index}.unit_id`)"
                 />
-                
+
               </q-td>
             </q-tr>
             <!-- Item detail Description -->
@@ -173,39 +173,39 @@
           </template>
           <q-tr slot="bottom-row" slot-scope="propItem" :propItem="propItem">
             <q-td colspan="100%">
-              <q-btn class="full-width" 
-                label="New Part"  
-                 dense 
-                color="positive" 
+              <q-btn class="full-width"
+                label="New Part"
+                 dense
+                color="positive"
                 @click="addNewItem()"/>
             </q-td>
           </q-tr>
           <template slot="top-left">
-            
+
           </template>
         </q-table>
       </div>
       <!-- COLUMN::4th Description -->
       <div class="col-12 q-mt-md">
         <div class="row q-col-gutter-x-lg ">
-          <q-input class="col-12" 
-            name="description" 
-            type="textarea" rows="3" 
-            stack-label label="Description" 
+          <q-input class="col-12"
+            name="description"
+            type="textarea" rows="3"
+            stack-label :label="$tc('label.description')"
             filled
             v-model="rsForm.description"/>
         </div>
       </div>
-      
+
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-actions class="q-mx-lg">
-      <q-btn :label="$tc('label.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
-      <q-btn :label="$tc('label.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
-      <q-btn :label="$tc('label.save')" icon="save" color="positive" @click="onSave()"></q-btn>     
+      <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
+      <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
+      <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()"></q-btn>
     </q-card-actions>
   </q-card>
-    <q-inner-loading :visible="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
+    <q-inner-loading :showing="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
 </q-page>
 </template>
 
@@ -230,8 +230,8 @@ export default {
       },
       FORM:{
         resource:{
-          uri: '/admin/factories/workin-productions',
-          api: '/api/v1/factories/workin-productions',
+          uri: '/admin/factories/productions',
+          api: '/api/v1/factories/productions',
         },
       },
       rsForm: {},
@@ -246,10 +246,10 @@ export default {
           worktime: 'REGULER',
 
           description: null,
-          
-          workin_production_items:[ 
+
+          production_items:[
             {
-              id:null, 
+              id:null,
               item_id: null, item: {},
               unit_id: null, unit: {},
               unit_rate: 1,
@@ -268,7 +268,7 @@ export default {
   },
   computed: {
     IssetLineItems() {
-        let items = this.rsForm.workin_production_items
+        let items = this.rsForm.production_items
         for (const i in items) {
           if (items.hasOwnProperty(i)) {
             if(items[i].item_id) return true
@@ -281,7 +281,7 @@ export default {
       return (this.rsForm.line_id ? true : false)
     },
     TotalQuantity() {
-      this.rsForm.workin_production_items.reduce((total, item) => {
+      this.rsForm.production_items.reduce((total, item) => {
         console.warn(total, item)
       })
     },
@@ -302,12 +302,12 @@ export default {
             item.work_order = {id: wo.id, number: wo.number, line_id: wo.line_id,}
             data.push(item)
           }
-        }) 
+        })
       })
 
       return data.map(item => ({
         data: item,
-        label: `${item.work_order.number} #${item.id}`, 
+        label: `${item.work_order.number} #${item.id}`,
         sublabel: subLabel(item.item_id),
         value: item.id
       }))
@@ -330,9 +330,9 @@ export default {
     },
     ItemUnitOptions() {
       let vars = []
-      for (const i in this.rsForm.workin_production_items) {
-        if (this.rsForm.workin_production_items.hasOwnProperty(i)) {
-          let rsItem = this.rsForm.workin_production_items[i]
+      for (const i in this.rsForm.production_items) {
+        if (this.rsForm.production_items.hasOwnProperty(i)) {
+          let rsItem = this.rsForm.production_items[i]
           vars[i] = ( this.UnitOptions || [])
           vars[i] = vars[i].filter((unit)=> {
             if(!rsItem.item_id) return false
@@ -360,30 +360,30 @@ export default {
           return this.hasOwnProperty(id) ? this[id] : 0
         }
       }
-      
+
       if(this.FORM.data)
-      this.FORM.data.workin_production_items.forEach(detail => {
+      this.FORM.data.production_items.forEach(detail => {
         if(!maxitem.hasOwnProperty(detail.work_order_item_id)) maxitem[detail.work_order_item_id] = 0
         maxitem[detail.work_order_item_id] += (Number(detail.quantity || 0) * Number(detail.unit_rate || 0))
       })
-      
+
       this.WorkOrderItemOptions.map((opt) => {
         if(!maxitem.hasOwnProperty(opt.data.id)) maxitem[opt.data.id] = 0
         let line = opt.data.work_order_item_lines.find(x => x.line_id === this.rsForm.line_id)
-        maxitem[opt.data.id] += (Number(opt.data.unit_amount || 0) - Number( line.total_workin_production_item || 0))
-        // console.log('c:', opt.data.unit_amount, line.total_workin_production_item)
+        maxitem[opt.data.id] += (Number(opt.data.unit_amount || 0) - Number( line.total_production_item || 0))
+        // console.log('c:', opt.data.unit_amount, line.total_production_item)
       })
 
       let data = {}
-      if(this.rsForm.workin_production_items) {
-        this.rsForm.workin_production_items.map((detail, index) => {
+      if(this.rsForm.production_items) {
+        this.rsForm.production_items.map((detail, index) => {
           if (maxitem[detail.work_order_item_id] && detail.work_order_item_id) {
             data[index] = Number(maxitem[detail.work_order_item_id] || 0) - Number(moveItem.get(detail.work_order_item_id) || 0)
             moveItem.set(detail.work_order_item_id, (Number(detail.quantity) * Number(detail.unit_rate)) )
           }
         })
       }
-      
+
       return data
     },
     LoadItemStock() {
@@ -397,21 +397,21 @@ export default {
           return this.hasOwnProperty(id) ? this[id] : 0
         }
       }
-      this.FORM.data.workin_production_items.forEach(item => {
+      this.FORM.data.production_items.forEach(item => {
         if (stockItem.hasOwnProperty(item.item_id)) {
           stockItem[item.item_id].totals['FG'] += Number(item.quantity)
         }
       })
 
       let data = {}
-      this.rsForm.workin_production_items.map((detail, index) => {
+      this.rsForm.production_items.map((detail, index) => {
         if (stockItem[detail.item_id] && detail.item_id) {
           data[index] = Number(stockItem[detail.item_id].totals['FG'] || 0) - Number(moveItem.get(detail.item_id) || 0)
           moveItem.set(detail.item_id, detail.quantity)
         }
-        
+
       })
-      
+
       return data
     },
     MAPINGKEY() {
@@ -421,16 +421,16 @@ export default {
         'items': {},
         'itemstocks': {}
       }
-      
+
       // this.SHEET['work_order_items'].data.map(value => { variables['work_order_items'][value.work_order_item_id] = value })
       this.SHEET['units'].data.map(value => { variables['units'][value.id] = value })
       this.SHEET['items'].data.map(value => { variables['items'][value.id] = value })
       this.SHEET['itemstocks'].data.map(value => { variables['itemstocks'][value.id] = value })
 
-      this.SHEET['work_orders'].data.map(wo => { 
+      this.SHEET['work_orders'].data.map(wo => {
         wo.work_order_items.map(item => {
           variables['work_order_items'][item.id] = item
-        })        
+        })
       })
 
       return variables;
@@ -441,15 +441,9 @@ export default {
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.FORM.load(
-        (data) => {
-          this.setForm(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.FORM.load((data) => {
+        this.setForm(data || this.setDefault())
+      })
     },
     setForm(data) {
       this.rsForm = JSON.parse(JSON.stringify(data))
@@ -469,82 +463,82 @@ export default {
     },
     numUnitConvertion(row, val = 0) {
       return Number(val) / Number(row.unit_rate || 1)
-    },    
-    setWorkOrderItemReference(index, val) {      
+    },
+    setWorkOrderItemReference(index, val) {
       if(!val) {
-        this.rsForm.workin_production_items[index].item_id = null
+        this.rsForm.production_items[index].item_id = null
         this.setItemReference(index, null)
       }
       else if(this.MAPINGKEY['work_order_items'][val]){
         let itemID = this.MAPINGKEY['work_order_items'][val].item_id
-        this.rsForm.workin_production_items[index].item_id = itemID
+        this.rsForm.production_items[index].item_id = itemID
         this.setItemReference(index, itemID)
       }
     },
     setItemReference(index, val) {
       if(!val) {
-        this.rsForm.workin_production_items[index].unit_id = null
-        this.rsForm.workin_production_items[index].unit = {}
-        this.rsForm.workin_production_items[index].item = {}
+        this.rsForm.production_items[index].unit_id = null
+        this.rsForm.production_items[index].unit = {}
+        this.rsForm.production_items[index].item = {}
       }
       else {
         let unitID = this.MAPINGKEY['items'][val].unit_id
-        this.rsForm.workin_production_items[index].unit_id = unitID
-        this.rsForm.workin_production_items[index].unit_rate = 1
+        this.rsForm.production_items[index].unit_id = unitID
+        this.rsForm.production_items[index].unit_rate = 1
 
-        this.rsForm.workin_production_items[index].item = this.MAPINGKEY['items'][val]
-        this.rsForm.workin_production_items[index].unit = this.MAPINGKEY['units'][unitID]
+        this.rsForm.production_items[index].item = this.MAPINGKEY['items'][val]
+        this.rsForm.production_items[index].unit = this.MAPINGKEY['units'][unitID]
       }
     },
     setUnitReference(index, val) {
-      let detail = this.rsForm.workin_production_items[index]
+      let detail = this.rsForm.production_items[index]
 
       if(!val && !detail.hasOwnProperty('item')) return;
       else if (detail.item.unit_id === val) {
-        this.rsForm.workin_production_items[index].unit_rate = 1
+        this.rsForm.production_items[index].unit_rate = 1
       }
       else {
         if(detail.item.item_units) {
           detail.item.item_units.map((unitItem)=> {
-            if (unitItem.unit_id == val) this.rsForm.workin_production_items[index].unit_rate = unitItem.rate
+            if (unitItem.unit_id == val) this.rsForm.production_items[index].unit_rate = unitItem.rate
           })
         }
       }
     },
 
     addNewItem(){
-      let newEntri =  this.setDefault().workin_production_items[0];      
-      this.rsForm.workin_production_items.push(newEntri)
+      let newEntri =  this.setDefault().production_items[0];
+      this.rsForm.production_items.push(newEntri)
     },
     cloneItem(index) {
-      let newEntri = Object.assign({}, JSON.parse(JSON.stringify( this.rsForm.workin_production_items[index])))
-      this.rsForm.workin_production_items.push(newEntri)
+      let newEntri = Object.assign({}, JSON.parse(JSON.stringify( this.rsForm.production_items[index])))
+      this.rsForm.production_items.push(newEntri)
     },
     removeItem(index) {
-        this.rsForm.workin_production_items.splice(index, 1)
-        if(this.rsForm.workin_production_items.length < 1) this.addNewItem()
+        this.rsForm.production_items.splice(index, 1)
+        if(this.rsForm.production_items.length < 1) this.addNewItem()
     },
-    
+
     onSave() {
 
       this.$validator.validate().then(result => {
         if (!result) {
           this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:'Please complete the form fields'
-          }); 
-          
+            message:this.$tc('messages.to_complete_form')
+          });
+
           return;
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();
         this.$axios.set(method, apiUrl, this.rsForm)
-        .then((response) => { 
+        .then((response) => {
           let message = response.data.number + ' - #' + response.data.id
           this.FORM.response.success({message:message})
           this.FORM.toView(response.data.id)
         })
-        .catch((error) => { 
+        .catch((error) => {
 
           this.FORM.response.fields(error.response)
           this.FORM.response.error(error.response, 'Submit')
@@ -552,7 +546,7 @@ export default {
         .finally(()=>{
           this.FORM.loading = false
         });
-        
+
       });
     },
   },

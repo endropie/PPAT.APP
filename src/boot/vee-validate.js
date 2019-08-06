@@ -1,5 +1,9 @@
 import VeeValidate from 'vee-validate'
 
+VeeValidate.Validator.extend('eq', (value, [otherValue]) => {
+  return value === otherValue
+}, { hasTarget: true, computesRequired: true })
+
 // leave the export, even if you don't use it
 export default ({ app, router, Vue }) => {
   Vue.use(VeeValidate)

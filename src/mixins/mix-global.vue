@@ -120,19 +120,6 @@ export default {
         case 401:
           values.message = 'Ops, Authorization invalid!'
 
-          this.$axios.validToken(
-            (valid) => setTimeout(() => {
-              if (!valid) this.$router.push('/auth')
-              this.$q.notify({
-                message: 'Authorization has been expired!. Please Login!',
-                color: 'negative',
-                icon: 'error',
-                position: 'top-left',
-                timeout: 3000
-              })
-            }, 1000)
-          )
-
           values.color = 'red-6'
           values.icon = 'warning'
           break

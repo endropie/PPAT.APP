@@ -1,5 +1,4 @@
 <script>import { mapGetters } from 'vuex'
-import '@/css/app.styl'
 
 export default {
   data () {

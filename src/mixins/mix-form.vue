@@ -1,24 +1,16 @@
 <script>
-import GlobalMix from './mix-global.vue'
+// import GlobalMix from './mix-global.vue'
 import MixPage from '@/mixins/mix-page.vue'
 import MixSheet from '@/mixins/mix-sheet.vue'
-
-import ListItem from '@/components/ListItem'
+import FormCard from '@/components/FormCard'
 import FormHeader from '@/components/FormHeader'
 import FormDetail from '@/components/FormDetail'
-import SelectFilter from '@/components/SelectFilter'
-import InputNumeric from '@/components/InputNumeric'
-import InputDate from '@/components/InputDate'
 
 import '@/css/form-page.styl'
-
 export default {
-  mixins: [GlobalMix, MixPage, MixSheet],
+  mixins: [MixPage, MixSheet],
   components: {
-    InputNumeric,
-    InputDate,
-    SelectFilter,
-    ListItem,
+    FormCard,
     FormHeader,
     FormDetail,
     // QNumeric
@@ -75,32 +67,56 @@ export default {
         return 'Correction from #' + this.$route.params.id
       }
       else return 'Create new  ' + (this.$route.meta.title || '').toLowerCase()
-    }
+    },
+    FORM__component() {
+
+    },
   },
   methods: {
-    FORM__load (callback) {
+    FORM__load (callback = null) {
       if (typeof callback !== 'function') console.warn('*[PLAY]* - callback is function required')
 
+      this.FORM.show = false
+      this.FORM.loading = true
       const callBase = () => {
         if (['edit', 'revision'].find(x => x === this.$route.meta.mode)) {
-          let url = this.FORM.resource.api + '/' + this.$route.params.id + this.FORM.resource.params
-          this.$axios.get(url)
+          let apiUrl = `${this.FORM.resource.api}/${this.$route.params.id}${this.FORM.resource.params}`
+          this.$axios.get(apiUrl)
             .then((response) => {
               this.FORM.data = JSON.parse(JSON.stringify(response.data))
-              callback(response.data)
+              setTimeout(() => this.FORM.show = true, 500)
+
+              if(callback) callback(response.data)
             })
             .catch(error => {
-              console.warn(error, 'Load Form')
-              this.$app.response.error(error.response, 'Load Form')
+              if(!error.response) error.response = {}
+              this.$router.replace({
+                path: '/admin/error',
+                query: {
+                  // api: apiUrl,
+                  redirect: this.$route.fullPath,
+                  code: error.response.status || null,
+                  message: error.response.statusText ||null
+                },
+              })
+
+              if(callback) callback()
+            })
+            .finally(() => {
+              setTimeout(() => this.FORM.loading = false, 1000)
             })
         }
         else {
           const data = this.setDefault()
           this.FORM.data = JSON.parse(JSON.stringify(data))
           callback(data)
+          setTimeout(() => {
+            this.FORM.loading = false
+            this.FORM.show = true
+          }, 1000)
         }
       }
-      
+
       this.SHEET.assign()
       this.SHEET.request(
         callBase()
@@ -174,10 +190,6 @@ export default {
       }
     },
 
-    FORM__response_error (ErrRes, title) { 
-      this.$app.response.error(ErrRes, title)
-    },
-
     FORM__response_relationship (dialog = {}) {
       if(!dialog) {
         this.$app.notify.warning({message: 'This data form has been relationship'})
@@ -213,40 +225,52 @@ export default {
             dialog.catch()
           }
           else this.$q.notify({message:`The form is not allowed to be changed!`, type:'warning'})
-          
+
         })
       }
     },
 
-    FORM__response_success (params = {}) {
-      let mode = {
+    FORM__response_error (ErrRes, title) {
+      this.$app.response.error(ErrRes, title)
+    },
+
+    FORM__response_success (params = {}, text) {
+      let mode = Object.assign({
         icon: 'check_circle_outline',
         message: (params.mode || this.$route.meta.mode || 'SUBMIT').toUpperCase() + ' SUCCESS',
         detail: (params.message || 'The processing has excecute!')
+      })
+
+      if(typeof params === 'string' & params.length) {
+        if(this.$route.meta.mode === 'create') {
+          mode.message = this.$tc('messages.success_created')
+          mode.detail = this.$tc('messages.form_has_created', {v: params})
+        }
+        if(this.$route.meta.mode === 'edit') {
+          mode.message = this.$tc('messages.success_updated')
+          mode.detail = this.$tc('messages.form_has_updated', {v: params})
+        }
       }
-      // let txtMessage = (params.mode || this.$route.meta.mode || 'SUBMIT').toUpperCase() + ' SUCCESS'
-      // let txtDetail  = (params.message || 'The processing has excecute!')
-      if(mode.detail) {
-        mode.message += `<br><small style="font-size:80%">${mode.detail}</small>`
-        mode.html = true
-      }
+
       this.$app.notify.success(mode)
     },
 
     FORM__void () {
       this.$q.dialog({
-        title: 'Void Confirm',
-        message: 'Are you sure to void the record ?',
+        title: 'Void',
+        message: this.$tc('messages.to_sure', 1,{v:this.$tc('form.void',2)}),
         preventClose: true,
-        ok: 'Yes, please!',
-        cancel: 'Cancel'
+        ok: this.$tc('messages.yes_to', 1,{v:this.$tc('form.void')}),
+        cancel: this.$tc('form.cancel')
       }).onOk(() => {
         this.$axios.delete(`${this.FORM.resource.api}/${this.$route.params.id}?mode=void`)
           .then((response) => {
             console.warn('then', response)
             if (response.data.success) {
-              let txtMessage = 'The record has been void!'
-              this.$q.notify({message: txtMessage, color: 'positive', icon: 'check', position: 'top-right', timeout: 3000})
+              this.$app.notify.success({
+                message: this.$tc('messages.success_void'),
+                detail: this.$tc('messages.form_has_void', 1, {v: `#${this.$route.params.id}`}),
+              })
               this.FORM__toIndex()
             }
           })
@@ -259,26 +283,29 @@ export default {
 
     FORM__delete () {
       this.$q.dialog({
-        title: 'Delete Confirm',
-        message: 'Are you sure to delete the record ?',
+        title: 'DELETE',
+        message: this.$tc('messages.to_sure', 1,{v:this.$tc('form.delete',2)}),
         preventClose: true,
-        ok: 'Yes, please!',
-        cancel: 'Cancel'
+        ok: this.$tc('messages.yes_to', 1,{v:this.$tc('form.delete')}),
+        cancel: this.$tc('form.cancel')
       }).onOk(() => {
-        console.warn('DELETE', this.$route.params.id)
+        // console.warn('DELETE', this.$route.params.id)
         this.$axios.delete(`${this.FORM.resource.api}/${this.$route.params.id}`)
           .then((response) => {
-            console.warn('then', response)
+            // console.warn('then', response)
             if (response.data.success) {
-              let txtMessage = 'The record has been deleted!'
-              this.$q.notify({message: txtMessage, color: 'positive', icon: 'check', position: 'top-right', timeout: 3000})
+              this.$app.notify.success({
+                message: this.$tc('messages.success_deleted'),
+                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${this.$route.params.id}`}),
+              })
               this.FORM__toIndex()
             }
           })
           .catch(error => {
-            if(!error.hasOwnProperty('response')) console.warn('error', error)
             this.FORM.response.error(error.response)
           })
+      }).onCancel(()=>{
+        // DELETE CANCELED!
       })
     },
 

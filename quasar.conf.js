@@ -8,8 +8,9 @@ module.exports = function (ctx) {
     // --> boot files are part of "main.js"
     boot: [
       'app',
-      'apollo',
+      // 'apollo',
       'axios',
+      'components',
       'i18n',
       'vee-validate'
     ],
@@ -20,10 +21,10 @@ module.exports = function (ctx) {
 
     extras: [
       'roboto-font',
-      'material-icons' // optional, you are not bound to it
+      'material-icons',
+      'mdi-v3',
+      'fontawesome-v5'
       // 'ionicons-v4',
-      // 'mdi-v3',
-      // 'fontawesome-v5',
       // 'eva-icons'
     ],
 

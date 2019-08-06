@@ -1,26 +1,56 @@
 <template>
-  <div class="table-header column full-width" 
+  <div class="table-header column full-width"
     v-bind="$attrs"
     v-on="$listeners"
   >
-    <div class="header-top q-gutter-x-sm">
+    <div class="header-top q-pb-xs">
       <div class="row no-wrap float-right">
         <slot name="menu-prepend"></slot>
+        <template v-for="(menu, index) in menus">
+          <q-btn :key="index" dense round glossy class="q-mx-xs"
+            :outline="menu.outline"
+            :icon="menu.icon || undefined"
+            :color="menu.btnColor || 'primary'"
+            :to="menu.to || undefined" v-ripple
+            @click="actionsCall(menu)"
+            v-show="menu.shortcut && $q.screen.gt.sm"
+            v-if="!menu.hidden" />
+        </template>
         <q-btn v-if="!hideMenu"
-          flat round dense 
-          color="light" 
+          flat round dense
+          color="light"
           icon="more_vert">
 
           <q-menu :content-class="{'bg-faded text-light':LAYOUT.isDark}">
             <slot name="menu" >
-              <q-list :dark="LAYOUT.isDark" class="table-menu" style="min-width: 150px">
+              <q-list :dark="LAYOUT.isDark" class="table-menu" style="min-width: 220px">
+                <template v-for="(menu, index) in menus">
+                  <q-item :key="index"
+                    :clickable="typeof menu.clickable === 'undefined' ? true : menu.clickable"
+                    :to="menu.to || undefined"
+                    @click="actionsCall(menu)"
+                    v-close-popup="typeof menu.closePopup === 'undefined' ? true : menu.closePopup"
+                    v-show="!menu.shortcut || !$q.screen.gt.sm"
+                    v-if="!menu.hidden">
+                    <q-item-section>
+                      <q-item-label>{{menu.label}}</q-item-label>
+                      <q-item-label caption v-if="menu.detail" lines="1">{{menu.detail}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section avatar style="min-width:40px">
+                      <!-- <q-icon :name="menu.icon" :color="LAYOUT.isDark ? 'white' : menu.color || 'light'"/> -->
+                      <q-avatar :icon="menu.icon" :color="menu.color || 'primary'" text-color="white" />
+                    </q-item-section>
+                  </q-item>
+                </template>
+                <slot name="menu-item" />
+                <q-separator :dark="LAYOUT.isDark" v-if="PREFERENCE" />
                 <q-item v-if="PREFERENCE" clickable>
                   <q-item-section>Preferences</q-item-section>
                   <q-item-section side>
                     <q-icon name="keyboard_arrow_right" />
                   </q-item-section>
                   <q-menu anchor="top right" self="top left">
-                    <q-list>
+                    <q-list dense>
                       <q-item
                         v-for="n in 3"
                         :key="n"
@@ -32,8 +62,6 @@
                     </q-list>
                   </q-menu>
                 </q-item>
-                <q-separator :dark="LAYOUT.isDark"/>
-                <slot name="menu-item" />
               </q-list>
             </slot>
           </q-menu>
@@ -51,14 +79,14 @@
           <slot name="search-prepend"></slot>
         </div>
         <div  v-if="!hideSearch">
-          <q-input 
-            class="table-filter" 
-            v-model="model.filter" 
+          <q-input
+            class="table-filter"
+            v-model="model.filter"
             v-if="filter !== undefined"
-            :dark="LAYOUT.isDark" 
-            outlined dense 
-            autocomplete="off" 
-            placeholder="Search..." 
+            :dark="LAYOUT.isDark"
+            outlined dense
+            autocomplete="off"
+            placeholder="Search..."
           >
             <template v-slot:append>
               <q-icon name="search" color="light" dense />
@@ -72,11 +100,11 @@
 
       </div>
     </div>
-    <div class="header-main">  
+    <div class="header-main">
       <slot></slot>
     </div>
   </div>
-  
+
 </template>
 
 <script>
@@ -89,6 +117,7 @@ export default {
       hideMenu: Boolean,
       filter: String,
       columns: Array,
+      menus: Array,
       title: {
           type: String,
           default: null
@@ -100,7 +129,7 @@ export default {
   },
   data () {
     return {
-      model:  { 
+      model:  {
         filter: this.$attrs.filter || ''
       },
     }
@@ -110,7 +139,7 @@ export default {
   },
   computed: {
     PREFERENCE () {
-      return Boolean (this.columns) 
+      return Boolean (this.columns)
     },
     LAYOUT () {
       return this.$store.state.admin.LAYOUT
@@ -123,6 +152,9 @@ export default {
     setFilter(v) {
       this.$emit('update:filter', v)
     },
+    actionsCall(menu) {
+      if (menu.hasOwnProperty('actions')) menu.actions()
+    }
   }
 }
 </script>
@@ -133,7 +165,7 @@ export default {
     height 36px
   .q-field__control:before
     border-color rgba(0,0,0,0)
-    
+
 .table-header
   .q-chip
     margin: 2px 4px;

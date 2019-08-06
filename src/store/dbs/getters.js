@@ -21,7 +21,7 @@ export const MESSAGE_LASTEST = (state) => {
   let message = []
   const objMessage = state.messages
 
-  console.warn('start->objMessage', objMessage, Object.values(objMessage))
+  // console.warn('start->objMessage', objMessage, Object.values(objMessage))
   for (const i in objMessage) {
     console.warn('objMessage', objMessage[i])
     if (objMessage.hasOwnProperty(i) && objMessage[i].data) {

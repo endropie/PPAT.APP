@@ -70,7 +70,7 @@
         </modal>
       </div>
     </div>
-    <a class="ribbon" :title="`PPA Administration Built on v${$q.version}`" />
+    <a class="ribbon" :title="`PPA Built on v${$q.version}`" />
   </div>
 </template>
 
@@ -156,7 +156,7 @@ export default {
   right 0
   z-index 39
   pointer-events none
-  font-size 15px
+  font-size 17px
   text-decoration none
   text-indent -999999px
   opacity 0.7
@@ -164,7 +164,7 @@ export default {
     position fixed
   &:before
     content ''
-    padding .38em 0
+    padding 4px
     background-color white
     background-image linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, .15))
     box-shadow 0 .15em .23em 0 rgba(0, 0, 0, .5)

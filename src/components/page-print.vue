@@ -67,6 +67,13 @@ table
   td    
     page-break-insideavoid page-break-afterauto 
 
+.super-dense .q-table
+  th:last-child,
+  td:last-child 
+    padding-right: 8px
+  th, td
+    padding: 2px 6px
+
 .profile
   font-size:14px
   line-height 1.42857143
@@ -116,7 +123,7 @@ table
 
 .page-print 
   .page-print-header, .page-print-footer
-    padding 10px 10px
+    padding 5px 10px
   .page-print-body
     font-size 14px
     padding 10px 20px
@@ -127,7 +134,7 @@ table
 
     .head-brand
       min-width calc(100% - 70px)
-      padding 10px 0px
+      padding 5px 0px
 
       .title
         font-size 32px

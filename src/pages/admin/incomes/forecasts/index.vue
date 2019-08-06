@@ -1,12 +1,12 @@
 <template>
-  <q-page padding class="page-index"  v-if="SHOW">
+  <q-page padding class="page-index" >
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table ref="table" inline class="table-index" color="primary" :dark="LAYOUT.isDark"
+      <q-table ref="table" inline class="table-index th-uppercase" color="primary" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
         :filter="TABLE.filter"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
@@ -18,37 +18,52 @@
           <table-header hide-search
             :title="TABLE.getTitle()"
             :TABLE.sync="TABLE"
-            :filter.sync="TABLE.filter" >
+            :menus="[
+              { label: $tc('form.add'),
+                detail: $tc('messages.form_new'),
+                icon: 'add',
+                shortcut: true,
+                hidden:!$app.can('incoming-goods-create'),
+                to: `${TABLE.resource.uri}/create`
+              },
+              { label: $tc('label.trash'),
+                detail:  $tc('messages.show_deleted'),
+                shortcut: true,
+                icon: Boolean(FILTERABLE.fill.withTrashed.value)? 'mdi-cup' : 'mdi-cup-off',
+                closePopup: false,
+                outline: true,
+                actions:() => {
+                  FILTERABLE.toggleTrash()
+                  FILTERABLE.submit()
+                }
+              }
+            ]">
 
-            <template v-slot:menu-item>
-              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
-                <q-item-section>Add new</q-item-section>
-                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
-              </q-item>
-              <q-separator :dark="LAYOUT.isDark"/>
-            </template>
 
             <div class="row q-col-gutter-xs" >
-              <select-filter class="col-12 col-sm-6" style="min-width:150px"
-                name="customer_id" 
-                v-model="FILTERABLE.fill.customer_id.value" 
-                stack-label :label="$tc('general.customer')" 
-                dense hide-bottom-space
-                :dark="LAYOUT.isDark"
-                :options="CustomerOptions" filter clearable />               
+              <ux-select-filter class="col-12 col-sm-6 items-start self-start"
+                v-model="FILTERABLE.fill.customer_id.value" clearable
+                :label="$tc('general.customer')"
+                dense hide-bottom-space hide-dropdown-icon
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
+                :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
+                :options="CustomerOptions"
+                @input="FILTERABLE.submit" />
 
-              <q-select class="col-12 col-sm-6" 
+              <q-select class="col-12 col-sm-6" autocomplete="off"
                 multiple use-chips use-input new-value-mode="add"
                 dense hide-dropdown-icon
-                name="filterable" 
                 v-model="FILTERABLE.search" emit-value
-                placeholder="Searching..." 
+                :placeholder="`${$tc('form.search',2)}...`"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark">
+
                 <template slot="append">
-                  <q-btn flat dense icon="search" color="secondary" @click="FILTERABLE.submit"/>
+                  <q-btn flat dense icon="search" dark-percentage color="fadded" @click="FILTERABLE.submit"/>
                 </template>
-              </q-select> 
-              
+              </q-select>
             </div>
           </table-header>
         </template>
@@ -60,7 +75,7 @@
           <q-btn v-if="isCanDelete" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden':  !isEditable(rs.row)}"/>
 
         </q-td>
-        
+
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
           <span v-if="rs.row.customer"> {{ rs.row.customer.name }}</span>
           <span v-else>- undifined -</span>
@@ -77,8 +92,8 @@
         </q-td>
 
         <q-td slot="body-cell-interval_date" slot-scope="rs" :props="rs">
-          <span> 
-            {{ rs.row.begin_date ? $app.moment(rs.row.begin_date).format('DD/MM/YY') : 'undefined'}} - 
+          <span>
+            {{ rs.row.begin_date ? $app.moment(rs.row.begin_date).format('DD/MM/YY') : 'undefined'}} -
             {{ rs.row.until_date ? $app.moment(rs.row.until_date).format('DD/MM/YY') : 'undefined'}}
           </span>
         </q-td>
@@ -90,7 +105,7 @@
 
       </q-table>
     </q-pull-to-refresh>
-    
+
   </q-page>
 </template>
 
@@ -120,14 +135,14 @@ export default {
           uri: '/admin/incomes/forecasts',
         },
         columns: [
-          { name: 'prefix', label: ''},
-          
-          { name: 'number', label: 'Number', field: 'number', align: 'left', sortable: true },
-          { name: 'customer_id', label: 'Customer', field: 'customer_id', align: 'left', sortable: true },
+          { name: 'prefix', label: '', align: 'left'},
+
+          { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
+          { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
           { name: 'begin_date', label: 'Begin Date', field: 'begin_date', align: 'center'},
           { name: 'until_date', label: 'Until Date', field: 'until_date', align: 'center'},
-          { name: 'created', label: 'Created at', field: 'created_at', align: 'center', sortable: true},
-          
+          { name: 'created', label: this.$tc('form.create', 2), field: 'created_at', align: 'center', sortable: true},
+
         ]
       },
     }

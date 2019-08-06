@@ -1,70 +1,114 @@
 <template>
-  <q-page padding class="row justify-center" v-if="SHOW" :dark="LAYOUT.isDark">
-    <page-print class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
-     <div slot="header-tags">
+  <q-page padding class="row justify-center" :dark="LAYOUT.isDark" style="min-width:210mm;">
+    <page-print class="q-pa-md shadow-2" style="max-width:210mm" v-if="VIEW.show">
+      <div slot="header-tags">
         <q-chip label="Revised" v-if="!!rsView.revise_id"
           icon="bookmark" color="negative"
           tag outline small dense />
+        <ux-chip-status :row="rsView" tag outline small square icon='bookmark'/>
       </div>
       <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
       <span slot="header-subtitle" style="font-size:16px">Planing & Production Control Division</span>
-      
-      <div class="column  q-gutter-md" >
-        <div class="row justify-around q-col-gutter-sm" >
-          <div class="col-6 self-center text-center">
-              <span class="text-h6">PACKING GOODS</span>
-          </div>
-          <div class="col-6">
-             <q-markup-table class="bordered no-shadow" separator="cell" dense :dark="LAYOUT.isDark">
-              <tr><th>Number</th><th>Date</th></tr>
-              <tr>                               
-                <td>{{rsView.number}}</td>
-                <td>{{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }}</td>
-              </tr>
-            </q-markup-table>
+
+      <div class="row q-col-gutter-sm" >
+        <div class="col-12">
+          <div class="row justify-between q-col-gutter-sm" >
+            <div class="col self-end">
+                <span class="text-h6">PACKING GOODS</span>
+            </div>
+            <div class="col q-pb-md">
+              <q-markup-table class="bordered no-shadow" separator="cell" dense :dark="LAYOUT.isDark">
+                <tr><th>{{$tc('label.number')}}</th><th>{{$tc('label.date')}}</th></tr>
+                <tr>
+                  <td>{{rsView.number}}</td>
+                  <td>{{$app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm')}}</td>
+                </tr>
+              </q-markup-table>
+            </div>
           </div>
         </div>
-        <q-markup-table class="bordered no-shadow" separator="vertical" dense :dark="LAYOUT.isDark">
-          <tr>
-            <th class="text-weight-light">Worktime</th><td>{{ getWorktime(rsView.worktime) }}</td>
-    
-            <th class="text-weight-light">Customer</th><td>{{ rsView.customer.name }}</td>
-          </tr>
-          <tr>
-            <th class="text-weight-light">Operator</th><td>{{ rsView.operator.name }}</td>
-          
-            <th class="text-weight-light">Process at</th><td>{{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '' }}</td>
-          </tr>
-        </q-markup-table>
         <div class="col-12">
-          <q-table ref="table" class="bordered no-shadow" color="secondary" separator="vertical" dense hide-bottom :dark="LAYOUT.isDark"
-            :data="[rsView.packing_items]" 
+          <q-markup-table class="super-dense no-shadow th-text-right" dense :dark="LAYOUT.isDark">
+            <tr>
+              <th class="text-weight-light">Worktime</th>
+              <td width="35%">{{ getWorktime(rsView.worktime) }}</td>
+
+              <th class="text-weight-light">{{$tc('general.customer')}}</th>
+              <td width="35%">{{ rsView.customer.name }}</td>
+            </tr>
+            <tr>
+              <th class="text-weight-light">Operator</th>
+              <td width="35%">{{ rsView.operator ? rsView.operator.name : '-'}}</td>
+
+              <th class="text-weight-light">{{$tc('label.shift')}}</th>
+              <td width="35%">{{ rsView.shift.name }}</td>
+            </tr>
+          </q-markup-table>
+        </div>
+        <div class="col-12">
+          <q-table ref="table" class="bordered no-highlight no-shadow" color="secondary" separator="vertical" dense hide-bottom :dark="LAYOUT.isDark"
+            :data="[rsView.packing_items]"
             no-data-label = "No Production"
             :columns="[
               { name: 'work_order_item', label: 'Work Order', align: 'left', field: (v)=> v.work_order_item.work_order.number},
-              { name: 'code', label: 'Part code', align: 'left', field: (v)=> v.item.code},
-              { name: 'part_name', label: 'Part name', align: 'left', field: (v)=> v.item.part_name},
-              { name: 'quantity', label: 'Quantity', align: 'right', field: (v)=> v.quantity},
-              { name: 'unit_id', label: 'Unit', align: 'center', field: (v)=> v.unit.code}
+              { name: 'code', label: this.$tc('label.code', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.code},
+              { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
+              { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
+              { name: 'quantity', label: 'QTY', align: 'right', field: (v)=> v.quantity},
+              { name: 'faulty', label: 'FAULT', align: 'right', field: (v)=> this.FAULT_TOTALS},
+              { name: 'total', label: $tc('label.total'), align: 'right', field: (v)=> (v.quantity+FAULT_TOTALS)},
             ]"
           >
+          <template slot="bottom-row">
+            <tr v-if="FAULT_TOTALS">
+              <q-td colspan="100%" style="border-top-width: 1px">
+                <div class="q-pb-sm text-caption text-weight-light">
+                  {{('FAULTY').toUpperCase()}}
+               </div>
+                <div>
+                  <template v-for="(item_fault, index) in rsView.packing_items.packing_item_faults">
+                    <q-chip :key="index" class="bg-white bordered" square dense>
+                      <q-avatar color="faded" text-color="white">{{item_fault.quantity}}</q-avatar>
+                      {{item_fault.fault.name}}
+                    </q-chip>
+                  </template>
+                </div>
+
+              </q-td>
+            </tr>
+          </template>
           </q-table>
         </div>
-        
+
         <div class="col-12">
-            <div class="q-my-xs text-italic">Description:</div>
+            <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
         <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
-          <q-btn label="Back" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <q-btn color="positive" :icon-right="btnIcon('edit')" label="Edit" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
-          <q-btn label="Print" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
-          <q-btn color="negative" :icon-right="btnIcon('delete')" label="Delete" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn>
+          <q-btn :label="$tc('form.back')" icon="cancel"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
+          <q-btn :label="$tc('form.edit')" icon="edit" color="positive" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
+          <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="print()" ></q-btn>
+          <!-- <q-btn :label="$tc('form.delete')" :icon="btnIcon('delete')" color="negative" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn> -->
+          <ux-btn-dropdown :label="$tc('label.others')" split color="blue-grey" no-caps class="float-right"
+            :options="[
+              { label: 'Delete', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
+                detail: $tc('messages.process_delete'),
+                actions: () => {
+                  VIEW.delete()
+                }
+              },
+              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+                detail: $tc('messages.process_void'),
+                actions: () => {
+                  VIEW.void(()=> init() )
+                }
+              },
+            ]" />
         </div>
       </div>
     </page-print>
-    
-    <q-inner-loading :visible="VIEW.loading">
+
+    <q-inner-loading :showing="VIEW.loading">
         <q-spinner-gears size="50px" color="primary" />
     </q-inner-loading>
   </q-page>
@@ -96,23 +140,32 @@ export default {
     this.init()
   },
   computed: {
+    IS_VOID() {
+      if (this.IS_EDITABLE) return false
+      if (this.rsView.deleted_at) return false
+      if (['VOID'].find(x => x === this.rsView.status)) return false
+      return true
+    },
     IS_EDITABLE() {
-      if (this.rsView.hasOwnProperty('has_relathinship') && this.rsView.has_relationship.length > 0) return false
+      if (this.rsView.deleted_at || this.rsView.status !== 'OPEN') return false
+      if (this.rsView.hasOwnProperty('has_relationship') && Object.keys(this.rsView.has_relationship).length > 0) return false
 
       return true
     },
+    FAULT_TOTALS() {
+      if(!this.rsView.packing_items) return 0
+      if(this.rsView.packing_items.packing_item_faults.length === 0) return 0
+      return this.rsView.packing_items.packing_item_faults.reduce((total,item) => {
+        // console.log(total)
+        return total + Number(item.quantity)
+      },0)
+    }
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.VIEW.onLoad(
-        (data) => {
-          this.setView(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.VIEW.load((data) => {
+        this.setView(data || {})
+      })
     },
     btnIcon (str) {
       return !this.$q.screen.lt.sm ? str : ''

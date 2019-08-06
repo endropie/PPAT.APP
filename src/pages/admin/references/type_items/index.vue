@@ -1,12 +1,12 @@
 <template>
-  <q-page padding class="page-index"  v-if="SHOW" :dark="LAYOUT.isDark">
+  <q-page padding class="page-index"  :dark="LAYOUT.isDark">
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table  ref="table" class="table-index" color="primary"
+      <q-table  ref="table" class="table-index th-uppercase" color="primary"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
         :filter="TABLE.filter"
-        selection="none" 
+        selection="none"
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
@@ -28,7 +28,7 @@
             </template>
           </table-header>
         </template>
-        
+
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
@@ -52,9 +52,9 @@ export default {
           uri: '/admin/references/type_items',
         },
         columns: [
-          { name: 'prefix', label: ''},
+          { name: 'prefix', label: '', align: 'left'},
           { name: 'name', field: 'name', label: 'Name', align: 'left', sortable: true},
-          { name: 'description', field: 'description', label: 'Description', align: 'left'},
+          { name: 'description', field: 'description', label: this.$tc('label.description'), align: 'left'},
         ]
       },
     }

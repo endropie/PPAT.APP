@@ -1,46 +1,71 @@
 <template>
-<q-page padding class="form-page" v-if="SHOW">
-  <q-card inline class="main-box q-ma-sm" :dark="LAYOUT.isDark">
+<q-page padding class="form-page">
+  <q-card inline class="main-box q-ma-sm" v-if="FORM.show" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('label.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
         </template>
       </form-header>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-section class="row q-col-gutter-x-sm">
       <!-- COLUMN::1st customer Identitity -->
-      <q-input class="col-12 col-sm-6"
-        name="number" 
-        label="No Transaction" 
-        v-model="rsForm.number" 
-        placeholder="[Auto Generate]" 
+      <q-input class="col-12 col-sm-6 hidden"
+        name="number"
+        :label="$tc('label.number')"
+        v-model="rsForm.number"
+        placeholder="[Auto Generate]"
          :dark="LAYOUT.isDark"
-        v-validate="$route.meta.mode == 'edit' ? 'required':''" 
-        :error="errors.has('number')" 
+        v-validate="$route.meta.mode == 'edit' ? 'required':''"
+        :error="errors.has('number')"
         :error-message="errors.first('number')"
         autofocus/>
-        
-      <select-filter class="col-12 col-sm-6"
-        name="line_id" 
-        v-model="rsForm.line_id" 
-        label="Line Production" 
-        :disable="IssetWorkOrderItems" 
+
+      <ux-select-filter class="col-12 col-sm-6"
+        name="line_id"
+        v-model="rsForm.line_id"
+        :label="$tc('label.line_production')"
+        :disable="IssetWorkOrderItems"
         :dark="LAYOUT.isDark"
         v-validate="'required'"
-        :options="LineOptions" clearable
-        :error="errors.has('line_id')" 
-        :error-message="errors.first('line_id')"/>
-      <q-tooltip :disable="!IssetWorkOrderItems" :offset="[0, 10]">To change, Please delete Work-Order items first!</q-tooltip>
+        :options="LineOptions.filter(x => x.row.ismain)" clearable
+        :error="errors.has('line_id')"
+        :error-message="errors.first('line_id')">
+        <q-tooltip v-if="Boolean(IssetWorkOrderItems)" :offset="[0, 10]">To change, Please delete Work-Order items first!</q-tooltip>
+      </ux-select-filter>
 
-        
+      <div class="col-12 col-sm-6">
+        <div class="row q-col-gutter-sm">
+          <ux-date name="date" type="date" class="col-12 col-sm-6"
+            :label="$tc('label.date')" stack-label
+            v-model="rsForm.date"
+            v-validate="`required|date_format:yyyy-MM-dd|after:${$app.moment().add(-1,'days').format('YYYY-MM-DD')}`"
+            :date-options="(date) => date >= $app.moment().format('YYYY/MM/DD')"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('date')"
+            :error-message="errors.first('date')">
+          </ux-date>
+
+          <q-select class="col-12 col-sm-6"
+            name="shift_id"
+            :label="$tc('label.shift')" stack-label
+            v-model="rsForm.shift_id"
+            v-validate="'required'"
+            :options="ShiftOptions" filter
+            map-options emit-value
+            :error="errors.has('shift_id')"
+          />
+
+        </div>
+      </div>
+
       <!-- COLUMN::2th Detail Items & Lines -->
-      <q-field class="col-12" prefix="Material production" borderless dense 
+      <q-field class="col-12" prefix="Material production" borderless dense
         :dark="LAYOUT.isDark"
-        :error="errors.has(`stockist_from`)" 
+        :error="errors.has(`stockist_from`)"
         :error-message="errors.first('stockist_from')">
-        <q-option-group :name="`stockist_from`" type="radio" 
+        <q-option-group :name="`stockist_from`" type="radio"
           v-model="rsForm.stockist_from" inline
           :dark="LAYOUT.isDark"
           :options="[
@@ -49,20 +74,20 @@
             {value: 'NGR', label: 'REPAIR',  color: 'orange-8' },
           ]"
           v-validate="'required'"
-          
+
         />
       </q-field>
       <div class="col-12">
         <q-table ref="table-items" dense hide-bottom
-          class="no-shadow inline full-width no-hightlight" color="secondary"  style="display:grid"
+          class="no-shadow inline full-width no-highlight" color="secondary"  style="display:grid"
           :dark="LAYOUT.isDark"
-          :data="rsForm.work_order_items" 
+          :data="rsForm.work_order_items"
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'prefix', label: '',  align: 'left', visibility:false},
-            { name: 'item_id', label: 'Part item ', align: 'left'}, 
-            { name: 'target', label: 'Quantity', align: 'center'},
-            { name: 'unit_id', label: 'Unit', align: 'center'},
+            { name: 'item_id', label: 'Part item ', align: 'left'},
+            { name: 'target', label: $tc('label.quantity'), align: 'center'},
+            { name: 'unit_id', label: $tc('label.unit'), align: 'center'},
             { name: 'ngratio', label: 'NG Ratio', align: 'center'},
             { name: 'quantity', label: 'Total', align: 'center'},
           ]"
@@ -73,38 +98,38 @@
                 <q-btn dense flat round icon="clear" color="negative" @click="removeItem(rsItem.row.__index)"/>
               </q-td>
               <q-td key="item_id" width="40%" >
-                <select-filter
-                  :name="`work_order_items.${rsItem.row.__index}.item_id`" 
+                <ux-select-filter
+                  :name="`work_order_items.${rsItem.row.__index}.item_id`"
                   :dark="LAYOUT.isDark"
-                  v-model="rsItem.row.item_id" 
+                  v-model="rsItem.row.item_id"
                   v-validate="'required'"
                   filled dense hide-bottom-space color="blue-grey-4"
-                  :disable="!rsForm.line_id"
+                  :disable="!rsForm.line_id" autofocus
                   :options="ItemOptions" clearable
                   @input="(val) => setItemReference(rsItem.row.__index, val)"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.item_id`)"
-                />
-                <q-tooltip v-if="!rsForm.line_id" :offset="[0, 10]">Select a Pre-Line , first! </q-tooltip>
-                
+                >
+                  <q-tooltip v-if="!rsForm.line_id" :offset="[0, 10]">Select a Pre-Line , first! </q-tooltip>
+                </ux-select-filter>
+
               </q-td>
               <q-td key="target"  width="15%">
-                <q-input
-                  :name="`work_order_items.${rsItem.row.__index}.target`" type="number"
-                  :min="0" align="center" 
-                  :dark="LAYOUT.isDark"
-                  v-model="rsItem.row.target"  
-                  filled dense hide-bottom-space color="blue-grey-4"
+                <q-input style="min-width:70px"
+                  :name="`work_order_items.${rsItem.row.__index}.target`"
+                  type="number" :min="0" align="center"
+                  v-model="rsItem.row.target"
+                  :dark="LAYOUT.isDark" color="blue-grey-4"
+                  filled dense hide-bottom-space no-error-icon
                   v-validate="FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index])"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.target`)"
-                  :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                   @input="() => { rsItem.row.quantity = calcQuantity(rsItem.row)}"
                 />
               </q-td>
               <q-td key="unit_id"  width="15%">
-                <q-select 
-                  :name="`work_order_items.${rsItem.row.__index}.unit_id`" 
+                <q-select
+                  :name="`work_order_items.${rsItem.row.__index}.unit_id`"
                   :dark="LAYOUT.isDark"
-                  v-model="rsItem.row.unit_id" 
+                  v-model="rsItem.row.unit_id"
                   filled dense hide-bottom-space color="blue-grey-4"
                   :options="ItemUnitOptions[rsItem.row.__index]"
                   map-options
@@ -115,12 +140,12 @@
                 />
               </q-td>
               <q-td key="ngratio"  width="15%">
-                <q-input 
-                  :name="`work_order_items.${rsItem.row.__index}.ngratio`" 
-                  suffix="%" type="number" 
-                  :dark="LAYOUT.isDark"
-                  v-model="rsItem.row.ngratio" 
-                  filled dense hide-bottom-space align="center" color="blue-grey-4" 
+                <q-input  style="min-width:60px" input-class="text-center"
+                  :name="`work_order_items.${rsItem.row.__index}.ngratio`"
+                  type="number" align="right" suffix="%"
+                  :dark="LAYOUT.isDark" color="blue-grey-4"
+                  v-model="rsItem.row.ngratio"
+                  filled dense hide-bottom-space no-error-icon
                   v-validate="'required'"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.ngratio`)"
                   :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
@@ -128,10 +153,10 @@
                   />
               </q-td>
               <q-td key="quantity"  width="15%">
-                <q-input 
+                <q-input style="min-width:120px"
                   :name="`work_order_items.${rsItem.row.__index}.quantity`" type="number"
                   :dark="LAYOUT.isDark"
-                  v-model="rsItem.row.quantity" 
+                  v-model="rsItem.row.quantity"
                   filled dense hide-bottom-space disable align="right" color="blue-grey-6"
                   no-error-icon
                   v-validate="rsItem.row.item_id ? FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index]) : ''"
@@ -141,13 +166,13 @@
                 />
               </q-td>
             </q-tr>
-            <q-tr  :rsItem="rsItem">
+            <!-- <q-tr  :rsItem="rsItem">
               <q-td></q-td>
               <q-td colspan="100%">
                 <q-table ref="table-itemlines" class="no-shadow inline full-width" style="display:grid"
-                  dense hide-bottom color="secondary" separator="none" 
-                  :dark="LAYOUT.isDark" 
-                  :data="rsItem.row.work_order_item_lines" 
+                  dense hide-bottom color="secondary" separator="none"
+                  :dark="LAYOUT.isDark"
+                  :data="rsItem.row.work_order_item_lines"
                   :rows-per-page-options ="[0]"
                   :columns="[
                     { name: 'prefix', label: '',  align: 'left', visibility:false},
@@ -164,32 +189,32 @@
                         />
                       </q-td>
                       <q-td key="line_id" width="50%" >
-                        <select-filter class="field-auto-hight"
-                          :name="`work_order_item_lines.${propLine.row.__index}.line_id`" 
-                          borderless dense hide-bottom-space hide-dropdown-icon readonly color="blue-grey-1" 
+                        <ux-select-filter class="field-auto-hight"
+                          :name="`work_order_item_lines.${propLine.row.__index}.line_id`"
+                          borderless dense hide-bottom-space hide-dropdown-icon readonly color="blue-grey-1"
                           :dark="LAYOUT.isDark"
-                          v-model="propLine.row.line_id" 
+                          v-model="propLine.row.line_id"
                           v-validate="'required'"
                           :error="errors.has(`work_order_item_lines.${propLine.row.__index}.line_id`)"
                           :options="LineOptions" filter
                         />
                         <q-tooltip v-if="!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
-                  
+
                       </q-td>
                       <q-td key="begin_date" width="25%">
-                        
+
                         <q-input class="field-auto-hight"
-                          v-model="propLine.row.begin_date" type="date" 
+                          v-model="propLine.row.begin_date" type="date"
                           :dark="LAYOUT.isDark"
-                          filled dense hide-bottom-space color="blue-grey-1" 
+                          filled dense hide-bottom-space color="blue-grey-1"
                           :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                         />
                       </q-td>
                       <q-td key="until_date"  width="25%">
                         <q-input class="field-auto-hight"
-                          v-model="propLine.row.until_date" type="date" 
+                          v-model="propLine.row.until_date" type="date"
                           :dark="LAYOUT.isDark"
-                          filled dense hide-bottom-space color="blue-grey-1"  
+                          filled dense hide-bottom-space color="blue-grey-1"
                           :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                         />
                       </q-td>
@@ -202,35 +227,35 @@
                   </q-tr>
                 </q-table>
               </q-td>
-            </q-tr>
+            </q-tr> -->
           </template>
           <q-tr slot="bottom-row" slot-scope="rsItem" :rsItem="rsItem">
             <q-td colspan="100%">
-              <q-btn dense @click="addNewItem()"  icon="add" color="positive"/>
+              <q-btn round dense @click="addNewItem()"  icon="add" color="positive"/>
             </q-td>
           </q-tr>
         </q-table>
       </div>
       <!-- COLUMN::4th Description -->
       <div class="col-12 cloumn q-mt-md">
-        <q-input name="description" type="textarea" rows="3" 
-          stack-label label="Description" 
+        <q-input name="description" type="textarea" rows="3"
+          stack-label :label="$tc('label.description')"
           filled
           :dark="LAYOUT.isDark"
           v-model="rsForm.description"/>
-    
+
       </div>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-actions >
-      <q-btn :label="$tc('label.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
-      <q-btn :label="$tc('label.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
-      <q-btn :label="$tc('label.save')" icon="save" color="positive" @click="onSave()" 
+      <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
+      <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
+      <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()"
         :disabled="FORM.has_relationship.length > 0">
       </q-btn>
     </q-card-actions>
   </q-card>
-    <q-inner-loading :visible="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
+    <q-inner-loading :showing="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
 </q-page>
 </template>
 
@@ -252,7 +277,7 @@ export default {
         customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
         units: {data:[], api:'/api/v1/references/units?mode=all'},
         items: {data:[], api:'/api/v1/common/items?mode=all&with=prelines'},
-        itemstocks: {data:[], api:'/api/v1/common/items?mode=itemstock'},
+        // itemstocks: {data:[], api:'/api/v1/common/items?mode=itemstock'},
         lines: {data:[], api:'/api/v1/references/lines?mode=all'},
         shifts: {data:[], api:'/api/v1/references/shifts?mode=all'}
       },
@@ -263,7 +288,7 @@ export default {
         },
         validator: {
           quantity: (row, max) => {
-            let 
+            let
               validation = ['required'],
               isMaxValidation = true
 
@@ -279,16 +304,18 @@ export default {
         return {
           number: null,
           line_id: null,
+          date: this.$app.moment().format('YYYY-MM-DD'),
+          shift_id: null,
           stockist_from: 'FM',
           description: null,
           work_order_items: [
             {
-              id:null, 
-              item_id: null, 
+              id:null,
+              item_id: null,
               quantity: null,
               target:null,
-              unit_id: null, 
-              unit_rate: 1, 
+              unit_id: null,
+              unit_rate: 1,
               ngratio: 0,
               item: {}, unit: {},
               work_order_item_lines: [{
@@ -310,14 +337,14 @@ export default {
   },
   computed: {
     IssetWorkOrderItems() {
-        if (this.rsForm.work_order_items) {
-          return this.rsForm.work_order_items.some((item) => item.item_id)
-        }
-        return false
+      if (this.rsForm.work_order_items) {
+        return this.rsForm.work_order_items.some((item) => item.item_id)
+      }
+      return false
     },
     LineOptions() {
       let data = this.SHEET.lines.data || []
-      return data.map(line => ({label: line.name, value: line.id}))
+      return data.map(line => ({label: line.name, value: line.id, row:line}))
     },
     ShiftOptions() {
       return (this.SHEET.shifts.data.map(line => ({label: line.name, value: line.id})) || [])
@@ -329,12 +356,24 @@ export default {
       return (this.SHEET.units.data.map(item => ({label: item.code, value: item.id})) || [])
     },
     ItemOptions() {
-      let ITEM = this.SHEET.items.data.filter((item) => item.item_prelines[0].line_id === this.rsForm.line_id)
-      return (ITEM.map(item => ({label: item.code + ' - ' + item.part_name, sublabel: item.part_number, value: item.id})) || [])
+      let orKeys = this.FORM.data.work_order_items.map(x => x.item_id, [])
+
+      let ITEM = this.SHEET.items.data.filter((item) => {
+        if (item.item_prelines[0].line_id !== this.rsForm.line_id) return false
+        if(item.totals['FM'] <= 0 && !orKeys.find(x=> x === item.id)) return false
+        else return true
+      })
+      return (ITEM.map(item => ({
+        label: item.part_name,
+        sublabel: `[${item.code}] ${item.part_number}`,
+        value: item.id,
+        disable: !item.enable,
+        row: item
+      })) || [])
     },
     ItemUnitOptions() {
       let vars = []
-      
+
       for (const i in this.rsForm.work_order_items) {
         if (this.rsForm.work_order_items.hasOwnProperty(i)) {
           let rsItem = this.rsForm.work_order_items[i]
@@ -342,7 +381,7 @@ export default {
           vars[i] = vars[i].filter((unit)=> {
             if(!rsItem.item_id) return false
             if(rsItem.item) {
-              
+
               if(rsItem.item.unit_id === unit.value) return true
               if(rsItem.item.item_units) {
                 let filtered = rsItem.item.item_units.filter((fill)=> fill.unit_id === unit.value)
@@ -358,7 +397,7 @@ export default {
     loadItemStock() {
       const stockist = this.rsForm.stockist_from
 
-      let stockItem =  JSON.parse(JSON.stringify(this.MAPINGKEY['itemstocks']))
+      let stockItem =  JSON.parse(JSON.stringify(this.MAPINGKEY['items']))
       let moveItem = {
         set: function (id, val) {
           if (!this.hasOwnProperty(id)) this[id] = 0
@@ -382,7 +421,7 @@ export default {
           moveItem.set(detail.item_id, detail.quantity)
         }
       })
-      
+
       return data
     },
     MAPINGKEY() {
@@ -390,13 +429,11 @@ export default {
         'customers' : {},
         'units': {},
         'items': {},
-        'itemstocks': {},
       }
-      
+
       this.SHEET['customers'].data.map(value => { variables['customers'][value.id] = value })
       this.SHEET['units'].data.map(value => { variables['units'][value.id] = value })
       this.SHEET['items'].data.map(value => { variables['items'][value.id] = value })
-      this.SHEET['itemstocks'].data.map(value => { variables['itemstocks'][value.id] = value })
 
       return variables;
     }
@@ -406,15 +443,9 @@ export default {
   },
   methods: {
     init() {
-      this.SHOW = false
-      this.FORM.load(
-        (data) => {
-          this.setForm(data)
-          setTimeout(() => {
-            this.SHOW = true
-          }, 500) 
-        }
-      )
+      this.FORM.load((data) => {
+        this.setForm(data || this.setDefault())
+      })
     },
     setForm(data) {
       this.rsForm =  data
@@ -445,7 +476,7 @@ export default {
       return Math.ceil(Number(row.target) + (Number(row.target) * Number(row.ngratio) / 100))
     },
     setItemReference(index, val) {
-    
+
        if(!val){
         this.rsForm.work_order_items[index].unit_id = null
         this.rsForm.work_order_items[index].unit = {}
@@ -470,7 +501,7 @@ export default {
       }
     },
     setUnitReference(index, val) {
-      
+
       if(!val) return;
       else if (this.rsForm.work_order_items[index].item.unit_id === val) {
         this.rsForm.work_order_items[index].unit_rate = 1
@@ -489,7 +520,7 @@ export default {
     addNewItem() {
       let newEntri = this.setDefault().work_order_items[0];
       newEntri.work_order_item_lines = []
-      
+
       this.rsForm.work_order_items.push(newEntri)
     },
     removeItem(itemIndex) {
@@ -498,7 +529,7 @@ export default {
     },
     addNewItemLine(itemIndex) {
       let newEntri = this.setDefault().work_order_items[0].work_order_item_lines[0];
-      
+
       this.rsForm.work_order_items[itemIndex].work_order_item_lines.push(newEntri)
     },
     removeItemLine(itemIndex, lineIndex) {
@@ -511,27 +542,26 @@ export default {
         if (!result) {
           this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:'Please complete the form fields'
+            message:this.$tc('messages.to_complete_form')
           })
           return
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();
         this.$axios.set(method, apiUrl, this.rsForm)
-        .then((response) => {  
+        .then((response) => {
           let message = response.data.number + ' - #' + response.data.id
           this.FORM.response.success({message:message})
           this.FORM.toView(response.data.id)
         })
-        .catch((error) => { 
-          console.warn('[PLAY] onSave', error)
+        .catch((error) => {
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response, this.$tc('messages.fail', 1, {v:this.$tc('form.save')}).toUpperCase())
         })
         .finally(()=>{
           this.FORM.loading = false
         });
-        
+
       });
     },
   },

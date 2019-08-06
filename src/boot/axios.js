@@ -39,8 +39,6 @@ export default async ({ app, Vue }) => {
   axios.validToken = (callback) => {
     axios.post('/api/v1/auth/valid-token', {})
       .then((response) => callback(response))
-      .catch(() => {
-        callback()
-      })
+      .catch((error) => callback(error.response || error))
   }
 }

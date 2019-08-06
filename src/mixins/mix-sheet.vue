@@ -1,5 +1,6 @@
 <script>
 import { setTimeout } from 'timers';
+import { error } from 'util';
 export default {
   data () {
     return {
@@ -42,15 +43,17 @@ export default {
 
       if(newOption.api) api = String(newOption.api)
       if(newOption.params) params = String(newOption.params)
-      
+
       if(api.indexOf('?') !== -1) {
-        saparator = '&' 
+        saparator = '&'
       }
 
       return api + saparator + params
-      
+
     },
-    SHEET__LOAD (i, newOption) {
+    SHEET__LOAD (i, newOption, callback = null) {
+      if (callback && typeof callback !== 'function') console.warn('[PLAY] Callback is not function!');
+
       if (this.SHEET.hasOwnProperty(i) && typeof this.SHEET[i] !== 'function') {
 
         if (typeof newOption === 'string') {
@@ -58,51 +61,59 @@ export default {
         }
 
         const uri = this.SHEET__GETURI(this.SHEET[i], newOption)
-        console.log('SHEET__LOAD->uri = ', uri)
+
+        if(process.env.DEV) console.info('[PLAY] SHEET.LOAD => ', uri)
+
         this.SHEET[i].loading = true
         this.SHEET[i].data = []
         this.$axios.get(uri)
-          .then(response => { 
-            this.SHEET[i].data = response.data 
+          .then(response => {
+            this.SHEET[i].data = response.data
           })
           .catch(error => {
-            this.$app.response.error(error.response)
+            if(process.env.DEV) console.error('[PLAY] SHEET.ERROR => ', error)
+            // this.$app.response.error(error.response)
           })
           .finally(() => {
-            setTimeout(() => { this.SHEET[i].loading = false }, 1000)
+            setTimeout(() => {
+              this.SHEET[i].loading = false
+              if (callback) callback()
+             }, 500)
           })
       }
     },
-    SHEET__REQUEST (callbacks = null) {
+    SHEET__REQUEST (callback = null) {
+      if (callback && typeof callback !== 'function') console.warn('[PLAY] Callback is not function!');
+
       let requests = []
       for (const i in this.SHEET) {
         if (this.SHEET.hasOwnProperty(i)) {
           if (typeof this.SHEET[i] !== 'function' && this.SHEET[i].autoload === true && this.SHEET[i].api != null ) {
             const uri = this.SHEET__GETURI(this.SHEET[i])
+            this.SHEET[i].loading = true
             requests.push(
               this.$axios.get(this.SHEET[i].api)
-                .then(response => { 
-                  // console.log('SHEET__REQUEST->data = ', response.data)
-                  this.SHEET[i].data = response.data 
+                .then(response => {
+                  this.SHEET[i].data = response.data
+                  return response
+                })
+                .catch((error) => {
+                  if(process.env.DEV) console.error('[PLAY] SHEET.REQUEST.'+i+'.error')
+                  this.SHEET[i].errorMessage = error
+                })
+                .finally(() => {
+                  this.SHEET[i].loading = false
                 })
             )
           }
         }
       }
       this.$axios.all(requests)
-        .then((x) => {
-          const call = (f) => {
-            if (typeof f === 'function') return f()
-            else if (typeof f === 'undefined') return f
-          }
+        .finally((final)=> {
+          // if(process.env.DEV) console.warn('[PLAY] SHEET.REQUEST.ALL.finally')
+          if (callback) callback()
+        })
 
-          if (callbacks !== null) callbacks()
-            
-        })
-        .catch(error => {
-          this.$app.response.error(error.response, 'ERROR Get Option')
-        })
-        
     }
   }
 }

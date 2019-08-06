@@ -1,0 +1,23 @@
+export default {
+  add: 'Tambah',
+  add_new: 'Tambah Baru',
+  back: 'Kembali',
+  cancel: 'Batal',
+  create: 'Buat | Dibuat',
+  confirm: 'Konfirmasi {v} | {v} dikonfirmasi',
+  delete: 'Hapus',
+  delete_all: 'Hapus All',
+  edit: 'Edit',
+  new: 'Baru',
+  remove: 'Hapus | Dihapus',
+  reset: 'Reset | Direset',
+  save: 'Simpan | Disimpan',
+  search: 'Cari | Pencarian',
+  select: 'Pilih | Dipilih',
+  select_a: 'Pilih salah satu {v}',
+  show: 'Tampilkan {v}',
+  submit: 'Submit | Submited',
+  print: 'Print',
+  validation: 'Validasi | Ter-validasi',
+  void: 'Batal'
+}
