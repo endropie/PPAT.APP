@@ -17,13 +17,6 @@
             :title="TABLE.getTitle()"
             :TABLE.sync="TABLE"
             :menus="[
-              { label: $tc('form.add_new'),
-                detail: $tc('messages.form_new'),
-                icon: 'add',
-                shortcut: true,
-                hidden:!$app.can('work-orders-create'),
-                to: `${TABLE.resource.uri}/create`
-              },
               { label: $tc('label.trash'),
                 detail:  $tc('messages.show_deleted'),
                 shortcut: true,
@@ -45,7 +38,8 @@
                 :label="$tc('label.line')" stack-label
                 :placeholder="$tc('form.select_a', null, {v:$tc('label.line')})"
                 dense hide-bottom-space hide-dropdown-icon
-                standout="bg-blue-grey-3 text-white" bg-color="blue-grey-1"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark"
                 :options="LineOptions"
                 @input="FILTERABLE.submit" />
@@ -55,7 +49,8 @@
                 :options="['OPEN', 'PROCESSED','CLOSED']"
                 :label=" $tc('label.state')"
                 dense hide-bottom-space hide-dropdown-icon
-                standout="bg-blue-grey-3 text-white" bg-color="blue-grey-1"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark"
                 @input="FILTERABLE.submit" />
 
@@ -63,7 +58,8 @@
                 stack-label :label="$tc('label.date')"
                 v-model="FILTERABLE.fill.date.value" type="date"  clearable
                 dense hide-bottom-space
-                standout="bg-blue-grey-3 text-white" bg-color="blue-grey-1"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark"
                 @input="FILTERABLE.submit"/>
 
@@ -73,7 +69,8 @@
                 :options="ShiftOptions"
                 :label="$tc('label.shift')"
                 dense hide-bottom-space hide-dropdown-icon
-                standout="bg-blue-grey-3 text-white" bg-color="blue-grey-1"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark"
                 @input="FILTERABLE.submit"/>
 
@@ -82,7 +79,8 @@
                 dense hide-dropdown-icon
                 v-model="FILTERABLE.search" emit-value
                 :placeholder="`${$tc('form.search',2)}...`"
-                standout="bg-blue-grey-3 text-white" bg-color="blue-grey-1"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark">
 
                 <template slot="append">
@@ -96,7 +94,7 @@
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn v-if="rs.row.status != 'OPEN'" dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
-          <q-btn v-if="rs.row.status == 'OPEN' && isCanClosed" dense flat color="light" icon="beenhere" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
+          <q-btn v-if="rs.row.status == 'OPEN' && isCanConfirm" dense flat color="light" icon="beenhere" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
         </q-td>
 
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs">
@@ -176,8 +174,8 @@ export default {
     this.INDEX.load()
   },
   computed: {
-    isCanClosed(){
-      return this.$app.can('work-process-close')
+    isCanConfirm(){
+      return this.$app.can('work-process-confirm')
     },
     ShiftOptions() {
       return (this.SHEET.shifts.data.map(line => ({label: line.name, value: line.id})) || [])

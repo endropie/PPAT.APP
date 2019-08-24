@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="row justify-center" :dark="LAYOUT.isDark" style="min-width:210mm;">
-    <page-print class="q-pa-md shadow-2" style="max-width:210mm" v-if="VIEW.show">
+    <page-print v-if="VIEW.show" class="q-pa-md shadow-2" style="max-width:210mm">
       <div slot="header-tags">
         <q-chip label="Revised" v-if="!!rsView.revise_id"
           icon="bookmark" color="negative"
@@ -85,31 +85,42 @@
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
         <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
-          <q-btn :label="$tc('form.back')" icon="cancel"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <q-btn :label="$tc('form.edit')" icon="edit" color="positive" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
+          <q-btn :label="$tc('form.back')" icon="cancel" color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
+          <q-btn :label="$tc('form.edit')" icon="edit" color="green" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`" v-if="IS_EDITABLE && $app.can('packings-update')"></q-btn>
           <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="print()" ></q-btn>
           <!-- <q-btn :label="$tc('form.delete')" :icon="btnIcon('delete')" color="negative" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn> -->
-          <ux-btn-dropdown :label="$tc('label.others')" split color="blue-grey" no-caps class="float-right"
+          <ux-btn-dropdown split color="blue-grey" no-caps class="float-right"
+            :label="IS_EDITABLE ?  $tc('form.add_new') : $tc('label.others')"
+            @click="IS_EDITABLE ? $router.push(`${VIEW.resource.uri}/create`) : false"
             :options="[
-              { label: 'Delete', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
+              { label: $tc('form.add_new'), color:'green', icon: 'add',
+                detail: $tc('messages.process_create'),
+                hidden: !isCanCreate || !$app.can('packings-create'),
+                actions: () => {
+                  $router.push(`${VIEW.resource.uri}/create`)
+                }
+              },
+              { label: 'Delete', color:'red', icon: 'delete',
                 detail: $tc('messages.process_delete'),
+                hidden: !IS_EDITABLE || !$app.can('packings-delete'),
                 actions: () => {
                   VIEW.delete()
                 }
               },
-              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+              { label: 'VOID', color:'red', icon: 'block',
                 detail: $tc('messages.process_void'),
+                hidden: !IS_VOID || !$app.can('packings-create'),
                 actions: () => {
                   VIEW.void(()=> init() )
                 }
               },
-            ]" />
+          ]"/>
         </div>
       </div>
     </page-print>
 
     <q-inner-loading :showing="VIEW.loading">
-        <q-spinner-gears size="50px" color="primary" />
+        <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </q-page>
 </template>
@@ -140,9 +151,19 @@ export default {
     this.init()
   },
   computed: {
+    isCanCreate() {
+      return this.$app.can('packings-create')
+    },
+    isCanUpdate() {
+      return this.$app.can('packings-update')
+    },
+    isCanDelete() {
+      return this.$app.can('packings-delete')
+    },
     IS_VOID() {
       if (this.IS_EDITABLE) return false
       if (this.rsView.deleted_at) return false
+      if (!this.$app.can('packings-void')) return false
       if (['VOID'].find(x => x === this.rsView.status)) return false
       return true
     },
@@ -174,12 +195,9 @@ export default {
       window.print()
     },
     getWorktime(val) {
-    const stockist = [
-        { label: 'Reguler', value: 'REGULER' },
-        { label: 'Overtime', value: 'OVERTIME', color: 'secondary' },
-    ]
-    const v = stockist.find(x => x.value === val)
-    return v ? v.label : 'N/A'
+      const worktimes = this.CONFIG.options['worktime']
+      const v = worktimes.find(x => x.value === val)
+      return v ? v.label : 'N/A'
 
     },
     setView(data) {

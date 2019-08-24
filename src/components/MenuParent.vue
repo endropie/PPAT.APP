@@ -3,7 +3,7 @@
   <q-expansion-item v-if="show" :class="{hidden:!hasChildShow}"
     :label="node.name || ''"
     :dark="dark"
-    :icon="node.icon"  
+    :icon="node.icon"
     :content-inset-level="0.2"
     expand-separator dense-toggle
     :default-opened="$route.fullPath.startsWith(prefix)">
@@ -12,14 +12,15 @@
           <q-icon :name="isChildren ? `keyboard_arrow_right` : node.icon" />
         </q-item-section>
         <q-item-section label>
-          {{node.name || ''}}
+          <span v-if="node.lang">{{ $tc(node.lang)}}</span>
+          <span v-else>{{node.name || '- noname -'}}</span>
         </q-item-section>
       </template>
-      
-      <admin-menu-item v-for="(nodeitem, index) in node.children" :key="index" 
+
+      <admin-menu-item v-for="(nodeitem, index) in node.children" :key="index"
         :dark="dark"
-        :node="nodeitem" 
-        :prefix="getPrefix(nodeitem)" 
+        :node="nodeitem"
+        :prefix="getPrefix(nodeitem)"
         isChildren />
   </q-expansion-item>
 </template>
@@ -48,10 +49,10 @@ export default {
     }
   },
   methods: {
-    getPrefix(item) {  
+    getPrefix(item) {
       return this.prefix + (item.path ? ('/' + item.path) : '' )
     }
-      
+
   },
 }
 </script>

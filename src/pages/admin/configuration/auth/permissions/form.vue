@@ -4,7 +4,7 @@
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="ROUTE.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -96,7 +96,7 @@ export default {
         .catch((error) => {
 
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false

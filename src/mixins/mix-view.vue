@@ -9,6 +9,9 @@ import showVue from '../pages/admin/common/items/show.vue';
 
 export default {
   mixins: [MixPage, MixSheet],
+  props: {
+    route: Object,
+  },
   data () {
     return {
       VIEW: {
@@ -19,7 +22,9 @@ export default {
         load: (callback) => this.VIEW__load(callback),
         onCatch: (errors, title) => this.VIEW__onCatch(errors, title),
         toIndex: () => this.VIEW__toIndex(),
+        toBack: () => this.VIEW__toBack(),
         delete: () => this.VIEW__delete(),
+        state:(mode, callback) => this.VIEW__state (mode, callback),
         void: (callback) => this.VIEW__void(callback),
         options: {},
         has_relationship: [],
@@ -35,11 +40,14 @@ export default {
     // console.info('[PLAY] MIX-VIEW is Mounted!')
   },
   computed: {
+    ROUTE() {
+      return this.route || this.$route
+    },
     VIEW__Title () {
-      return (this.$route.meta.title || 'VIEW').toUpperCase()
+      return (this.ROUTE.meta.title || 'VIEW').toUpperCase()
     },
     VIEW__Subtitle () {
-      const stringID = (this.$route.params.id ? '#' + this.$route.params.id : '')
+      const stringID = (this.ROUTE.params.id ? '#' + this.ROUTE.params.id : '')
       return 'Data ' + stringID
     }
   },
@@ -50,7 +58,7 @@ export default {
       this.VIEW.loading = true
 
       const callBase = () => {
-        const apiUrl = this.VIEW.resource.api + '/' + this.$route.params.id + this.VIEW.resource.params
+        const apiUrl = this.VIEW.resource.api + '/' + this.ROUTE.params.id + this.VIEW.resource.params
 
         this.$axios.get(apiUrl)
           .then((response) => {
@@ -79,9 +87,7 @@ export default {
           })
       }
 
-      this.SHEET.request(
-        callBase()
-      )
+      this.SHEET.request(callBase)
     },
 
     VIEW__onCatch (ErrorResponse, title) { // Handle Catch error of Axios
@@ -97,12 +103,12 @@ export default {
         cancel: this.$tc('form.cancel')
       }).onOk(() => {
 
-        this.$axios.delete(`${this.VIEW.resource.api}/${this.$route.params.id}?mode=void`)
+        this.$axios.delete(`${this.VIEW.resource.api}/${this.ROUTE.params.id}?mode=void`)
           .then((response) => {
             if (response.data.success) {
               this.$app.notify.success({
                 message: this.$tc('messages.success', 1, 'VOID').toUpperCase(),
-                detail: this.$tc('messages.form_has_void', 1, {v: `[code: #${this.$route.params.id}]`}),
+                detail: this.$tc('messages.form_has_void', 1, {v: `[code: #${this.ROUTE.params.id}]`}),
               })
 
               if(typeof callback === 'function') {
@@ -127,13 +133,13 @@ export default {
         ok: this.$tc('messages.yes_to', 1,{v:this.$tc('form.delete')}),
         cancel: this.$tc('form.cancel')
       }).onOk(() => {
-        this.$axios.delete(`${this.VIEW.resource.api}/${this.$route.params.id}`)
+        this.$axios.delete(`${this.VIEW.resource.api}/${this.ROUTE.params.id}`)
           .then((response) => {
             // console.warn(response)
             if (response.data.success) {
               this.$app.notify.success({
                 message: this.$tc('messages.success_deleted'),
-                detail: this.$tc('messages.form_has_deleted', 1, {v: `[code:#${this.$route.params.id}]`}),
+                detail: this.$tc('messages.form_has_deleted', 1, {v: `[code:#${this.ROUTE.params.id}]`}),
               })
               this.VIEW__toIndex()
             }
@@ -145,17 +151,12 @@ export default {
     },
 
     VIEW__toIndex () {
-      if (!this.VIEW.resource.uri) {
-        console.warn('Property "VIEW.resource.uri" is not undefined!')
-        return
-      }
-
       setTimeout(() => {
-        this.$router.replace(this.VIEW.resource.uri)
+        this.$router.push(`${this.VIEW.resource.uri}?return=first`)
       }, 500)
     },
 
-    VIEW__back () {
+    VIEW__toBack () {
       this.$router.go(-1)
     }
   }

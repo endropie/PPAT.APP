@@ -3,21 +3,15 @@
   <q-card inline class="q-ma-sm " v-if="FORM.show">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
-        <template slot="menu-prepend">
-          <q-chip small color="negative" v-if="rsForm.revise_id">
-            Revised
-          </q-chip>
-        </template>
-        <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
-        </template>
+          <q-chip label="Revised" slot="menu-prepend" small color="negative" v-if="rsForm.revise_id" />
       </form-header>
     </q-card-section>
     <q-card-section>
       <div class="row q-col-gutter-sm q-col-gutter-x-md">
         <!-- COLUMN::Base Document -->
         <q-field class="col-12"
-          label="Transaction mode"
+          :label="$tc('label.mode',1, {v:$tc('label.transaction')})"
+          :data-vv-as="$tc('label.mode',1, {v:$tc('label.transaction')})"
           borderless
           :error="errors.has('transaction')"
           :error-message="errors.first('transaction')">
@@ -26,10 +20,7 @@
             <q-option-group class="col" name="transaction" type="radio"
               v-model="rsForm.transaction"
               inline color="secondary"
-              :options="[
-                { label: 'REGULER', value: 'REGULER' },
-                { label: 'RETURN', value: 'RETURN' }
-              ]"
+              :options="CONFIG.options['transaction_mode']"
               v-validate="'required'"/>
 
           </template>
@@ -41,7 +32,7 @@
               stack-label label="No Transaction"
               v-model="rsForm.number"
               readonly
-              v-validate="$route.meta.mode == 'edit' ? 'required':''"
+              v-validate="ROUTE.meta.mode == 'edit' ? 'required':''"
               :error="errors.has('number')" :error-message="errors.first('number')"
             >
               <template slot="after">
@@ -49,7 +40,7 @@
                   stack-label label="Revision"
                   v-model="rsForm.numrev" readonly
                   hide-bottom-space style="width:70px"
-                  v-validate="$route.meta.mode == 'edit' ? 'required':''"
+                  v-validate="ROUTE.meta.mode == 'edit' ? 'required':''"
                   :error="errors.has('numrev')"
                 />
 
@@ -107,10 +98,11 @@
               <q-tr :propItem="propItem">
                 <q-td key="item_id" width="50%" >
                   <q-field style="min-width:150px" :error="errors.has(`delivery_order_items.${propItem.row.__index}.item_id`)">
-                    <q-select :name="`delivery_order_items.${propItem.row.__index}.item_id`" v-model="propItem.row.item_id"	inverted color="blue-grey-5"
+                    <q-select :name="`delivery_order_items.${propItem.row.__index}.item_id`"
+                      v-model="propItem.row.item_id"	readonly
+                      inverted color="blue-grey-5"
                       v-validate="'required'"
-                      :options="ItemOptions" filter
-                      readonly
+                      :options="ItemOptions"
                       @input="(val)=>{ setItemReference(propItem.row.__index, val) }"
                     />
                     <q-tooltip :disable="IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
@@ -118,39 +110,25 @@
                 </q-td>
                 <q-td key="quantity" width="25%">
                     <q-field  style="min-width:120px" :error="errors.has(`delivery_order_items.${propItem.row.__index}.quantity`)" >
-                      <q-input :name="`delivery_order_items.${propItem.row.__index}.quantity`" v-model="propItem.row.quantity" type="number" align="center" inverted color="blue-grey-5"
+                      <q-input :name="`delivery_order_items.${propItem.row.__index}.quantity`"
+                        v-model="propItem.row.quantity" type="number" align="center"
+                        inverted color="blue-grey-5"
                         :suffix="propItem.row.item_id ? `&nbsp;/&nbsp; ${numUnitConvertion(propItem.row, MaxMount[propItem.row.__index])}` : ''"
-                        v-validate="FORM.validator.quantity(propItem.row, numUnitConvertion(propItem.row, MaxMount[propItem.row.__index]))"
+                        v-validate="`required|max_value:${numUnitConvertion(propItem.row, MaxMount[propItem.row.__index])}`"
                       />
                     </q-field>
                 </q-td>
                 <q-td key="unit_id" width="20%" >
                   <q-field  style="min-width:100px" :error="errors.has(`delivery_order_items.${propItem.row.__index}.unit_id`)" >
-                    <q-select :name="`delivery_order_items.${propItem.row.__index}.unit_id`" v-model="propItem.row.unit_id"	inverted color="blue-grey-5"
+                    <q-select :name="`delivery_order_items.${propItem.row.__index}.unit_id`"
+                      v-model="propItem.row.unit_id"
+                      inverted color="blue-grey-5"
                       :options="ItemUnitOptions[propItem.row.__index]"
+                      map-options emit-value
                       v-validate="propItem.row.item_id ? 'required' : ''"
                       @input="(val)=>{ setUnitReference(propItem.row.__index, val) }"
                     />
                   </q-field>
-                </q-td>
-              </q-tr>
-              <q-tr  class="" :propItem="propItem" v-if=" propItem.row.item_id">
-                <q-td colspan="1">
-                  <div class="text-left">
-                    <table class="table-description full-width">
-                      <tr><td>No Plate    </td><td>{{ propItem.row.item.part_number }}</td></tr>
-                      <tr><td>Plate name  </td><td>{{ propItem.row.item.part_name }}</td></tr>
-                    </table>
-                  </div>
-                </q-td>
-                  <q-td colspan="2">
-                  <div class="text-left" >
-                    <!-- {{propItem.row}} -->
-                    <table class="table-description full-width">
-                      <tr><td>Quantity    </td><td>{{ formatNumber(Number(propItem.row.quantity) * Number(propItem.row.unit_rate)) }} {{ propItem.row.unit.name }}</td></tr>
-                      <tr><td>FG #alias    </td><td>{{ propItem.row.item.part_alias }}</td></tr>
-                    </table>
-                  </div>
                 </q-td>
               </q-tr>
             </template>
@@ -160,7 +138,7 @@
         <div class="col-12">
           <div class="row q-col-gutter-x-lg q-mb-md">
             <q-field class="col-12" :error="errors.has(`operator_id`)" :error-message="errors.first(`operator_id`)">
-              <q-select name="operator_id"  stack-label label="Operator" v-model="rsForm.operator_id" :options="OperatorOptions" v-validate="'required'"/>
+              <q-select name="operator_id"  stack-label label="Operator" v-model="rsForm.operator_id" :options="EmployeeOptions" v-validate="'required'"/>
             </q-field>
             <q-field class="col-12 col-sm-8 col-md-4" :error="errors.has('date')" :error-message="errors.first('date')">
               <q-input name="date" stack-label label="Date" v-model="rsForm.date" type="date" v-validate="'required'"/>
@@ -203,7 +181,7 @@ export default {
         request_orders: {autoload: false, api:'/api/v1/incomes/request-orders?mode=all&--with=request_order_items'},
         customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
         transports: {data:[], api:'/api/v1/warehouses/transports?mode=all'},
-        operators: {data:[], api:'/api/v1/references/operators?mode=all'},
+        employees: {data:[], api:'/api/v1/common/employees?mode=all'},
         vehicles: {data:[], api:'/api/v1/references/vehicles?mode=all'},
         units: {data:[], api:'/api/v1/references/units?mode=all'},
         items: {data:[], api:'/api/v1/common/items?mode=all'},
@@ -212,19 +190,7 @@ export default {
       FORM:{
         resource:{
           api: '/api/v1/incomes/delivery-orders',
-          uri: '/admin/incomes/delivery/delivery-orders',
-        },
-        validator: {
-          quantity: (row, max) => {
-            let
-              validation = ['required'],
-              isMaxValidation = this.$store.state.admin.CONFIG.model.pre_deliveries.max_quantity_validation
-
-            if (row.item_id && isMaxValidation === true) {
-              validation.push(`max_value:${max}`)
-            }
-            return validation.join('|')
-          }
+          uri: '/admin/deliveries/delivery-orders',
         }
       },
       rsForm: {},
@@ -304,14 +270,8 @@ export default {
       // let label = [item.code, item.name].join('-')
       return (this.SHEET.customers.data.map(item => ({label: [item.code, item.name].join(' - '), value: item.id})) || [])
     },
-    TransportOptions() {
-      return (this.SHEET.vehicles.data.map(item => ({label: item.name, value: item.name})))
-    },
-    OperatorOptions() {
-      return (this.SHEET.operators.data.map(item => ({label: item.name, value: item.id})) || [])
-    },
-    VehicleOptions() {
-      return (this.SHEET.vehicles.data.map(item => ({label: item.name, value: item.id})) || [])
+    EmployeeOptions() {
+      return (this.SHEET.employees.data.map(item => ({label: `[${item.code}] ${item.name}`, value: item.id})) || [])
     },
     UnitOptions() {
       return (this.SHEET.units.data.map(item => ({label: item.code, value: item.id})) || [])
@@ -536,7 +496,7 @@ export default {
         this.FORM.loading = true
         // const {method, mode, apiUrl} = this.FORM.meta();
         const method = 'PATCH'
-        const apiUrl = [this.FORM.resource.api, this.$route.params.id, 'revision'].join('/')
+        const apiUrl = [this.FORM.resource.api, this.ROUTE.params.id, 'revision'].join('/')
 
         this.$axios.set(method, apiUrl, this.rsForm)
         .then((response) => {
@@ -546,7 +506,7 @@ export default {
         })
         .catch((error) => {
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'REVISION FAILED')
+          this.FORM.response.error(error.response || error, 'REVISION FAILED')
 
         })
         .finally(()=>{

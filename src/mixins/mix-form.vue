@@ -7,6 +7,7 @@ import FormHeader from '@/components/FormHeader'
 import FormDetail from '@/components/FormDetail'
 
 import '@/css/form-page.styl'
+import { type } from 'os';
 export default {
   mixins: [MixPage, MixSheet],
   components: {
@@ -14,6 +15,9 @@ export default {
     FormHeader,
     FormDetail,
     // QNumeric
+  },
+  props:{
+    route: Object
   },
   data () {
     return {
@@ -52,21 +56,24 @@ export default {
     // console.info('[PLAY] MIX-FORM is Mounted!')
   },
   computed: {
+    ROUTE() {
+      return this.route || this.$route
+    },
     FORM__Title () {
-      const title = (this.$route.meta.title || '').toUpperCase()
-      if (this.$route.meta.mode === 'revision') {
+      const title = (this.ROUTE.meta.title || '').toUpperCase()
+      if (this.ROUTE.meta.mode === 'revision') {
         return 'REVISION - ' + title
       }
       else return 'FORM - ' + title
     },
     FORM__Subtitle () {
-      if (this.$route.meta.mode === 'edit') {
-        return 'Update data #' + this.$route.params.id
+      if (this.ROUTE.meta.mode === 'edit') {
+        return 'Update data #' + this.ROUTE.params.id
       }
-      else if (this.$route.meta.mode === 'revision') {
-        return 'Correction from #' + this.$route.params.id
+      else if (this.ROUTE.meta.mode === 'revision') {
+        return 'Correction from #' + this.ROUTE.params.id
       }
-      else return 'Create new  ' + (this.$route.meta.title || '').toLowerCase()
+      else return 'Create new  ' + (this.ROUTE.meta.title || '').toLowerCase()
     },
     FORM__component() {
 
@@ -79,8 +86,8 @@ export default {
       this.FORM.show = false
       this.FORM.loading = true
       const callBase = () => {
-        if (['edit', 'revision'].find(x => x === this.$route.meta.mode)) {
-          let apiUrl = `${this.FORM.resource.api}/${this.$route.params.id}${this.FORM.resource.params}`
+        if (['edit', 'revision'].find(x => x === this.ROUTE.meta.mode)) {
+          let apiUrl = `${this.FORM.resource.api}/${this.ROUTE.params.id}${this.FORM.resource.params}`
           this.$axios.get(apiUrl)
             .then((response) => {
               this.FORM.data = JSON.parse(JSON.stringify(response.data))
@@ -89,11 +96,13 @@ export default {
               if(callback) callback(response.data)
             })
             .catch(error => {
-              if(!error.response) error.response = {}
+              if(!error.response) {
+                console.error(error)
+                error.response = {}
+              }
               this.$router.replace({
                 path: '/admin/error',
                 query: {
-                  // api: apiUrl,
                   redirect: this.$route.fullPath,
                   code: error.response.status || null,
                   message: error.response.statusText ||null
@@ -103,7 +112,7 @@ export default {
               if(callback) callback()
             })
             .finally(() => {
-              setTimeout(() => this.FORM.loading = false, 1000)
+              setTimeout(() => this.FORM.loading = false, 500)
             })
         }
         else {
@@ -118,9 +127,7 @@ export default {
       }
 
       this.SHEET.assign()
-      this.SHEET.request(
-        callBase()
-      )
+      this.SHEET.request(callBase)
     },
 
     FORM__meta () { // Return Properties for axios set(POST, PATCH, PUT)
@@ -128,10 +135,10 @@ export default {
         method = 'POST',
         apiUrl = this.FORM.resource.api
 
-      if (this.$route.meta.mode === 'edit') {
+      if (this.ROUTE.meta.mode === 'edit') {
         status = 'update'
         method = 'PUT'
-        apiUrl += `/${this.$route.params.id}`
+        apiUrl += `/${this.ROUTE.params.id}`
       }
 
       return {
@@ -231,22 +238,23 @@ export default {
     },
 
     FORM__response_error (ErrRes, title) {
+      if(typeof ErrRes === 'string') ErrRes = Object.assign({message: ErrRes})
       this.$app.response.error(ErrRes, title)
     },
 
     FORM__response_success (params = {}, text) {
       let mode = Object.assign({
         icon: 'check_circle_outline',
-        message: (params.mode || this.$route.meta.mode || 'SUBMIT').toUpperCase() + ' SUCCESS',
+        message: (params.mode || this.ROUTE.meta.mode || 'SUBMIT').toUpperCase() + ' SUCCESS',
         detail: (params.message || 'The processing has excecute!')
       })
 
       if(typeof params === 'string' & params.length) {
-        if(this.$route.meta.mode === 'create') {
+        if(this.ROUTE.meta.mode === 'create') {
           mode.message = this.$tc('messages.success_created')
           mode.detail = this.$tc('messages.form_has_created', {v: params})
         }
-        if(this.$route.meta.mode === 'edit') {
+        if(this.ROUTE.meta.mode === 'edit') {
           mode.message = this.$tc('messages.success_updated')
           mode.detail = this.$tc('messages.form_has_updated', {v: params})
         }
@@ -263,20 +271,20 @@ export default {
         ok: this.$tc('messages.yes_to', 1,{v:this.$tc('form.void')}),
         cancel: this.$tc('form.cancel')
       }).onOk(() => {
-        this.$axios.delete(`${this.FORM.resource.api}/${this.$route.params.id}?mode=void`)
+        this.$axios.delete(`${this.FORM.resource.api}/${this.ROUTE.params.id}?mode=void`)
           .then((response) => {
             console.warn('then', response)
             if (response.data.success) {
               this.$app.notify.success({
                 message: this.$tc('messages.success_void'),
-                detail: this.$tc('messages.form_has_void', 1, {v: `#${this.$route.params.id}`}),
+                detail: this.$tc('messages.form_has_void', 1, {v: `#${this.ROUTE.params.id}`}),
               })
               this.FORM__toIndex()
             }
           })
           .catch(error => {
             if(!error.hasOwnProperty('response')) console.warn('error', error)
-            this.FORM.response.error(error.response)
+            this.FORM.response.error(error.response || error)
           })
       })
     },
@@ -289,34 +297,29 @@ export default {
         ok: this.$tc('messages.yes_to', 1,{v:this.$tc('form.delete')}),
         cancel: this.$tc('form.cancel')
       }).onOk(() => {
-        // console.warn('DELETE', this.$route.params.id)
-        this.$axios.delete(`${this.FORM.resource.api}/${this.$route.params.id}`)
+        // console.warn('DELETE', this.ROUTE.params.id)
+        this.$axios.delete(`${this.FORM.resource.api}/${this.ROUTE.params.id}`)
           .then((response) => {
             // console.warn('then', response)
             if (response.data.success) {
               this.$app.notify.success({
                 message: this.$tc('messages.success_deleted'),
-                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${this.$route.params.id}`}),
+                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${this.ROUTE.params.id}`}),
               })
               this.FORM__toIndex()
             }
           })
           .catch(error => {
-            this.FORM.response.error(error.response)
+            this.FORM.response.error(error.response || error)
           })
       }).onCancel(()=>{
         // DELETE CANCELED!
       })
     },
 
-    FORM__toIndex () { // Back history page with 1 step
-      if (!this.FORM.resource.uri) {
-        console.warn('[] WARNING - Property "FORM.resource.uri" is not undefined!')
-        return
-      }
-
+    FORM__toIndex () {
       setTimeout(() => {
-        this.$router.push(this.FORM.resource.uri)
+        this.$router.push(`${this.FORM.resource.uri}?return=first`)
       }, 500)
     },
 

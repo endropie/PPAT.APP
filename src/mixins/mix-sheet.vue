@@ -1,13 +1,11 @@
 <script>
-import { setTimeout } from 'timers';
-import { error } from 'util';
 export default {
   data () {
     return {
       SHEET: {
         request: (callbacks) => this.SHEET__REQUEST(callbacks),
         assign: (options) => this.SHEET__ASSIGN(options),
-        load: (option, params) => this.SHEET__LOAD(option, params),
+        load: (option, params, callback) => this.SHEET__LOAD(option, params, callback),
         default: () => {
           return {
             api : null,
@@ -68,16 +66,17 @@ export default {
         this.SHEET[i].data = []
         this.$axios.get(uri)
           .then(response => {
+            // if(process.env.DEV) console.info('[PLAY] SHEET.LOAD.SUCCESS => ', response)
             this.SHEET[i].data = response.data
+            if(typeof callback === 'function') callback(response)
           })
           .catch(error => {
-            if(process.env.DEV) console.error('[PLAY] SHEET.ERROR => ', error)
-            // this.$app.response.error(error.response)
+            if(process.env.DEV) console.error('[PLAY] SHEET.LOAD.ERROR => ', error.response || error)
+            if(typeof callback === 'function') callback(error.response || error)
           })
           .finally(() => {
             setTimeout(() => {
               this.SHEET[i].loading = false
-              if (callback) callback()
              }, 500)
           })
       }

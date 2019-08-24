@@ -5,6 +5,7 @@ export default {
   cancel: 'Batal',
   create: 'Buat | Dibuat',
   confirm: 'Konfirmasi {v} | {v} dikonfirmasi',
+  close: 'Tutup',
   delete: 'Hapus',
   delete_all: 'Hapus All',
   edit: 'Edit',
@@ -16,8 +17,9 @@ export default {
   select: 'Pilih | Dipilih',
   select_a: 'Pilih salah satu {v}',
   show: 'Tampilkan {v}',
-  submit: 'Submit | Submited',
+  submit: 'Submit | Submit',
   print: 'Print',
-  validation: 'Validasi | Ter-validasi',
+  update: 'Perubahan | dirubah',
+  validation: 'Validasi {v}| Ter-validasi',
   void: 'Batal'
 }

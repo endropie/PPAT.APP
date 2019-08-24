@@ -1,20 +1,25 @@
 <template>
   <q-page padding class="page-admin">
-    <div class="admin-top text-center">
-      <p class="caption">
-       <!-- No caption -->
-       This Dashboard page!
-      </p>
+    <div class="row content-stretch q-gutter-sm">
+      <incoming-good class="" style="min-width:200px" />
+      <incoming-good class="" style="min-width:200px"/>
+      <incoming-good class="" style="min-width:200px"/>
+      <incoming-good class="" style="min-width:200px"/>
+      <incoming-good class="" style="min-width:200px"/>
+      <incoming-good class="" style="min-width:200px"/>
     </div>
   </q-page>
 </template>
 
 <script>
 import MixPage from '@/mixins/mix-page.vue'
-import AdminMenus from '@/assets/data-menu'
+import IncomingGood from '@/pages/admin/warehouses/incoming-goods/dashboard'
 
 export default {
   mixins:[MixPage],
+  components: {
+    IncomingGood
+  },
   data () {
     return {
     //  values..

@@ -4,7 +4,7 @@
     <q-card-section>
      <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="ROUTE.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -36,7 +36,7 @@
           type="password"
           v-model="rsForm.password"
           v-validate="'required|min:8'"
-          v-if="$route.meta.mode !== 'edit'"
+          v-if="ROUTE.meta.mode !== 'edit'"
           :dark="LAYOUT.isDark"
           :error="errors.has('password')"
           :error-message="errors.first('password')"
@@ -47,7 +47,7 @@
           type="password"
           v-model="rsForm.password_confirmation"
           v-validate="'required'"
-          v-if="$route.meta.mode !== 'edit'"
+          v-if="ROUTE.meta.mode !== 'edit'"
           :dark="LAYOUT.isDark"
           :error="errors.has('password_confirmation')"
           :error-message="errors.first('password_confirmation')"
@@ -55,7 +55,7 @@
         <div  class="col-12">
           <q-list>
             <q-expansion-item label="RULES" expand-separator >
-              <div class="row q-gutter-sm ">
+              <div class="row q-col-gutter-sm ">
                 <q-checkbox v-for="(role, index) in RoleOptions" :key="index"
                   class="col-12 col-sm-6 col-md-3" :dark="LAYOUT.isDark"
                   v-model="rsForm.has_role" :val="role.value" :label="role.value"
@@ -65,7 +65,7 @@
             </q-expansion-item>
 
             <q-expansion-item label="PERMISSION" expand-separator>
-              <div class="row q-gutter-sm ">
+              <div class="row q-col-gutter-sm ">
                 <q-checkbox v-for="(permission, index) in PermissionOptions"
                   class="col-12 col-sm-6 col-md-3" :dark="LAYOUT.isDark"
                   v-model="rsForm.has_permission"
@@ -172,7 +172,7 @@ export default {
         .catch((error) => {
 
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false

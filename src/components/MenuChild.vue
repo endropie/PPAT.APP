@@ -11,7 +11,8 @@
     <q-icon :name="isChildren ? `keyboard_arrow_right` : node.icon"/>
     </q-item-section>
     <q-item-section  v-if="!node.children">
-      {{node.name || '- noname -'}}
+      <span v-if="node.lang">{{ $tc(node.lang)}}</span>
+      <span v-else>{{node.name || '- noname -'}}</span>
     </q-item-section>
   </q-item>
 </template>

@@ -19,10 +19,10 @@ export default {
   methods: {
     goBack() {
       if(this.$route.query.hasOwnProperty('redirect')) {
-        this.$router.push(this.$route.query.redirect)
+        this.$router.replace(this.$route.query.redirect)
         return
       }
-      
+
       this.$router.go(-1)
     }
   },

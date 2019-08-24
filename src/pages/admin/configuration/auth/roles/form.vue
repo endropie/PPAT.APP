@@ -4,18 +4,18 @@
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="ROUTE.params.id"/>
         </template>
       </form-header>
     </q-card-section>
     <q-card-section style="min-height: calc(100vh - 200px);">
-      <div class="row q-gutter-sm " >
+      <div class="row q-col-gutter-sm " >
         <q-field class="col-12 col-md-6" :error="errors.has('name')" :error-message="errors.first('name')">
           <q-input name="name" label="Name" v-model="rsForm.name" v-validate="'required'" :dark="LAYOUT.isDark"
           :suffix="rsForm.guard_name ? `Guard: ${rsForm.guard_name}` : ''"/>
         </q-field>
         <q-field label="Role has permission" label-width="12" class="col-12">
-          <div class="row q-gutter-sm ">
+          <div class="row q-col-gutter-sm ">
             <q-checkbox v-for="(permission, index) in PermissionOptions" :key="index"
               class="col-12 col-sm-6 col-md-3" :dark="LAYOUT.isDark"
               v-model="rsForm.has_permission" :val="permission.value" :label="permission.value"
@@ -105,7 +105,7 @@ export default {
         .catch((error) => {
 
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false

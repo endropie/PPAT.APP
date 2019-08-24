@@ -1,6 +1,6 @@
 <template>
-  <q-page padding class="row justify-center"  v-if="VIEW.show">
-    <page-print class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
+  <q-page padding class="row justify-center" >
+    <page-print v-if="VIEW.show" class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
       <div slot="header-tags">
         <q-chip tag outline small color="negative" icon="assignment" label="Revised"
           v-if="rsView.revise_id" />
@@ -64,29 +64,37 @@
             <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
-          <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
-          <q-btn :label="$tc('form.edit')" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`"  />
-          <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
-          <!-- <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" v-if="IS_EDITABLE" @click="VIEW.delete" outline
-            :class="{'float-right':$q.screen.gt.md}" /> -->
-          <ux-btn-dropdown :label="$tc('label.others')" :split="false" color="blue-grey" class="float-right"
-            :options="[
-              { label: 'DELETE', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
-                detail: $tc('messages.process_delete'),
-                actions: () => {
-                  VIEW.delete()
-                }
-              },
-              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
-                detail: $tc('messages.process_void'),
-                actions: () => {
-                  VIEW.void(()=> init() )
-                }
+      </div>
+      <div class="q-gutter-xs print-hide " style="padding-top:50px">
+        <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
+        <q-btn :label="$tc('form.edit')" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`"  />
+        <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
+        <!-- <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" v-if="IS_EDITABLE" @click="VIEW.delete" outline
+          :class="{'float-right':$q.screen.gt.md}" /> -->
+        <ux-btn-dropdown :label="$tc('label.others')" :split="false" color="blue-grey" class="float-right"
+          :options="[
+           { label: $tc('form.add_new'), color:'green', icon: 'add',
+              hidden: !$app.can('request-orders-create'),
+              detail: $tc('messages.process_create'),
+              actions: () => {
+                $router.push(`${VIEW.resource.uri}/create`)
               }
-            ]">
-          </ux-btn-dropdown>
-        </div>
+            },
+            { label: 'DELETE', color:'red', icon: 'delete',
+              hidden: !IS_EDITABLE,
+              detail: $tc('messages.process_delete'),
+              actions: () => {
+                VIEW.delete()
+              }
+            },
+            { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+              detail: $tc('messages.process_void'),
+              actions: () => {
+                VIEW.void(()=> init() )
+              }
+            }
+          ]">
+        </ux-btn-dropdown>
       </div>
     </page-print>
   </q-page>

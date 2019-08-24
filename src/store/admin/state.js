@@ -2,7 +2,7 @@ import { colors, LocalStorage } from 'quasar'
 import config from '@/assets/app-config'
 
 function getData () {
-  const layout = Object.assign({}, JSON.parse(LocalStorage.getItem('store:layout')))
+  const layout = Object.assign({}, JSON.parse(LocalStorage.getItem('LAYOUT')))
   if (layout.hasOwnProperty('color')) {
     for (const i in layout.color) {
       if (layout.color.hasOwnProperty(i)) {
@@ -17,10 +17,10 @@ function getData () {
 
 export default {
   NOW: new Date(),
-  AUTH: Object.assign({}, JSON.parse(LocalStorage.getItem('store:auth'))),
-  USER: Object.assign({}, JSON.parse(LocalStorage.getItem('store:user'))),
-  CONFIG: Object.assign({}, config, JSON.parse(LocalStorage.getItem('store:config'))),
-  SETTING: Object.assign({}, JSON.parse(LocalStorage.getItem('store:setting'))),
+  AUTH: Object.assign({}, JSON.parse(LocalStorage.getItem('AUTH'))),
+  USER: Object.assign({}, JSON.parse(LocalStorage.getItem('USER'))),
+  CONFIG: Object.assign({}, config, JSON.parse(LocalStorage.getItem('CONFIG'))),
+  SETTING: Object.assign({}, JSON.parse(LocalStorage.getItem('SETTING'))),
   PAGEMETA: {},
   PAGE: {
     show: true,

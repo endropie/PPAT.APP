@@ -1,15 +1,27 @@
-import moment from 'moment'
+// import moment from 'moment'
 
 const common = [
   {
     name: 'Good Items',
     path: 'items',
     icon: 'style',
+    lang: 'general.item',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'items-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'items-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'items-update' } },
       { page: 'view', path: ':id', meta: { permission: 'items-read' } }
+    ]
+  },
+  {
+    name: 'Employee',
+    path: 'employees',
+    icon: 'style',
+    lang: 'general.employee',
+    resources: [
+      { page: 'index', path: '', icon: 'mdi-account-group', meta: { permission: 'employees-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'employees-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'employees-update' } }
     ]
   }
 ]
@@ -19,6 +31,7 @@ const incomes = [
     name: 'Customers',
     icon: 'group',
     path: 'customers',
+    lang: 'general.customer',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'items-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'customers-create' } },
@@ -30,6 +43,7 @@ const incomes = [
     name: 'Forecasts',
     icon: 'timeline',
     path: 'forecasts',
+    lang: 'general.forecast',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'forecasts-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'forecasts-create' } },
@@ -41,56 +55,12 @@ const incomes = [
     name: 'Sale Orders',
     icon: 'shop',
     path: 'request-orders',
+    lang: 'general.request_order',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'request-orders-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'request-orders-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'request-orders-update' } },
       { page: 'view', path: ':id', meta: { permission: 'request-orders-read' } }
-    ]
-  },
-  {
-    name: 'Delivery',
-    icon: 'local_shipping',
-    path: 'delivery',
-    first: 'pre-deliveries',
-    // iframeTabs: true,
-    // tabs: []
-    children: [
-      {
-        name: 'Pre-Delivery Orders',
-        icon: 'assignment',
-        path: 'pre-deliveries',
-        resources: [
-          { page: 'index', path: '', icon: 'list', meta: { permission: 'pre-deliveries-read' } },
-          { page: 'form', path: 'create', meta: { mode: 'create', permission: 'pre-deliveries-create' } },
-          { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'pre-deliveries-update' } },
-          { page: 'view', path: ':id', meta: { permission: 'pre-deliveries-read' } }
-        ]
-      },
-      {
-        name: 'SJ-Delivery Orders',
-        icon: 'local_offer',
-        path: 'delivery-orders',
-        resources: [
-          { page: 'index', path: '', icon: 'list', meta: { permission: 'sj-delivery-orders-read' } },
-          // {page: 'form', path: 'create', meta: {mode: 'create', permission: 'delivery-orders-create'}},
-          // {page: 'form', path: ':id/edit', meta: {mode: 'edit', permission: 'delivery-orders-update'}},
-          { page: 'reform', path: ':id/revision', meta: { mode: 'revision', permission: 'sj-delivery-orders-update' } },
-          { page: 'view', path: ':id', meta: { mode: 'view', permission: 'sj-delivery-orders-read' } }
-        ]
-      }
-    ]
-  },
-  {
-    hide: true,
-    name: 'Invoices',
-    icon: 'local_atm',
-    path: 'invoices',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'invoices-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'invoices-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'invoices-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'invoices-read' } }
     ]
   }
 ]
@@ -139,22 +109,40 @@ const warehouses = [
     name: 'Incoming Good',
     icon: 'move_to_inbox',
     path: 'incoming-goods',
-    param: `?begin_date=${moment().format('YYYY-MM-DD')}`,
+    lang: 'general.incoming_good',
+    // param: `?begin_date=${moment().format('YYYY-MM-DD')}`,
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'incoming-goods-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'incoming-goods-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'incoming-goods-update' } },
+      { page: 'validation', path: ':id/validation', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
       { page: 'view', path: ':id', meta: { permission: 'incoming-goods-read' } }
+    ]
+  }
+]
+
+const deliveries = [
+  {
+    name: 'Pre-Delivery Orders',
+    icon: 'assignment',
+    path: 'pre-deliveries',
+    lang: 'general.pre_delivery',
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'pre-deliveries-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'pre-deliveries-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'pre-deliveries-update' } },
+      { page: 'view', path: ':id', meta: { permission: 'pre-deliveries-read' } }
     ]
   },
   {
     name: 'Outgoing Verification',
     icon: 'assignment_turned_in',
     path: 'outgoing-verifications',
+    lang: 'general.outgoing_verification',
     param: `?isWait=1`,
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-verifications-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'outgoing-verifications-create' } },
+      { page: 'create', path: 'create', meta: { mode: 'create', permission: 'outgoing-verifications-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'outgoing-verifications-update' } },
       { page: 'view', path: ':id', meta: { permission: 'outgoing-verifications-read' } }
     ]
@@ -163,12 +151,26 @@ const warehouses = [
     name: 'Outgoing Good',
     icon: 'unarchive',
     path: 'outgoing-goods',
+    lang: 'general.outgoing_good',
     param: ``,
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-goods-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'outgoing-goods-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'outgoing-goods-update' } },
       { page: 'view', path: ':id', meta: { permission: 'outgoing-goods-read' } }
+    ]
+  },
+  {
+    name: 'SJ-Delivery Orders',
+    icon: 'local_offer',
+    path: 'delivery-orders',
+    lang: 'general.sj_delivery',
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'sj-delivery-orders-read' } },
+      // {page: 'form', path: 'create', meta: {mode: 'create', permission: 'delivery-orders-create'}},
+      // {page: 'form', path: ':id/edit', meta: {mode: 'edit', permission: 'delivery-orders-update'}},
+      { page: 'reform', path: ':id/revision', meta: { mode: 'revision', permission: 'sj-delivery-orders-update' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'sj-delivery-orders-read' } }
     ]
   }
 ]
@@ -178,6 +180,7 @@ const factories = [
     name: 'Work Order',
     icon: 'work',
     path: 'work-orders',
+    lang: 'general.work_order',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'work-orders-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'work-orders-create' } },
@@ -186,13 +189,14 @@ const factories = [
     ]
   },
   {
-    name: 'Work In Process',
+    name: 'Work Process',
     icon: 'work',
     path: 'work-process',
     param: `?status=OPEN`,
+    lang: 'general.work_process',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'work-process-read' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-process-close' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-process-confirm' } },
       { page: 'view', path: ':id', meta: { permission: 'work-process-read' } }
     ]
   },
@@ -200,6 +204,7 @@ const factories = [
     name: 'Production',
     icon: 'gavel',
     path: 'productions',
+    lang: 'general.work_production',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'productions-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'productions-create' } },
@@ -211,6 +216,7 @@ const factories = [
     name: 'Packing Goods',
     icon: 'move_to_inbox',
     path: 'packings',
+    lang: 'general.packing',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'packings-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'packings-create' } },
@@ -222,9 +228,43 @@ const factories = [
 
 const references = [
   {
+    name: 'Departments',
+    icon: 'mdi-flag-triangle',
+    path: 'departments',
+    lang: 'general.department',
+    resources: [
+      { page: 'index', path: '', meta: { permission: 'departments-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'departments-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'departments-update' } }
+    ]
+  },
+  {
+    name: 'Positions',
+    icon: 'mdi-account-settings',
+    path: 'positions',
+    lang: 'general.position',
+    resources: [
+      { page: 'index', path: '', meta: { permission: 'positions-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'positions-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'positions-update' } }
+    ]
+  },
+  {
+    name: 'Vehicles',
+    icon: 'mdi-car-multiple',
+    path: 'vehicles',
+    lang: 'general.vehicle',
+    resources: [
+      { page: 'index', path: '', meta: { permission: 'brands-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'brands-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'brands-update' } }
+    ]
+  },
+  {
     name: 'Brands',
     icon: 'format_bold',
     path: 'brands',
+    lang: 'general.brand',
     resources: [
       { page: 'index', path: '', meta: { permission: 'brands-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'brands-create' } },
@@ -235,6 +275,7 @@ const references = [
     name: 'Specifications',
     icon: 'view_array',
     path: 'specifications',
+    lang: 'general.specification',
     resources: [
       { page: 'index', path: '', meta: { permission: 'specifications-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'specifications-create' } },
@@ -245,6 +286,7 @@ const references = [
     name: 'Lines',
     icon: 'insert_chart_outlined',
     path: 'lines',
+    lang: 'general.line',
     resources: [
       { page: 'index', path: '', meta: { permission: 'lines-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'lines-create' } },
@@ -255,6 +297,7 @@ const references = [
     name: 'Colors',
     icon: 'color_lens',
     path: 'colors',
+    lang: 'general.color',
     resources: [
       { page: 'index', path: '', meta: { permission: 'colors-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'colors-create' } },
@@ -265,6 +308,7 @@ const references = [
     name: 'Units',
     icon: 'web_asset',
     path: 'units',
+    lang: 'general.unit',
     resources: [
       { page: 'index', path: '', meta: { permission: 'units-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'units-create' } },
@@ -275,6 +319,7 @@ const references = [
     name: 'Sizes',
     icon: 'format_size',
     path: 'sizes',
+    lang: 'general.size',
     resources: [
       { page: 'index', path: '', meta: { permission: 'sizes-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'sizes-create' } },
@@ -285,6 +330,7 @@ const references = [
     name: 'Type of items',
     icon: 'dehaze',
     path: 'type_items',
+    lang: 'general.item_type',
     resources: [
       { page: 'index', path: '', meta: { permission: 'type-items-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'type-items-create' } },
@@ -295,6 +341,7 @@ const references = [
     name: 'Category of items',
     icon: 'table_chart',
     path: 'category_items',
+    lang: 'general.item_category',
     resources: [
       { page: 'index', path: '', meta: { permission: 'category-items-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'category-items-create' } },
@@ -306,27 +353,15 @@ const references = [
 const configuration = [
   { // Application
     name: 'Application',
-    icon: 'border_all',
+    icon: 'mdi-settings-outline',
     path: 'app',
-    first: 'general',
-    iframeTabs: true,
-    tabs: [
-      {
-        name: 'General',
-        icon: 'business',
-        path: 'general'
-      },
-      {
-        name: 'Modules',
-        icon: 'apps',
-        path: 'modules'
-      }
-    ]
+    lang: 'general.application'
   },
   { // Profile
     name: 'Profile',
     icon: 'perm_identity',
     path: 'profile',
+    lang: 'general.profile',
     resources: [
       { page: 'form', path: '', meta: { mode: 'edit', permission: 'profile-update' } }
     ]
@@ -336,11 +371,13 @@ const configuration = [
     icon: 'verified_user',
     menuicon: true,
     path: 'auth',
+    lang: 'general.auth',
     children: [
       {
         name: 'Users',
         icon: 'supervisor_account',
         path: 'users',
+        lang: 'auth.user',
         resources: [
           { page: 'index', path: '', icon: 'list', meta: { permission: 'users-read' } },
           { page: 'form', path: 'create', meta: { mode: 'create', permission: 'users-create' } },
@@ -348,23 +385,25 @@ const configuration = [
         ]
       },
       {
-        name: 'Roles',
-        icon: 'format_bold',
-        path: 'roles',
-        resources: [
-          { page: 'index', path: '', icon: 'list', meta: { permission: 'roles-read' } },
-          { page: 'form', path: 'create', meta: { mode: 'create', permission: 'roles-create' } },
-          { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'roles-update' } }
-        ]
-      },
-      {
         name: 'Permissions',
-        icon: 'format_bold',
+        icon: 'verified_user',
         path: 'permissions',
+        lang: 'auth.permission',
         resources: [
           { page: 'index', path: '', icon: 'list', meta: { permission: 'permissions-read' } },
           { page: 'form', path: 'create', meta: { mode: 'create', permission: 'permissions-create' } },
           { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'permissions-update' } }
+        ]
+      },
+      {
+        name: 'Roles',
+        icon: 'supervised_user_circle',
+        path: 'roles',
+        lang: 'auth.role',
+        resources: [
+          { page: 'index', path: '', icon: 'list', meta: { permission: 'roles-read' } },
+          { page: 'form', path: 'create', meta: { mode: 'create', permission: 'roles-create' } },
+          { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'roles-update' } }
         ]
       }
     ]
@@ -373,6 +412,7 @@ const configuration = [
     name: 'Customize',
     icon: 'perm_identity',
     path: 'customize',
+    lang: 'general.layout',
     resources: [
       { page: 'form', path: '', meta: { mode: 'edit', permission: null } }
     ]
@@ -393,22 +433,32 @@ export default [
     icon: 'widgets',
     path: 'dashboard'
   },
+  { // common
+    name: 'Common',
+    icon: 'dns',
+    path: 'common',
+    lang: 'general.common',
+    children: common
+  },
   { // Warehouse
     name: 'Warehouse',
     icon: 'kitchen',
     path: 'warehouses',
+    lang: 'general.warehouse',
     children: warehouses
   },
   { // Factory
     name: 'Factories',
     icon: 'group_work',
     path: 'factories',
+    lang: 'general.factory',
     children: factories
   },
   { // Incomes
     name: 'Incomes',
     icon: 'monetization_on',
     path: 'incomes',
+    lang: 'general.income',
     children: incomes
   },
   { // Expenses
@@ -416,32 +466,35 @@ export default [
     name: 'Expenses',
     icon: 'shopping_cart',
     path: 'expenses',
+    lang: 'general.expense',
     children: expenses
   },
-  { // common
-    name: 'Common',
-    icon: 'dns',
-    path: 'common',
-    children: common
+  { // Warehouse
+    name: 'Deliveries',
+    icon: 'local_shipping',
+    path: 'deliveries',
+    lang: 'general.delivery',
+    children: deliveries
   },
   { // References
     name: 'References',
     icon: 'dashboard',
     path: 'references',
-    // extract: true,
+    lang: 'general.preference',
     children: references
   },
   { // References
     name: 'Configuration',
     icon: 'settings',
     path: 'configuration',
-    // extract: true,
+    lang: 'general.configuration',
     children: configuration
   },
   {
     name: 'Documentation',
     icon: 'chrome_reader_mode',
     path: 'log',
+    lang: 'general.documentation',
     file: 'README.md'
     // fileType: '.md'
   }

@@ -3,9 +3,6 @@
   <q-card inline class="q-ma-sm"  v-if="FORM.show">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
-        <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
-        </template>
       </form-header>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
@@ -15,10 +12,7 @@
       <q-field class="col-12" prefix="Work Time Process" dense borderless :error="errors.has('worktime')">
         <q-option-group name="worktime" type="radio" v-model="rsForm.worktime" inline
           v-validate="'required'"
-          :options="[
-            { label: 'Reguler', value: 'REGULER' },
-            { label: 'Overtime', value: 'OVERTIME', color: 'secondary' },
-          ]"
+          :options="CONFIG.options['worktime']"
         />
       </q-field>
       <!-- COLUMN::1st customer Identitity -->
@@ -29,7 +23,7 @@
             label="No Transaction"
             placeholder="[Auto Generate]"
             v-model="rsForm.number"
-            v-validate="$route.meta.mode == 'edit' ? 'required':''"
+            v-validate="ROUTE.meta.mode == 'edit' ? 'required':''"
             :error="errors.has('number')"
             :error-message="errors.first('number')"
             autofocus/>
@@ -150,7 +144,7 @@
               </q-td>
             </q-tr>
             <!-- Item detail Description -->
-            <q-tr class="" :propItem="propItem">
+            <q-tr v-if="false" :propItem="propItem">
               <q-td></q-td>
               <q-td  colspan="2">
                 <div class="text-left">
@@ -163,7 +157,7 @@
                 <q-td colspan="2">
                 <div class="text-left" >
                   <q-markup-table class="no-border no-shadow">
-                    <tr><td>Quantity    </td><td>{{ formatNumber(Number(propItem.row.quantity) * Number(propItem.row.unit_rate)) }} {{ (propItem.row.item.unit ? propItem.row.item.unit.name : '') }}</td></tr>
+                    <tr><td>Quantity    </td><td>{{ $app.number_format(Number(propItem.row.quantity) * Number(propItem.row.unit_rate)) }} {{ (propItem.row.item.unit ? propItem.row.item.unit.name : '') }}</td></tr>
                     <tr><td>FG #alias    </td><td>{{ (propItem.row.item.part_alias || '') }}</td></tr>
                   </q-markup-table>
                 </div>
@@ -219,14 +213,13 @@ export default {
 
     return {
       SHEET:{
-        work_order_items: {data:[], api:'/api/v1/factories/work-orders?mode=item-lines'},
-        work_orders: {data:[], api:'/api/v1/factories/work-orders?mode=item-lines'},
-        lines: {data:[], api:'/api/v1/references/lines?mode=all'},
-        shifts: {data:[], api:'/api/v1/references/shifts?mode=all'},
-        customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
-        units: {data:[], api:'/api/v1/references/units?mode=all'},
-        items: {data:[], api:'/api/v1/common/items?mode=all'},
-        itemstocks: {data:[], api:'/api/v1/common/items?mode=itemstock'}
+        lines: { api:'/api/v1/references/lines?mode=all'},
+        units: { api:'/api/v1/references/units?mode=all'},
+        shifts: { api:'/api/v1/references/shifts?mode=all'},
+        customers: { api:'/api/v1/incomes/customers?mode=all'},
+        items: {autoload:false, api:'/api/v1/common/items?mode=all'},
+        work_order_items: {autoload:false, api:'/api/v1/factories/work-orders?mode=item-lines'},
+        work_orders: {autoload:false, api:'/api/v1/factories/work-orders?mode=item-lines'},
       },
       FORM:{
         resource:{
@@ -425,7 +418,7 @@ export default {
       // this.SHEET['work_order_items'].data.map(value => { variables['work_order_items'][value.work_order_item_id] = value })
       this.SHEET['units'].data.map(value => { variables['units'][value.id] = value })
       this.SHEET['items'].data.map(value => { variables['items'][value.id] = value })
-      this.SHEET['itemstocks'].data.map(value => { variables['itemstocks'][value.id] = value })
+      this.SHEET['itemstocks'].data.map(value => { variables['items'][value.id] = value })
 
       this.SHEET['work_orders'].data.map(wo => {
         wo.work_order_items.map(item => {
@@ -541,7 +534,7 @@ export default {
         .catch((error) => {
 
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false

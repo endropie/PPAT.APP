@@ -161,7 +161,7 @@ export default {
           .catch((error) => {
 
             this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
             this.FORM.onError(error.response, 'form-pass')
 
           })

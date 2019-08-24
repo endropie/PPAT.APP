@@ -158,11 +158,15 @@ export default {
       const callBase = () => {
         if (this.TABLE.mode === 'datagrid') {
           this.TABLE__init()
-          this.DATAGRID__getData(null, callbacks)
+          this.$nextTick(() => {
+            this.DATAGRID__getData(null, callbacks)
+          })
         }
         else {
           this.TABLE__init(this.$route)
-          this.DATAINDEX__getData(callbacks)
+          this.$nextTick(() => {
+            this.DATAINDEX__getData(callbacks)
+          })
         }
       }
 
@@ -301,6 +305,8 @@ export default {
         ? to.meta.lastest.query
         : to.query
 
+      if (to.query['return'] === 'first') delete params.page
+
       if (params.hasOwnProperty('limit')) this.TABLE.pagination.rowsPerPage = Number(params.limit)
       if (params.hasOwnProperty('page')) this.TABLE.pagination.page = Number(params.page)
       if (params.hasOwnProperty('sort')) this.TABLE.pagination.sortBy = params.sort
@@ -318,6 +324,10 @@ export default {
               switch (type) {
                 case 'integer':
                   this.FILTERABLE.fill[key].value = Number(params[key])
+                  break
+
+                case 'array':
+                  this.FILTERABLE.fill[key].value = params[key] ? String(params[key]).split(',') : null
                   break
 
                 default:

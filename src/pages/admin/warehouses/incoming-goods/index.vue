@@ -97,18 +97,14 @@
         </q-td>
 
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
-          <span v-if="rs.row.number" class="text-weight-medium ">
-            {{ rs.row.number }}
-            <!-- <span v-if="rs.row.transaction == 'RETURN'" v-text="'RET'" /> -->
-            <q-badge dense color="dark" text-color="white" label="RET"
-              class=""
-              v-if="rs.row.transaction == 'RETURN'"
-            />
-            <ux-badge-status :row="rs.row"
-              class=" on-right shadow-0"
-            />
-          </span>
-          <span v-else>- undifined -</span>
+          {{ rs.row.number }}
+          <q-badge label="RET" class=""
+            dense color="dark" text-color="white"
+            v-if="rs.row.transaction == 'RETURN'"/>
+        </q-td>
+
+        <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px">
+          <ux-badge-status :row="rs.row" class=" on-right shadow-0" />
         </q-td>
 
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
@@ -160,9 +156,9 @@ export default {
         columns: [
           { name: 'prefix', label: '', align: 'left'},
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
+          { name: 'status', label: '', field: 'status', align: 'left'},
           { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
           { name: 'date', label: this.$tc('label.date'), field: 'date', align: 'center', sortable: true},
-          // { name: 'time', label: 'Time', field: 'time', align: 'center'},
           { name: 'reference_number', label: this.$tc('warehouses.reference_number'), field: 'reference_number', align: 'left', sortable: true },
           { name: 'reference_date', label: this.$tc('warehouses.reference_date'), field: 'reference_date', align: 'center', sortable: true },
           { name: 'created_at', label: this.$tc('form.create', 2), field: 'created_at', align: 'center', sortable: true },

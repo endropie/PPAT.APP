@@ -79,7 +79,7 @@
         </template>
 
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
-          <q-btn v-if="isCanUpdate && isEditRow(rs.row)" dense flat color="light" icon="edit">
+          <q-btn v-show="false" v-if="isCanUpdate && isEditRow(rs.row)" dense flat color="light" icon="edit">
             <q-popup-edit v-if="!rs.row.outgoing_good_id" buttons
               title="Form"
               v-model="rs.row"
@@ -96,13 +96,14 @@
 
             </q-popup-edit>
           </q-btn>
+          <q-btn v-if="isCanUpdate && isEditRow(rs.row)" dense flat color="light" icon="edit" :to="`${TABLE.resource.uri}/${rs.row.id}/edit`"/>
           <q-btn v-if="isCanDelete && isEditRow(rs.row)" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)"/>
         </q-td>
 
         <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px">
           <q-badge dense class="q-px-sm q-py-xs"
-            :label="rs.row.outgoing_good_id ? 'Delivered' : 'Wait'"
-            :color="rs.row.outgoing_good_id ? 'primary' : 'dark'"
+            :label="rs.row.outgoing_good_id ? 'Verificated' : 'Wait'"
+            :color="rs.row.outgoing_good_id ? 'green-10' : 'faded'"
             text-color="white" />
         </q-td>
 
@@ -125,7 +126,6 @@ export default {
     return {
       SHEET: {
         customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
-        items: {data:[], api:'/api/v1/common/items?mode=all'},
       },
       FILTERABLE: {
         fill: {
@@ -149,8 +149,8 @@ export default {
       TABLE:{
         mode: 'index',
         resource:{
-          api: '/api/v1/warehouses/outgoing-good-items',
-          uri: '/admin/warehouses/outgoing-verifications',
+          api: '/api/v1/warehouses/outgoing-good-verifications',
+          uri: '/admin/deliveries/outgoing-verifications',
         },
         columns: [
           { name: 'prefix', label:''},

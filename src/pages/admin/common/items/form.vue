@@ -1,10 +1,10 @@
 <template>
-<q-page padding class="form-page row justify-center" v-if="FORM.show">
-  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark" :class="{ 'bg-grey-9': LAYOUT.isDark}">
+<q-page padding class="form-page row justify-center">
+  <q-card inline class="main-box self-start" v-if="FORM.show" :dark="LAYOUT.isDark" :class="{ 'bg-grey-9': LAYOUT.isDark}">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="ROUTE.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -28,8 +28,7 @@
             use-input
             fill-input
             hide-selected
-            emit-value
-            map-options
+            map-options emit-value
             :error="errors.has('customer_id')"
             :error-message="errors.first('customer_id')"
           />
@@ -59,7 +58,7 @@
         </div>
       </div>
       <div class="col-12 col-sm-6" >
-        <div class="column">
+        <div class="row q-col-gutter-x-sm">
           <q-input
             name="code"
             label="Intern Code"
@@ -70,14 +69,13 @@
             class="col-12"
             icon="code"
             :error="errors.has('code')"
-            :error-message="errors.first('code')"
-          >
-          <q-toggle slot="after" class="bordered rounded-borders q-pa-xs no-margin"
-            :label="rsForm.enable ? 'Enable':'Disable'" left-label
-            v-model="rsForm.enable"
-            :color="rsForm.enable ? 'primary':'red'"
-            :true-value="1"
-            :false-value="0" />
+            :error-message="errors.first('code')" >
+            <q-toggle slot="after" class="bordered rounded-borders q-pa-xs no-margin"
+              :label="rsForm.enable ? 'Enable':'Disable'" left-label
+              v-model="rsForm.enable"
+              :color="rsForm.enable ? 'primary':'red'"
+              :true-value="1"
+              :false-value="0" />
           </q-input>
           <ux-select-filter
             name="category_item_id"
@@ -87,22 +85,32 @@
             class="col-12"
             icon="table_chart"
             :dark="LAYOUT.isDark"
-            :options="CategoyOptions"
+            :options="CategoryOptions"
             :error="errors.has('category_item_id')"
-            :error-message="errors.first('category_item_id')"
-          ></ux-select-filter>
+            :error-message="errors.first('category_item_id')" />
           <ux-select-filter
             name="type_item_id"
             label="Type of Items"
-            class="col-12"
+            class="col-6"
             icon="dehaze"
             v-model="rsForm.type_item_id"
             v-validate="'required'"
             :dark="LAYOUT.isDark"
             :options="TypeOptions"
             :error="errors.has('type_item_id')"
-            :error-message="errors.first('type_item_id')"
-          ></ux-select-filter>
+            :error-message="errors.first('type_item_id')" />
+
+          <ux-select-filter
+            name="size_id"
+            v-model="rsForm.size_id"
+            label="Size"
+            v-validate="'required'"
+            :dark="LAYOUT.isDark"
+            :options="SizeOptions"
+            class="col-6"
+            icon="format_size"
+            :error="errors.has('size_id')"
+            :error-message="errors.first('size_id')" />
         </div>
       </div>
     </q-card-section>
@@ -160,15 +168,15 @@
           />
 
           <q-input
-            name="sa_area"
+            name="sa_dm"
             label="SA area"
-            v-model="rsForm.sa_area"
+            v-model="rsForm.sa_dm"
             type="number"
             v-validate="'required'"
             :dark="LAYOUT.isDark"
             class="col-12"
-            :error="errors.has('sa_area')"
-            :error-message="errors.first('sa_area')"
+            :error="errors.has('sa_dm')"
+            :error-message="errors.first('sa_dm')"
           />
 
           <q-input
@@ -187,40 +195,35 @@
       </div>
       <div class="col-6 col-sm-3">
         <div class="row q-col-gutter-sm ">
-          <q-input
-            name="number_hanger"
-            label="units of each hanger"
-            type="number"
-            class="col-12"
-            v-model="rsForm.number_hanger"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('number_hanger')"
-            :error-message="errors.first('number_hanger')"
-          />
-          <ux-select-filter
-            name="size_id"
-            v-model="rsForm.size_id"
-            label="Size"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :options="SizeOptions"
-            class="col-12"
-            icon="format_size"
-            :error="errors.has('size_id')"
-            :error-message="errors.first('size_id')"
-          />
           <ux-select-filter
             name="unit_id"
             v-model="rsForm.unit_id"
-            label="Unit"
+            :label="$tc('label.unit')" stack-label
             v-validate="'required'"
             :dark="LAYOUT.isDark"
             :options="UnitOptions"
             class="col-12" icon="web_asset"
             :error="errors.has('unit_id')"
-            :error-message="errors.first('unit_id')"
-          />
+            :error-message="errors.first('unit_id')" />
+
+          <q-select class="col-12"
+            name="load_type"
+            :label="$tc('label.mode', 1, {v:'Load'})" stack-label
+            v-model="rsForm.load_type"
+            :options="['HANGER', 'BAREL']"
+            v-validate="'required'"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('load_type')" />
+
+          <q-input class="col-12"
+            name="load_capacity"
+            :label="$tc('label.capacity', 1, {v:'Load'})" stack-label
+            type="number"
+            v-model="rsForm.load_capacity"
+            v-validate="'required'"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('load_capacity')" />
+
         </div>
       </div>
       <ux-numeric class="col-12 col-sm-4"
@@ -307,34 +310,33 @@
           <q-item-label header>Unit Convertion</q-item-label>
           <q-item v-for="(item, index) in rsForm.item_units" :key="index">
             <q-item-section>
-                <q-input
-                  :name="`unit-${index}`"
-                  type="number"
-                  v-model="rsForm.item_units[index].rate"
-                  v-validate="'required'"
-                  dense
-                  :dark="LAYOUT.isDark"
-                  :error="errors.has(`unit-${index}`)"
-                  :error-message="errors.first(`unit-${index}`)">
-                  <template slot="prepend">
-                    <q-select class="no-padding text-white"
-                      :name="`unit-${index}`"
-                      :placeholder="$tc('form.select')"
-                      prefix="1 -"
-                      v-model="rsForm.item_units[index].unit_id"
-                      v-validate="'required'"
-                      dense borderless style="width:110px"
-                      emit-value
-                      map-options
-                      :options="UnitOptions.filter(x => x.value !== rsForm.unit_id)"
-                      :dark="LAYOUT.isDark"
-                      :error="errors.has(`unit-${index}`)"
-                      :error-message="errors.first(`unit-${index}`)"
-                  />
-                  <span class="text-caption">{{$tc('label.rate')}}</span>
-                  <q-icon size="24px" name="arrow_right_alt"></q-icon>
-                  </template>
-                </q-input>
+              <q-input
+                :name="`unit-${index}`"
+                type="number"
+                v-model="rsForm.item_units[index].rate"
+                v-validate="'required'"
+                dense
+                :dark="LAYOUT.isDark"
+                :error="errors.has(`unit-${index}`)"
+                :error-message="errors.first(`unit-${index}`)">
+                <template slot="prepend">
+                  <q-select class="no-padding text-white"
+                    :name="`unit-${index}`"
+                    :placeholder="$tc('form.select')"
+                    prefix="1 -"
+                    v-model="rsForm.item_units[index].unit_id"
+                    v-validate="'required'"
+                    dense borderless style="width:110px"
+                    map-options emit-value
+                    :options="UnitOptions.filter(x => x.value !== rsForm.unit_id)"
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has(`unit-${index}`)"
+                    :error-message="errors.first(`unit-${index}`)"
+                />
+                <span class="text-caption">{{$tc('label.rate')}}</span>
+                <q-icon size="24px" name="arrow_right_alt"></q-icon>
+                </template>
+              </q-input>
             </q-item-section>
             <q-item-section side>
               <q-btn dense round flat icon="clear" color="red-4" @click="removeUnit(index)"/>
@@ -405,9 +407,10 @@ export default {
           part_alias:null,
           part_number:null,
 
-          number_hanger: null,
+          load_type: null,
+          load_capacity: null,
           packing_duration: null,
-          sa_area: null,
+          sa_dm: null,
           weight: null,
 
           category_item_id: null,
@@ -434,7 +437,7 @@ export default {
     LineOptions() {
       return (this.SHEET.lines.data.map(item => ({...item, label: item.name, value: item.id})) || [])
     },
-    CategoyOptions() {
+    CategoryOptions() {
       return (this.SHEET.category_items.data.map(item => ({label: item.name, value: item.id})) || [])
     },
     TypeOptions() {
@@ -471,11 +474,11 @@ export default {
       })) || [])
     },
     price_area() {
-      if(!Number(this.rsForm.price) || !Number(this.rsForm.sa_area)) return 0
-      return Number(this.rsForm.price) / Number(this.rsForm.sa_area)
+      if(!Number(this.rsForm.price) || !Number(this.rsForm.sa_dm)) return 0
+      return Number(this.rsForm.price) / Number(this.rsForm.sa_dm)
     },
     price_packaged() {
-      return Number(this.rsForm.number_hanger|| 0) * Number(this.rsForm.price || 0)
+      return Number(this.rsForm.load_capacity|| 0) * Number(this.rsForm.price || 0)
     },
     MAPINGKEY(){
       let variables = {
@@ -507,6 +510,11 @@ export default {
       let brand_id = this.rsForm.brand_id,
         customer_id = this.rsForm.customer_id,
         specification_id = this.rsForm.specification_id;
+
+      if (!brand_id || !customer_id || !specification_id) {
+        this.rsForm['code'] = this.rsForm['id'] || null
+        return
+      }
 
       let BRAND = this.MAPINGKEY['brands'][this.rsForm.brand_id] || {}
       let CUST = this.MAPINGKEY['customers'][this.rsForm.customer_id] || {}
@@ -558,7 +566,7 @@ export default {
         .catch((error) => {
           console.warn(error)
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false

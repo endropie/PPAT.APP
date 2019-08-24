@@ -6,86 +6,74 @@
         <q-chip slot="optional" v-if="rsForm.status === 'VOID'"
           icon="bookmark"  class="text-weight-medium"
           label="void" color="negative" outline/>
-        <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
-          <list-item label="void" icon="block" clickable @click="FORM.void" v-close-popup v-if="$route.params.id"/>
-        </template>
+
       </form-header>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark"></q-separator>
     <!-- COLUMN::1st Transaction details -->
-    <q-card-section class="row q-col-gutter-sm">
+    <q-card-section class="row q-col-gutter-x-md">
       <q-field class="col-12"
-        borderless dense
-        :prefix="$tc('warehouses.transaction_mode')"
+        borderless stack-label hide-bottom-space
+        :label="$tc('label.mode',1, {v:$tc('label.transaction')})"
         :dark="LAYOUT.isDark"
-        :error="errors.has('transaction')"
-        v-if="this.$route.meta.mode !== 'edit'">
-        <q-option-group
+        :error="errors.has('transaction')">
+
+        <q-option-group slot="control"
           name="transaction" type="radio" inline
           v-model="rsForm.transaction"
           v-validate="'required'"
           :dark="LAYOUT.isDark"
-          :disable="this.$route.meta.mode == 'edit'"
-          :options="[
-            { label: 'REGULER', value: 'REGULER' },
-            { label: 'RETURN', value: 'RETURN' }
-          ]"
-          @input="(val) => setTransactionReference(val)"
-        />
+          :disable="Boolean(rsForm.id)"
+          :options="CONFIG.options['transaction_mode']"
+          @input="(val) => setTransactionReference(val)"/>
+
       </q-field>
-      <div class="col-12 col-sm-6" >
-        <div class="row q-col-gutter-x-sm">
-          <!-- <q-input  name="number" class="col-12"
-            :label="$tc('label.number')" stack-label
-            placeholder="[Auto Generate]"
-            :dark="LAYOUT.isDark"
-            v-model="rsForm.number" readonly
-            v-validate="$route.meta.mode == 'edit' ? 'required':''"
-            :error="errors.has('number')" :error-message="errors.first('number')"
-          /> -->
-          <q-input name="registration" class="col-12"
-            :label="$tc('warehouses.registration')"
-            v-model="rsForm.registration"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('registration')" :error-message="errors.first('registration')"
-          />
-
-          <ux-date name="date" type="date" class="col-12 "
-            :label="$tc('label.date')" stack-label
-            v-model="rsForm.date"
-            v-validate="`required|date_format:yyyy-MM-dd|before:${$app.moment().add(1,'days').format('YYYY-MM-DD')}`"
-            :date-options="(date) => date <= $app.moment().format('YYYY/MM/DD')"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('date')"
-            :error-message="errors.first('date')">
-          </ux-date>
-
-          <!-- <q-input name="time" type="time" class="col-12 col-sm-4"
-            :label="$tc('label.time')" stack-label
-            v-model="rsForm.time"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('time')" :error-message="errors.first('time')"/> -->
-        </div>
-      </div>
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm">
           <ux-select-filter name="customer" class="col-12"
             :label="$tc('general.customer')"
             v-model="rsForm.customer_id"
             :options="CustomerOptions" clearable
-            :disable="IssetItemDetails"
+            :disable="Boolean(rsForm.id) || IssetItemDetails"
             v-validate="'required'"
             :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
             :error="errors.has('customer')"
             :error-message="errors.first('customer')"
             @input="(val) => setCustomerReference(val)">
-
-            <q-tooltip v-if="IssetItemDetails" :offset="[0, 10]">To change, Please delete Item goods first!</q-tooltip>
-
+            <q-badge slot="counter"
+              :label="rsForm.order_mode"
+              v-show="Boolean(rsForm.customer_id)"/>
           </ux-select-filter>
+
+          <ux-date name="date" type="date" class="col-8"
+            :label="$tc('label.date')" stack-label
+            v-model="rsForm.date"
+            v-validate="`required|date_format:yyyy-MM-dd|before:${$app.moment().add(1,'days').format('YYYY-MM-DD')}`"
+            :date-options="(date) => date <= $app.moment().format('YYYY/MM/DD')"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('date')"
+            :error-message="errors.first('date')"
+            @input="setDateReference"/>
+
+           <q-input name="time" type="time" class="col-4"
+            :label="$tc('label.time')" stack-label
+            v-model="rsForm.time"
+            v-validate="`required`"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('time')"
+            :error-message="errors.first('time')" />
+
+          <q-input name="registration" class="col-12"
+            :label="$tc('warehouses.registration')"
+            v-model="rsForm.registration"
+            v-validate="'required'"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('registration')"
+            :error-message="errors.first('registration')"/>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6" >
+        <div class="row q-col-gutter-x-sm">
           <!--  -->
           <q-input class="col-12"
             name="reference_number"
@@ -96,15 +84,38 @@
             :error="errors.has('reference_number')"
             :error-message="errors.first('reference_number')"/>
 
-
           <ux-date class="col-12"
             name="reference_date" type="date"
             stack-label :label="$tc('warehouses.reference_date')"
             v-model="rsForm.reference_date"
-            v-validate="'required'"
+            v-validate="`required|date_format:yyyy-MM-dd|before:${$app.moment().add(1,'days').format('YYYY-MM-DD')}`"
+            :date-options="(date) => date <= $app.moment().format('YYYY/MM/DD')"
             :dark="LAYOUT.isDark"
             :error="errors.has('reference_date')"
             :error-message="errors.first('reference_date')"/>
+
+          <ux-select-filter class="col-12"
+            name="vehicle_id"
+            :label="$tc('transports.seri')" stack-label
+            v-model="rsForm.vehicle_id"
+            autocomplete="off"
+            :options="VehicleOptions"
+            :dark="LAYOUT.isDark"
+            :error="errors.has('vehicle_id')"
+            :error-message="errors.first('vehicle_id')" >
+            <template slot="after">
+              <q-input class="no-padding text-uppercase"
+                input-class="text-weight-bold"
+                input-style="width:50px;text-align:center"
+                name="rit" type="number" min="0"
+                label="RIT"
+                v-model="rsForm.rit"
+                dense no-error-icon standout="dark"
+                v-validate="'min_value:0'"
+                :error="errors.has('rit')" />
+              <!-- Incoming Items lists -->
+            </template>
+          </ux-select-filter>
 
         </div>
       </div>
@@ -112,33 +123,16 @@
     <!-- COLUMN::2nd Request orders -->
     <q-separator inset spaced :dark="LAYOUT.isDark"></q-separator>
     <q-card-section class="row q-col-gutter-sm">
-      <q-input class="col-12 col-sm-6"
-        name="transport_number"
-        :label="$tc('transports.seri')" stack-label
-        v-model="rsForm.transport_number"
-        autocomplete="off"
-        :dark="LAYOUT.isDark"
-        :error="errors.has('transport_number')"
-        :error-message="errors.first('transport_number')" />
-
-      <q-input class="col-12 col-sm-6"
-        name="transport_rate" type="number"
-        :label="$tc('transports.trip')"
-        v-model="rsForm.transport_rate"
-        v-validate="''"
-        :dark="LAYOUT.isDark"
-        :error="errors.has('transport_rate')"
-        :error-message="errors.first('transport_rate')" />
-      <!-- Incoming Items lists -->
 
       <div class="col-12">
-        <q-table ref="table" class="main-box bordered no-shadow no-highlight"
+        <q-table ref="table" class="main-box bordered no-shadow no-highlight th-uppercase"
           :data="rsForm.incoming_good_items" dense
           :dark="LAYOUT.isDark"
           :rows-per-page-options ="[0]" hide-bottom
           :columns="[
             { name: 'prefix', field: 'prefix', label: '',  align: 'left'},
-            { name: 'item_id', field: 'item_id', label: 'Item details', align: 'left'},
+            { name: 'item_id', field: 'item_id', label: $tc('items.part_name'), align: 'left'},
+            { name: 'part_name', field: 'item_id', label: $tc('items.part_number'), align: 'left'},
             { name: 'quantity', field: 'quantity', label: $tc('label.quantity'), align: 'center'},
             { name: 'unit_id', field: 'unit_id', label: $tc('label.unit'), align: 'center'},
           ]"
@@ -157,10 +151,11 @@
                   dense outlined hide-bottom-space color="blue-grey-5"
                   v-model="row.item_id"
                   v-validate="'required'"
-                  emit-value map-options clearable
-                  :options="ItemOptions"
-                  :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
-                  :readonly="!IssetCustomerID"
+                  map-options emit-value
+                  :options="ItemOptions" clearable
+                  :options-dark="LAYOUT.isDark"
+                  :dark="LAYOUT.isDark"
+                  :readonly="!Boolean(rsForm.customer_id)"
                   @input="(val)=>{ setItemReference(row.__index, val) }"
                   :loading="SHEET['items'].loading"
                   :error="errors.has(`items.${row.__index}.item_id`)"
@@ -170,30 +165,38 @@
 
               </q-td>
             </template>
+            <template v-slot:body-cell-part_name="{row}">
+              <q-td key="part_number" width="35%" style="min-width:150px">
+                <q-input readonly
+                  :value="row.item ? row.item.part_number : null"
+                  outlined dense hide-bottom-space color="blue-grey-5"
+                  :dark="LAYOUT.isDark" />
+              </q-td>
+            </template>
             <template v-slot:body-cell-quantity="{row}">
               <q-td width="25%">
-                <q-input
+                <q-input style="min-width:120px"
                   :name="`items.${row.__index}.quantity`" type="number"
                   v-model="row.quantity"
                   v-validate="row.item_id ? 'required' : ''"
-                  dense outlined hide-bottom-space color="blue-grey-5"
+                  dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
                   :dark="LAYOUT.isDark"
                   :error="errors.has(`items.${row.__index}.quantity`)"/>
               </q-td>
             </template>
             <template v-slot:body-cell-unit_id="{row}">
               <q-td width="25%">
-                <q-select :name="`items.${row.__index}.unit_id`"
+                <q-select style="min-width:100px"
+                  :name="`items.${row.__index}.unit_id`"
                   v-model="row.unit_id"
                   dense outlined hide-bottom-space color="blue-grey-5"
                   @input="(val)=> { setUnitReference(row.__index, val) }"
                   :options="ItemUnitOptions[row.__index]"
-                  map-options
+                  map-options emit-value
                   :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
                   v-validate="row.item_id ? 'required' : ''"
                   :error="errors.has(`items.${row.__index}.unit_id`)"/>
-
-                <q-input v-model="row.unit_rate" class="hidden" />
+                <q-input class="hidden" v-model="row.unit_rate" />
               </q-td>
             </template>
 
@@ -232,10 +235,10 @@ export default {
   data () {
     return {
       SHEET:{
-        customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
-        units: {data:[], api:'/api/v1/references/units?mode=all'},
-        vehicles: {data:[], api:'/api/v1/references/vehicles?mode=all'},
-        items: {api:'/api/v1/common/items?mode=all', autoload:false}
+        units: {api:'/api/v1/references/units?mode=all'},
+        customers: {api:'/api/v1/incomes/customers?mode=all'},
+        vehicles: {api:'/api/v1/references/vehicles?mode=all'},
+        items: {autoload:false, api:'/api/v1/common/items?mode=all'}
       },
       FORM:{
         resource:{
@@ -252,13 +255,13 @@ export default {
 
           customer_id: null,
           reference_number: null,
-          reference_date: null, // this.$app.moment().format('YYYY-MM-DD'),
+          reference_date: null,
 
           transaction: null,
           order_mode: null,
 
-          transport_number: null,
-          tranport_rate: null,
+          vehicle_id: null,
+          rit: null,
           description: null,
 
           incoming_good_items:[
@@ -283,11 +286,9 @@ export default {
   },
   computed: {
     IS_EDITABLE() {
-      if (Object.keys(this.FORM.data.has_relationship || {}).length > 0) {
-        return false
-      }
+      if (Object.keys(this.FORM.data.has_relationship || {}).length > 0) return false
 
-      return true
+      return this.$app.can('incoming-goods-update')
     },
     IssetItemDetails() {
         let items = this.rsForm.incoming_good_items
@@ -306,10 +307,10 @@ export default {
       // let label = [item.code, item.name].join('-')
       return (this.SHEET.customers.data.map(item => ({label: [item.code, item.name].join(' - '), value: item.id})) || [])
     },
-    TransportOptions() {
+    VehicleOptions() {
       return this.SHEET.vehicles.data.map(item =>  ({
-          label: item.name,
-          value: item.name
+          label: item.number,
+          value: item.id
         })
       )
     },
@@ -390,6 +391,15 @@ export default {
           messages: data['has_relationship'],
           then: () => this.$router.push(`${this.FORM.resource.uri}/${data.id}`)
         })
+      }
+    },
+    setDateReference (val) {
+      if (this.ROUTE.meta.mode === 'create') {
+        if (this.rsForm.date < this.$app.moment().format('YYYY-MM-DD')) this.rsForm.time = null
+        else if (this.rsForm.date === this.$app.moment().format('YYYY-MM-DD')) {
+          this.rsForm.time = this.$app.moment().format('HH:mm')
+        }
+
       }
     },
     setTransactionReference(val) {
@@ -481,7 +491,7 @@ export default {
           this.FORM.toView(response.data.id)
         })
         .catch((error) => {
-          this.FORM.response.error(error.response, 'UPDATE FAILED');
+          this.FORM.response.error(error.response || error, 'UPDATE FAILED');
           this.FORM.response.fields(error.response);
         })
         .finally(()=>{

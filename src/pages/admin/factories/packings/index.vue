@@ -49,7 +49,11 @@
                   :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                   :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
                   :options="CustomerOptions"
-                  @input="FILTERABLE.submit" />
+                  @input="[
+                    FILTERABLE.fill.item_id.value=null,
+                    SHEET.load('items', `customer_id=${FILTERABLE.fill.customer_id.value}`),
+                    FILTERABLE.submit()
+                  ]"/>
 
                 <ux-select-filter class="col-8 col-sm-4"
                   v-model="FILTERABLE.fill.item_id.value" clearable
@@ -60,7 +64,8 @@
                   :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                   :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
                   :options="ItemOptions"
-                  @input="FILTERABLE.submit" />
+                  @input="FILTERABLE.submit"
+                  :loading="SHEET['items'].loading"/>
 
                 <ux-date class="col-8 col-sm-4"
                   stack-label :label="$tc('label.date')"
@@ -149,7 +154,7 @@ export default {
     return {
       SHEET: {
         customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
-        items: {data:[], api:'/api/v1/common/items?mode=all'},
+        items: {data:[], api:'/api/v1/common/items?mode=all', autoload: false},
       },
       FILTERABLE: {
         fill: {
@@ -177,7 +182,7 @@ export default {
           uri: '/admin/factories/packings',
         },
         columns: [
-          { name: 'prefix', label: ''},
+          { name: 'prefix', label: '', align: 'left',},
 
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
           { name: 'item_id', label: this.$tc('label.code', 1, {v:this.$tc('label.part')}), align: 'left', sortable: false },
@@ -218,6 +223,12 @@ export default {
     },
   },
   methods: {
+    initItemOptions(val, update, abort) {
+      console.warn('TEST', val, update, abort)
+      if(String(val).length > 2) {
+        this.SHEET.load('items', 'search='+val)
+      }
+    },
     isEditable(row) {
       if (row.deleted_at) return false
       return true

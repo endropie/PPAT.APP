@@ -87,10 +87,14 @@
 
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
-          <span v-if="rs.row.number"> {{ rs.row.number + (rs.row.transaction == 'RETURN' ? '.RET' : '') }}
-            <ux-badge-status :row="rs.row" class=" on-right shadow-0" />
-          </span>
-          <span v-else>- undifined -</span>
+          {{ rs.row.number  }}
+
+          <q-badge label="RET" class=""
+            dense color="dark" text-color="white"
+            v-if="rs.row.transaction == 'RETURN'"/>
+        </q-td>
+        <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px">
+          <ux-badge-status :row="rs.row" class=" on-right shadow-0" />
         </q-td>
 
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
@@ -103,16 +107,6 @@
           <span v-if="rs.row.date"> {{ $app.moment(rs.row.date).format('DD/MM/YYYY') }}</span>
           <span v-else>-</span>
         </q-td>
-
-        <!-- <q-td slot="body-cell-begin_date" slot-scope="rs" :props="rs">
-          <span v-if="rs.row.begin_date"> {{ $app.moment(rs.row.begin_date).format('DD/MM/YY') }}</span>
-          <span v-else>-</span>
-        </q-td> -->
-
-        <!-- <q-td slot="body-cell-until_date" slot-scope="rs" :props="rs">
-          <span v-if="rs.row.until_date"> {{ $app.moment(rs.row.until_date).format('DD/MM/YY') }}</span>
-          <span v-else>-</span>
-        </q-td> -->
 
         <q-td slot="body-cell-created_at" slot-scope="rs" :props="rs">
           <span v-if="rs.row.created_at"> {{ $app.moment(rs.row.created_at).format('DD/MM/YY HH:mm') }}</span>
@@ -165,12 +159,10 @@ export default {
         columns: [
           { name: 'prefix', label: '', align: 'left'},
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
+          { name: 'status', label: '', align: 'left', field: 'status'},
           { name: 'date', label: this.$tc('label.date'), align: 'center', field: 'date'},
           { name: 'customer_id', label: this.$tc('general.customer'), align: 'left', field: (row) => row.customer.name , sortable: true },
           { name: 'reference_number', label: 'No. Reference', field: 'reference_number', align: 'left', sortable: true },
-          // { name: 'begin_date', label: 'Begin Date', align: 'center', field: 'begin_date'},
-          // { name: 'until_date', label: 'Until Date', align: 'center', field: 'until_date'},
-          // { name: 'interval_date', label: 'Interval Date', align: 'center'},
           { name: 'created_at', label: 'Create', align: 'center', sortable: true, field: 'created_at'},
         ]
       },

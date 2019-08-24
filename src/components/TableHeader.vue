@@ -17,6 +17,7 @@
             v-if="!menu.hidden" />
         </template>
         <q-btn v-if="!hideMenu"
+          v-show="ShowMenus"
           flat round dense
           color="light"
           icon="more_vert">
@@ -42,7 +43,7 @@
                     </q-item-section>
                   </q-item>
                 </template>
-                <slot name="menu-item" />
+                <slot name="XXmenu-item" />
                 <q-separator :dark="LAYOUT.isDark" v-if="PREFERENCE" />
                 <q-item v-if="PREFERENCE" clickable>
                   <q-item-section>Preferences</q-item-section>
@@ -144,6 +145,15 @@ export default {
     LAYOUT () {
       return this.$store.state.admin.LAYOUT
     },
+    ShowMenus() {
+      if(!this.menus) return false
+
+      const f = this.menus.find(x => {
+        if (x.hidden != true && (!this.$q.screen.gt.sm || x.shortcut != true)) return true
+      })
+
+      return Boolean(f)
+    }
   },
   watch:{
     'model.filter' : 'setFilter'

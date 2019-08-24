@@ -1,18 +1,15 @@
 <template>
-<q-page padding class="form-page row justify-center" v-if="FORM.show">
-  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark">
+<q-page padding class="form-page row justify-center">
+  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark" v-if="FORM.show">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
-        <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
-        </template>
       </form-header>
     </q-card-section>
     <q-card-section>
       <div class="row q-col-gutter-md">
         <q-input class="col-12 col-sm-6"
           name="code"
-          :label="$tc('label.intern_code')"
+          :label="$tc('label.code')"
           icon="code"
           autocomplete="off"
           v-model="rsForm.code"
@@ -29,10 +26,8 @@
           v-validate="'required'"
           v-validate-name:my-name
           :dark="LAYOUT.isDark"
-
-
-
-        />
+          :error="errors.has('name')"
+          :error-message="errors.first('name')"/>
         <q-input class="col-12"
           v-model="rsForm.description"
           type="textarea"
@@ -124,7 +119,7 @@ export default {
         })
         .catch((error) => {
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false

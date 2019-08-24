@@ -1,6 +1,6 @@
 <template>
-  <div >
-    <div v-if="FORM.show" class="index-page bg-grey-2 window-height window-width column items-center no-wrap">
+  <div padding  >
+    <div class="index-page bg-grey-2 window-height window-width column items-center no-wrap">
       <div class="banner bg-primary flex flex-center">
         PPA
       </div>
@@ -65,7 +65,7 @@
       <a class="ribbon" :title="`PPA Administration Built on v${$q.version}`" />
     </div>
     <q-inner-loading :showing="FORM.loading">
-      <q-spinner-gears size="50px" color="primary" />
+      <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </div>
 </template>

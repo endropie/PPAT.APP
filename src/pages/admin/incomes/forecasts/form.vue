@@ -1,51 +1,41 @@
 <template>
-<q-page padding class="form-page justify-center" v-if="FORM.show">
-  <q-card inline class="q-ma-sm ">
+<q-page padding class="form-page justify-center" >
+  <q-card inline class="q-ma-sm " v-if="FORM.show">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
-        <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
-        </template>
       </form-header>
     </q-card-section>
-    <q-card-section>
-      <div class="row q-col-gutter-sm q-col-gutter-x-lg q-mb-lg">
+    <q-separator :dark="LAYOUT.isDark" />
+    <q-card-section class="row q-col-gutter-x-sm q-mb-lg">
         <!-- COLUMN::1st customer Identitity -->
-        <div class="col-12 col-sm-6" >
-          <div class="column q-col-gutter-sm">
-            <q-input name="number"
-              label="No Transaction"
-              v-model="rsForm.number"
-              placeholder="[Auto Generate]" autofocus
-              v-validate="$route.meta.mode == 'edit' ? 'required':''"
-              :error="errors.has('number')"
-              :error-message="errors.first('number')" />
+      <ux-select-filter class="col-12 col-sm-6"
+        name="customer_id"
+        v-model="rsForm.customer_id"
+        :label="$tc('general.customer')"
+        :disable="IssetIncomeItems"
+        v-validate="'required'"
+        :options="CustomerOptions" filter clearable
+        @input="setCustomerReference"
+        :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
+        <q-tooltip v-if="IssetIncomeItems" :offset="[0, 10]">To change, Please clear Delivery items first!</q-tooltip>
+      </ux-select-filter>
 
-            <ux-select-filter name="customer_id"
-              v-model="rsForm.customer_id"
-              :label="$tc('general.customer')"
-              :disable="IssetIncomeItems"
-              v-validate="'required'"
-              :options="CustomerOptions" filter clearable
-              @input="setCustomerReference"
-              :error="errors.has('customer_id')" :error-message="errors.first('customer_id')">
-              <q-tooltip v-if="IssetIncomeItems" :offset="[0, 10]">To change, Please clear Delivery items first!</q-tooltip>
-            </ux-select-filter>
-          </div>
-        </div>
-        <!-- COLUMN::2nd Transaction details -->
-        <div class="col-12 col-sm-6" >
-          <div class="column q-col-gutter-sm">
-            <ux-date name="begin_date" stack-label label="Begin Date" v-model="rsForm.begin_date" type="date"
-              v-validate="'required'"
-              :error="errors.has('begin_date')" :error-message="errors.first('begin_date')"/>
-            <ux-date name="until_date"
-              stack-label label="Until Date"
-              v-model="rsForm.until_date" type="date"
-              v-validate="'required'"
-              :error="errors.has('until_date')" :error-message="errors.first('until_date')"/>
-          </div>
-        </div>
+      <ux-date class="col-12 col-sm-3"
+        name="begin_date" type="date"
+        stack-label label="Begin Date"
+        v-model="rsForm.begin_date"
+        v-validate="'required'"
+        :error="errors.has('begin_date')"
+        :error-message="errors.first('begin_date')"/>
+
+      <ux-date class="col-12 col-sm-3"
+        name="until_date" type="date"
+        stack-label label="Until Date"
+        v-model="rsForm.until_date"
+        v-validate="'required'"
+        :error="errors.has('until_date')"
+        :error-message="errors.first('until_date')"/>
+
         <!-- COLUMN::3th Items lists -->
         <div class="col-12">
           <q-table ref="table" color="primary" :data="rsForm.forecast_items" dense style="min-width:100%;max-width:100%;display:inline-grid"
@@ -63,51 +53,52 @@
             <template v-slot:body="rsItem">
               <q-tr >
                 <q-td key="prefix"  style="width:50px">
-                  <q-btn dense  @click="removeItem(rsItem.row.__index)" icon="delete" color="negative"/>
+                  <q-btn dense flat icon="clear" color="red" @click="removeItem(rsItem.row.__index)" />
                 </q-td>
                 <q-td key="item_id"  >
-                  <ux-select-filter :name="`forecast_items.${rsItem.row.__index}.item`"  style="min-width:150px"
+                  <ux-select-filter :name="`forecast_items.${rsItem.row.__index}.item_id`"
                     v-model="rsItem.row.item_id"
                     dense hide-bottom-space
-                    filled color="blue-grey-5"
+                    outlined color="blue-grey-5"
                     :dark="LAYOUT.isDark"
                     v-validate="'required'"
                     :options="ItemOptions" filter
-                    :readonly="!IssetCustomerID"
+                    :disable="!IssetCustomerID"
                     @input="(val)=>{ setItemReference(rsItem.row.__index, val) }"
-                    :error="errors.has(`forecast_items.${rsItem.row.__index}.item`)"
-                    :error-message="errors.first(`forecast_items.${rsItem.row.__index}.item`)" >
+                    :error="errors.has(`forecast_items.${rsItem.row.__index}.item_id`)"
+                    :error-message="errors.first(`forecast_items.${rsItem.row.__index}.item_id`)"
+                    :loading="SHEET['items'].loading">
                     <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
                   </ux-select-filter>
                 </q-td>
                 <q-td key="quantity" >
-                  <q-input :name="`forecast_items.${rsItem.row.__index}.quantity`" style="min-width:50px"
+                  <q-input :name="`forecast_items.${rsItem.row.__index}.quantity`"
+                    style="min-width:50px"
                     v-model="rsItem.row.quantity" type="number" min="0"
-                    filled color="blue-grey-5"
+                    outlined no-error-icon color="blue-grey-5"
                     :dark="LAYOUT.isDark"
                     dense hide-bottom-space
-                    v-validate="rsItem.row.item_id ? 'required' : ''"
+                    v-validate="'required|gt_value:0'"
                     :error="errors.has(`forecast_items.${rsItem.row.__index}.quantity`)" />
                 </q-td>
                 <q-td key="unit_id"  >
                   <q-select :name="`forecast_items.${rsItem.row.__index}.unit_id`" style="min-width:70px"
                     v-model="rsItem.row.unit_id"
-                    filled color="blue-grey-5"
-                    :dark="LAYOUT.isDark"
-                    dense hide-bottom-space
-                    v-validate="rsItem.row.item_id ? 'required' : ''"
-                    @input="(val)=> { setUnitReference(rsItem.row.__index, val) }"
+                    outlined  dense hide-bottom-space=""
+                    :dark="LAYOUT.isDark" color="blue-grey-5"
                     :options="ItemUnitOptions[rsItem.row.__index]"
                     map-options emit-value
-                    :error="errors.has(`forecast_items.${rsItem.row.__index}.unit_id`)" />
+                    v-validate="'required'"
+                    :error="errors.has(`forecast_items.${rsItem.row.__index}.unit_id`)"
+                    @input="(val)=> { setUnitReference(rsItem.row.__index, val) }" />
                 </q-td>
                 <q-td key="price" >
                   <ux-numeric :name="`forecast_items.${rsItem.row.__index}.price`" style="min-width:100px"
                     v-model="rsItem.row.price"
-                    filled color="blue-grey-5" align="right"
+                    outlined color="blue-grey-5" align="right"
                     :dark="LAYOUT.isDark"
                     dense hide-bottom-space
-                    v-validate="rsItem.row.item_id ? 'required' : ''"
+                    v-validate="'required|gt_value:0'"
                     :error="errors.has(`forecast_items.${rsItem.row.__index}.price`)" />
                 </q-td>
                 <q-td key="total_price"  >
@@ -120,7 +111,7 @@
                 </q-td>
               </q-tr>
               <!-- Item detail Description -->
-              <q-tr >
+              <!-- <q-tr >
                 <q-td></q-td>
                 <q-td >
                   <div class="text-left">
@@ -141,7 +132,7 @@
                 <q-td colspan="100%">
                   <q-input filled v-model="rsItem.row.note" stack-label label="Note" color="blue-grey-6" />
                 </q-td>
-              </q-tr>
+              </q-tr> -->
             </template>
 
             <q-tr slot="bottom-row" >
@@ -158,8 +149,7 @@
           v-model="rsForm.description">
           <q-icon slot="prepend" name="rate_review" />
         </q-input>
-      </div>
-    </q-card-section>
+     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-actions class="q-mx-lg">
       <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
@@ -181,12 +171,9 @@ export default {
 
     return {
       SHEET:{
-        customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
-        transports: {data:[], api:'/api/v1/warehouses/transports?mode=all'},
-        operators: {data:[], api:'/api/v1/references/operators?mode=all'},
-        vehicles: {data:[], api:'/api/v1/references/vehicles?mode=all'},
-        units: {data:[], api:'/api/v1/references/units?mode=all'},
-        items: {data:[], api:'/api/v1/common/items?mode=all'}
+        customers: {api:'/api/v1/incomes/customers?mode=all'},
+        units: {api:'/api/v1/references/units?mode=all'},
+        items: {autoload:false, api:'/api/v1/common/items?mode=all'}
       },
       FORM:{
         resource:{
@@ -243,21 +230,17 @@ export default {
       // let label = [item.code, item.name].join('-')
       return (this.SHEET.customers.data.map(item => ({label: [item.code, item.name].join(' - '), value: item.id})) || [])
     },
-    TransportOptions() {
-      return (this.SHEET.transports.data.map(item => ({label: item.name, value: item.id})) || [])
-    },
-    OperatorOptions() {
-      return (this.SHEET.operators.data.map(item => ({label: item.name, value: item.id})) || [])
-    },
-    VehicleOptions() {
-      return (this.SHEET.vehicles.data.map(item => ({label: item.name, value: item.id})) || [])
-    },
     UnitOptions() {
       return (this.SHEET.units.data.map(item => ({label: item.code, value: item.id})) || [])
     },
     ItemOptions() {
       let ITEM = this.SHEET.items.data.filter((item) => item.customer_id === this.rsForm.customer_id)
-      return (ITEM.map(item => ({label: item.code, sublabel:item.part_name, value: item.id})) || [])
+      return (ITEM.map(item => ({
+        label: `${item.part_name}`,
+        sublabel:`${item.code} No.${item.part_number}`,
+        value: item.id,
+        disable: !item.enable
+      })) || [])
     },
     ItemUnitOptions() {
       let vars = []
@@ -309,8 +292,10 @@ export default {
         this.rsForm.customer_name = null
         this.rsForm.customer_phone = null
         this.rsForm.customer_address = null
+        this.SHEET['items'].data = []
       }
       else {
+        this.SHEET.load('items', `customer_id=${val}`)
         this.rsForm.customer_name = this.MAPINGKEY['customers'][val].name
         this.rsForm.customer_phone = this.MAPINGKEY['customers'][val].phone
         this.rsForm.customer_address = this.MAPINGKEY['customers'][val].address_raw
@@ -351,6 +336,8 @@ export default {
     setForm(data) {
       this.rsForm =  data
 
+      if(data.customer_id) this.SHEET.load('items', `customer_id=${data.customer_id}`)
+
       if(data.hasOwnProperty('has_relationship') && data['has_relationship'].length > 0) {
         this.FORM.has_relationship = data.has_relationship
         this.FORM.onRelationship({
@@ -374,9 +361,9 @@ export default {
       }
     },
     routing() {
-      if(this.$route.meta.mode === 'edit') {
+      if(this.ROUTE.meta.mode === 'edit') {
         this.FORM.loading = true
-        let url = this.FORM.resource.api +'/'+ this.$route.params.id
+        let url = this.FORM.resource.api +'/'+ this.ROUTE.params.id
         this.$axios.get(url)
           .then((response) => {
             const data = response.data
@@ -430,7 +417,7 @@ export default {
         })
         .catch((error) => {
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           setTimeout(() => {

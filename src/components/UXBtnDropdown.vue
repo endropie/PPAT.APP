@@ -1,6 +1,8 @@
 <template>
   <q-btn-dropdown v-show="!EMPTY"
-  split
+    split
+    :label="FIRST.label || $attrs.label"
+    @click="firstCall()"
     v-bind="$attrs"
     v-on="$listeners"
   >
@@ -11,7 +13,7 @@
     <q-list style="min-width:200px">
       <template v-for="(item, index) in options">
       <q-item :key="index"
-        v-if="!item.hidden"
+        v-if="!item.hidden && index !== 0"
         clickable
         v-close-popup
         @click="actionsCall(item)" >
@@ -35,17 +37,28 @@
 <script>
 export default {
   props: {
+    required: Boolean,
     options: {
       type: Array,
       default: () => []
     }
   },
   computed:{
+    FIRST() {
+      let find = {}
+      if(this.options) find = this.options.find(x => !x.hidden)
+
+      return find
+    },
     EMPTY() {
+      if(this.required) return true
       return this.options.filter(x=> x.hidden !== true).length === 0
     },
   },
   methods: {
+    firstCall() {
+      if (this.FIRST.hasOwnProperty('actions')) this.FIRST.actions()
+    },
     actionsCall(item) {
       if (item.hasOwnProperty('actions')) item.actions()
     }

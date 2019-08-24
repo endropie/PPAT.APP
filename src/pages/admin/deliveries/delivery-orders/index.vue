@@ -3,6 +3,7 @@
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
       <q-table ref="table" inline class="table-index th-uppercase" color="primary" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
+        subtitle="cskc"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
         :filter="TABLE.filter"
@@ -19,13 +20,6 @@
             :title="TABLE.getTitle()"
             :TABLE.sync="TABLE"
             :menus="[
-              { label: $tc('form.add'),
-                detail: $tc('messages.form_new'),
-                icon: 'add',
-                shortcut: true,
-                hidden:!$app.can('incoming-goods-create'),
-                to: `${TABLE.resource.uri}/create`
-              },
               { label: $tc('label.trash'),
                 detail:  $tc('messages.show_deleted'),
                 shortcut: true,
@@ -38,6 +32,7 @@
                 }
               }
             ]">
+
 
             <div class="row q-col-gutter-xs" >
               <ux-select-filter class="col-12 col-sm-6"
@@ -78,8 +73,6 @@
                 :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark">
 
-                <template slot="before">
-                </template>
                 <template slot="append">
                   <q-btn flat dense icon="search" dark-percentage color="fadded" @click="FILTERABLE.submit"/>
                 </template>
@@ -88,20 +81,31 @@
           </table-header>
         </template>
 
-        <!-- slot name syntax: body-cell-<column_name> -->
-        <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
-          <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
-          <q-btn v-if="isCanUpdate && isEditable(rs.row)" dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" :class="{'hidden': rs.row.is_relationship === true}" />
-          <q-btn v-if="isCanDelete && isEditable(rs.row)" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'hidden': rs.row.is_relationship === true}" />
-        </q-td>
+        <!-- <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.search" :placeholder="`${$tc('form.search',2)}...`"  color="blue-grey-5"
+          @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
+          <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
 
-        <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
-          <span> {{ rs.row.number }} </span>
-          <ux-badge-status :row="rs.row" class=" on-right shadow-0" />
-        </q-td>
+          </q-popover>
+        </q-chips-input> -->
+
+        <!-- slot name syntax: body-cell-<column_name> -->
+        <template slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
+          <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
+          <!-- <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'invisible': rs.row.is_relationship === true}" /> -->
+        </template>
 
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
           <span v-if="rs.row.customer"> {{ rs.row.customer.name }}</span>
+          <span v-else>- undifined -</span>
+        </q-td>
+
+        <q-td slot="body-cell-number" slot-scope="rs" :props="rs">
+          <span v-if="rs.row.number" class="text-weight-medium" :class="{'text-strike text-faded': rs.row.revise_id}"> {{ rs.row.number }} {{ rs.row.numrev ? ' - REV.' + rs.row.numrev : '' }}</span>
+          <span v-else>- undifined -</span>
+        </q-td>
+
+        <q-td slot="body-cell-operator_id" slot-scope="rs" :props="rs">
+          <span v-if="rs.row.operator"> {{ rs.row.operator.name }}</span>
           <span v-else>- undifined -</span>
         </q-td>
 
@@ -141,23 +145,35 @@ export default {
           }
         }
       },
-      TABLE:{
+      TABLE: {
         mode: 'index',
         resource:{
-          api: '/api/v1/incomes/pre-deliveries',
-          uri: '/admin/incomes/delivery/pre-deliveries',
+          api: '/api/v1/incomes/delivery-orders',
+          uri: '/admin/deliveries/delivery-orders',
         },
         columns: [
           { name: 'prefix', label: '', align: 'left'},
+
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
           { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
-          { name: 'trans_qty', label: 'Tran Qty', field: 'trans_qty', align: 'center', sortable: true },
+          // { name: 'vehicle_id', label: 'Vehicle', field: 'vehicle_id', align: 'left', sortable: true },
+          { name: 'operator_id', label: 'Operator', field: 'operator_id', align: 'left', sortable: true },
           { name: 'date', label: this.$tc('label.date'), field: 'date', align: 'left', sortable: true},
-          { name: 'time', label: 'Time', field: 'time', align: 'left'},
-          { name: 'plan_date', label: 'Plan Date', field: 'plan_date', align: 'left', sortable: true},
-          { name: 'plan_time', label: 'Plan Time', field: 'plan_time', align: 'left', sortable: true},
+          { name: 'due_date', label: this.$tc('label.due_date'), field: 'due_date', align: 'left', sortable: true},
 
-        ]
+        ],
+        rowData:[],
+        resData:[],
+        pagination : {
+          page: 1,
+          rowsPerPage: 10,
+          rowsNumber: 10 // specifying this determines pagination is server-side,
+        },
+        filter: '',
+        selected: [
+          // initial selection => { id: 5 }
+        ],
+        loading: false,
       },
     }
   },
@@ -165,19 +181,12 @@ export default {
     this.INDEX.load()
   },
   computed: {
-    isCanUpdate(){
-      return this.$app.can('items-update')
-    },
-    isCanDelete(){
-      return this.$app.can('items-delete')
-    },
     CustomerOptions() {
       return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
     },
   },
   methods: {
     isEditable(row) {
-      if(row.order_mode === 'NONE') return false
       if(row.status !== 'OPEN') return false
       if(row.is_relationship) return false
       return true

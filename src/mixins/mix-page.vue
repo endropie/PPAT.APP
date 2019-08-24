@@ -1,4 +1,5 @@
-<script>import { mapGetters } from 'vuex'
+<script>
+import { mapGetters } from 'vuex'
 
 export default {
   data () {
@@ -7,8 +8,7 @@ export default {
     }
   },
   created () {
-    // this.SHOW = this.$store.admin.page.show
-    // console.info('[PLAY] MIX-TABLE is Created!')
+    // console.info('[PLAY] MIX-PAGE is Created!')
   },
   computed: {
     title() {
@@ -48,7 +48,7 @@ export default {
         this.$store.commit('admin/setPageShow', val)
       }
     },
-    ...mapGetters('admin', ['LAYOUT'])
+    ...mapGetters('admin', ['LAYOUT', 'CONFIG', 'SETTING'])
   },
   methods: {
     directToAdmin () {

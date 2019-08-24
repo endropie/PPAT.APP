@@ -17,20 +17,33 @@
           <table-header
             :title="TABLE.getTitle()"
             :TABLE.sync="TABLE"
-            :filter.sync="TABLE.filter"
-          >
-            <template v-slot:menu-prepend>
-              <q-btn dense rounded icon="add" color="primary" class="q-mx-sm"
-                :to="`${TABLE.resource.uri}/create`"
-                v-if="$app.can('customers-create') && $q.screen.gt.sm" />
-            </template>
-            <template v-slot:menu-item>
-              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
-                <q-item-section>Add new</q-item-section>
-                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
-              </q-item>
-              <q-separator :dark="LAYOUT.isDark"/>
-            </template>
+            :menus="[
+              { shortcut: true,
+                label: $tc('form.add'),
+                detail: $tc('messages.form_new'),
+                icon: 'add',
+                hidden:!$app.can('customers-create'),
+                to: `${TABLE.resource.uri}/create`
+              }
+            ]">
+
+
+            <div class="row q-col-gutter-xs" >
+              <q-select class="col-12" autocomplete="off"
+                multiple use-chips use-input new-value-mode="add"
+                dense hide-dropdown-icon
+                v-model="FILTERABLE.search" emit-value
+                :placeholder="`${$tc('form.search',2)}...`"
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
+                :dark="LAYOUT.isDark">
+
+                <template slot="append">
+                  <q-btn flat dense icon="search" dark-percentage color="fadded" @click="FILTERABLE.submit"/>
+                </template>
+              </q-select>
+            </div>
+
           </table-header>
         </template>
 
@@ -43,9 +56,13 @@
           <!-- <q-btn :to="`${TABLE.resource.uri}/${rs.row.id}`"  flat round color="light" size="sm" icon="menu" /> -->
         </q-td>
 
-        <q-td slot="body-cell-enable" slot-scope="rs" :props="rs">
-          <q-icon :name=" rs.row.enable ? `check`: `times`"></q-icon>
+        <q-td slot="body-cell-order_mode" slot-scope="rs" :props="rs">
+          <q-badge :label="rs.row.order_mode" class="text-caption" color="lime-10"/>
         </q-td>
+
+        <!-- <q-td slot="body-cell-enable" slot-scope="rs" :props="rs">
+          <q-icon :name=" rs.row.enable ? `check`: `times`"></q-icon>
+        </q-td> -->
 
       </q-table>
     </q-pull-to-refresh>
@@ -60,8 +77,7 @@ export default {
   data () {
     return {
       TABLE: {
-        mode: 'datagrid',
-        show:false,
+        mode: 'index',
         resource:{
           api: '/api/v1/incomes/customers',
           uri: '/admin/incomes/customers',
@@ -71,10 +87,11 @@ export default {
 
           { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true },
           { name: 'name', field: 'name', label: 'Name', align: 'left', sortable: true},
+          { name: 'order_mode', field: 'order_mode', label: this.$tc('label.mode', 1 ,{v:'Order'}), align: 'left', sortable: false},
           { name: 'phone', label: 'Phone', field: 'phone', align: 'left'},
-          { name: 'fax', label: 'Fax', field: 'fax', align: 'left', sortable: true },
           { name: 'email', label: 'Email', field: 'email', align: 'left', sortable: true },
-          { name: 'enable', label: 'Enable', field: 'enable', align: 'left', sortable: true },
+          // { name: 'fax', label: 'Fax', field: 'fax', align: 'left', sortable: true },
+          // { name: 'enable', label: 'Enable', field: 'enable', align: 'left', sortable: true },
         ],
         rowData:[],
         resData:[],

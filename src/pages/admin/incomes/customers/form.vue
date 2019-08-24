@@ -3,81 +3,88 @@
   <q-card inline class="main-box q-ma-sm" v-if="FORM.show" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
-        <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
-        </template>
       </form-header>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark"></q-separator>
     <!-- ROW::1st Customer Identitity -->
     <q-card-section class="row q-col-gutter-x-md">
       <div class="col-12 col-sm-6" >
-        <div class="row q-col-gutter-x-md">
-          <q-input name="code" class="col-8"
-            label="Intern. code"
-            v-model="rsForm.code"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('code')"
-            :error-message="errors.first('code')"/>
+        <q-list bordered :dark="LAYOUT.isDark" dense>
+          <q-item-label header>Details</q-item-label>
+          <q-separator :dark="LAYOUT.isDark"></q-separator>
+          <q-item>
+            <q-item-section >
+              <div class="row q-col-gutter-x-md">
+                <q-input name="code" class="col-4"
+                  :label="$tc('label.code')"
+                  v-model="rsForm.code"
+                  v-validate="'required'"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has('code')"
+                  :error-message="errors.first('code')"/>
 
-          <q-input name="name" class="col-12"
-            label="Nama"
-            v-model="rsForm.name"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('name')"
-            :error-message="errors.first('name')"/>
+                <q-input name="name" class="col-8"
+                  label="Nama"
+                  v-model="rsForm.name"
+                  v-validate="'required'"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has('name')"
+                  :error-message="errors.first('name')"/>
 
-          <q-input name="phone" class="col-12 col-sm-6"
-            label="Phone"
-            v-model="rsForm.phone"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('phone')"
-            :error-message="errors.first('phone')"/>
+                <q-input name="phone" class="col-12 col-sm-6"
+                  label="Phone"
+                  v-model="rsForm.phone"
+                  v-validate="'required'"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has('phone')"
+                  :error-message="errors.first('phone')"/>
 
-          <q-input name="fax" class="col-12 col-sm-6"
-            label="Fax" v-model="rsForm.fax"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('fax')"
-            :error-message="errors.first('fax')"/>
+                <q-input name="fax" class="col-12 col-sm-6"
+                  label="Fax" v-model="rsForm.fax"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has('fax')"
+                  :error-message="errors.first('fax')"/>
 
-          <q-input name="email" class="col-12"
-            label="Email" v-model="rsForm.email" v-validate="''"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('email')" :error-message="errors.first('email')"/>
+                <q-input name="email" class="col-12"
+                  label="Email"
+                  v-model="rsForm.email" type="email"
+                  v-validate="'email'"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has('email')" :error-message="errors.first('email')"/>
 
-          <q-input name="address" class="col-12"
-            type="textarea" rows="2"
-            label="Address" stack-label
-            v-model="rsForm.address"
-            :dark="LAYOUT.isDark" />
+                <q-input name="address" class="col-12"
+                  type="textarea" rows="2"
+                  label="Address" stack-label
+                  v-model="rsForm.address"
+                  :dark="LAYOUT.isDark" />
 
-          <q-input name="subdistrict" class="col-12 col-sm-6"
-            label="Sub-district" v-model="rsForm.subdistrict" :dark="LAYOUT.isDark"
-            :error="errors.has('subdistrict')" :error-message="errors.first('subdistrict')"/>
+                <q-input name="subdistrict" class="col-12 col-sm-6"
+                  label="Sub-district" v-model="rsForm.subdistrict" :dark="LAYOUT.isDark"
+                  :error="errors.has('subdistrict')" :error-message="errors.first('subdistrict')"/>
 
-          <q-input name="district" class="col-12 col-sm-6"
-            label="District"
-            v-model="rsForm.district"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('district')" :error-message="errors.first('district')"/>
+                <q-input name="district" class="col-12 col-sm-6"
+                  label="District"
+                  v-model="rsForm.district"
+                  :dark="LAYOUT.isDark"
+                  :error="errors.has('district')" :error-message="errors.first('district')"/>
 
-          <ux-select-filter name="province_id" class="col-12 col-sm-8"
-            label="Province"
-            v-model="rsForm.province_id"
-            :dark="LAYOUT.isDark"
-            :options="ProvinceOptions" filter
-            :error="errors.has('province_id')" :error-message="errors.first('province_id')" />
+                <ux-select-filter name="province_id" class="col-12 col-sm-8"
+                  label="Province"
+                  v-model="rsForm.province_id"
+                  :dark="LAYOUT.isDark"
+                  :options="ProvinceOptions" filter
+                  :error="errors.has('province_id')" :error-message="errors.first('province_id')" />
 
-          <q-input name="zipcode" class="col-12 col-sm-4"
-              label="Zip Code"
-              v-model="rsForm.zipcode"
-              :dark="LAYOUT.isDark"
-              :error="errors.has('zipcode')" :error-message="errors.first('zipcode')" />
+                <q-input name="zipcode" class="col-12 col-sm-4"
+                    label="Zip Code"
+                    v-model="rsForm.zipcode"
+                    :dark="LAYOUT.isDark"
+                    :error="errors.has('zipcode')" :error-message="errors.first('zipcode')" />
 
-        </div>
+              </div>
+            </q-item-section>
+          </q-item>
+         </q-list>
       </div>
       <!-- COLUMN::2nd Customer Coporation details -->
       <div class="col-12 col-sm-6" >
@@ -233,11 +240,13 @@
             :dark="LAYOUT.isDark"
             filled
             hint="Pick the mode Invoice Type">
-              <q-option-group name="invoice_mode" type="radio" class="q-pa-md q-gutter-sm"
-                v-model="rsForm.invoice_mode"
-                v-validate="'required'"
-                :dark="LAYOUT.isDark" dense
-                :options="SETTING.customer.invoice_mode" />
+
+            <q-option-group slot="control" class="q-pa-md q-gutter-sm no-padding"
+              name="invoice_mode" type="radio"
+              v-model="rsForm.invoice_mode"
+              v-validate="'required'"
+              :dark="LAYOUT.isDark" dense
+              :options="CONFIG.options.invoice_mode.map(x => ({...x, label: x.detail}))" />
 
           </q-field>
           <q-field class="col-12 col-sm-4"
@@ -247,13 +256,14 @@
             :error="errors.has('delivery_mode')"
             :error-message="errors.first('delivery_mode')">
 
-            <q-option-group name="delivery_mode" type="radio" class="q-pa-md q-gutter-sm"
+            <q-option-group slot="control" class="q-pa-md q-gutter-sm no-padding"
+              name="delivery_mode" type="radio"
               v-model="rsForm.delivery_mode"
               v-validate="'required'"
               :dark="LAYOUT.isDark" dense
-              :options="SETTING.customer.delivery_mode" />
-
+              :options="CONFIG.options.delivery_mode.map(x => ({...x, label: x.detail}))" />
           </q-field>
+
           <q-field class="col-12 col-sm-4"
             hint="Pick the mode PO Type"
             :dark="LAYOUT.isDark"
@@ -261,12 +271,11 @@
             :error="errors.has('order_mode')"
             :error-message="errors.first('order_mode')">
 
-            <q-option-group name="order_mode" type="radio" class="q-pa-md q-gutter-sm"
+            <q-option-group slot="control" name="order_mode" type="radio" class="q-pa-md q-gutter-sm"
               v-model="rsForm.order_mode"
               v-validate="'required'"
               :dark="LAYOUT.isDark" dense
-              :options="SETTING.customer.order_mode" />
-
+              :options="CONFIG.options.order_mode" />
           </q-field>
         </div>
       </div>
@@ -294,26 +303,6 @@ export default {
   },
   data () {
     return {
-      SETTING: {
-        customer:{
-          invoice_mode: [
-            { label: 'Service & material are joined', value: 'JOIN', color: 'positive' },
-            { label: 'Service & material are separated', value: 'SEPARATE', color: 'orange' },
-            { label: 'Service & material Specified', value: 'DETAIL', color: 'blue'}
-          ],
-          delivery_mode: [
-            { label: 'Service & material are joined', value: 'JOIN', color: 'positive' },
-            { label: 'Service & material are separated', value: 'SEPARATE', color: 'orange' },
-            { label: 'Service & material Specified', value: 'DETAIL', color: 'blue'},
-            { label: 'Units of service & material Specified', value: 'UNIT_DETAIL', color: 'info'}
-          ],
-          order_mode: [
-            { label: 'Non-PO (PO Harian)', value: 'NONE', color: 'blue-grey' },
-            { label: 'PO', value: 'PO', color: 'blue' },
-            { label: 'PO Akumulasi', value: 'ACCUMULATE', color: 'positive'}
-          ],
-        }
-      },
       SHEET:{
         provinces: {data:[], api:'/api/v1/references/provinces?mode=all'},
       },
@@ -406,14 +395,13 @@ export default {
         let {method, mode, apiUrl} = this.FORM.meta();
         this.$axios.set(method, apiUrl, this.rsForm)
         .then((response) => {
-          let label = response.data.name + ' - #' + response.data.id
+          let message = response.data.name + ' - #' + response.data.id
           this.FORM.response.success({message:message})
-          this.FORM.toView(response.data.id)
+          this.FORM.toIndex()
         })
         .catch((error) => {
-
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error)
         })
         .finally(()=>{
           setTimeout(() => {

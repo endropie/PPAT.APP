@@ -1,10 +1,10 @@
 <template>
-<q-page padding class="form-page row justify-center" v-if="FORM.show">
-  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark">
+<q-page padding class="form-page row justify-center">
+  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark" v-if="FORM.show">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
         <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="ROUTE.params.id"/>
         </template>
       </form-header>
     </q-card-section>
@@ -17,12 +17,14 @@
           v-validate="'required'"
           :dark="LAYOUT.isDark"
           :error="errors.has('name')"
-          :error-message="errors.first('name')"/>
-        <q-toggle
-          name="ismain"
-          :label="$tc('reference.main_line')"
-          v-model="rsForm.ismain"
-          :dark="LAYOUT.isDark" />
+          :error-message="errors.first('name')">
+          <q-toggle slot="append"
+            name="ismain"
+            label="Main" left-label
+            v-model="rsForm.ismain"
+            :true-value="1" :false-value="0"
+            :dark="LAYOUT.isDark" />
+        </q-input>
 
         <q-input
           :label="$tc('label.description')" stack-label
@@ -108,7 +110,7 @@ export default {
         .catch((error) => {
 
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           setTimeout(() => {

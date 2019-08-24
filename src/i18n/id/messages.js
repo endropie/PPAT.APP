@@ -28,6 +28,8 @@ export default {
   to_sure: 'Apakah anda Yakin untuk {v} ?',
   to_complete_form: 'Silahkan Lengkapi Form Terlebih Dahulu!',
 
+  to_waiting: 'Mohon tunggu',
+
   process_create: 'Form penambahan data.',
   process_update: 'Form Perubahan data.',
   process_delete: 'Proses penghapusan data.',

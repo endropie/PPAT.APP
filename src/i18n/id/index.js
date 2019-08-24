@@ -1,6 +1,7 @@
 // This is just an example,
 // so you can safely delete all default props below
 import general from './general'
+import auth from './auth'
 import label from './label'
 import form from './form'
 import messages from './messages'
@@ -12,6 +13,7 @@ import transports from './transports'
 
 export default {
   general: general,
+  auth: auth,
   label: label,
   form: form,
   messages: messages,

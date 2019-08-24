@@ -1,6 +1,6 @@
 <template>
-  <q-page padding class="row justify-center"  v-if="VIEW.show">
-    <page-print class="q-pa-md q-pr-lg shadow-2" :class="{'header-minimaze': $q.screen.lt.md} " style="max-width:210mm;">
+  <q-page padding class="row justify-center" >
+    <page-print v-if="VIEW.show" class="q-pa-md q-pr-lg shadow-2" :class="{'header-minimaze': $q.screen.lt.md} " style="max-width:210mm;">
       <!-- AVAILBLE "slot" = [header, header-icon, header-title, header-subtitle, header-tags] -->
       <div slot="header-title">
         OUTGOING GOOD
@@ -18,6 +18,7 @@
               <q-markup-table class="bordered super-dense no-highlight no-shadow" separator="cell">
                 <tr><td class="text-weight-light">No</td><td>{{ rsView.number }}</td></tr>
                 <tr><td class="text-weight-light">{{$tc('label.date')}}</td><td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td></tr>
+                 <tr><td class="text-weight-light">{{$tc('label.transaction')}}</td><td>{{ rsView.transaction }}</td></tr>
               </q-markup-table>
             </div>
           </div>
@@ -51,9 +52,17 @@
 
           <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
             :options="[
+              { label: $tc('form.add_new'), color:'green', icon: 'add',
+                hidden: !$app.can('outgoing-goods-create'),
+                detail: $tc('messages.process_create'),
+                actions: () => {
+                  $router.push(`${VIEW.resource.uri}/create`)
+                }
+              },
               // NO DELETE BUTTON //
-              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+              { label: 'VOID', color:'red', icon: 'block',
                 detail: $tc('messages.process_void'),
+                hidden: !IS_VOID || !$app.can('outgoing-goods-void'),
                 actions: () => {
                   VIEW.void(()=> init() )
                 }
@@ -80,7 +89,7 @@ export default {
         data: {},
         resource:{
           api: '/api/v1/warehouses/outgoing-goods',
-          uri: '/admin/warehouses/outgoing-goods',
+          uri: '/admin/deliveries/outgoing-goods',
         }
       },
       rsView: {},

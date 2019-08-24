@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="row justify-center" :dark="LAYOUT.isDark" style="min-width:210mm;">
-    <page-print class="q-ma-md shadow-2" v-if="VIEW.show" style="max-width:210mm;">
+    <page-print v-if="VIEW.show" class="q-ma-md shadow-2" style="max-width:210mm;">
       <div slot="header-tags">
         <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
       </div>
@@ -67,26 +67,35 @@
       </div>
       <div class="row q-col-gutter-xs" >
         <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
-          <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <q-btn :label="$tc('form.edit')" color="positive" :icon-right="btnIcon('edit')" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
-          <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
-          <!-- <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn> -->
+          <q-btn :label="$tc('form.back')" icon="cancel" color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
+          <q-btn :label="$tc('form.edit')" icon="edit" color="green" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
+          <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="print()" ></q-btn>
           <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
             :options="[
               { label: $tc('form.add_new'), color:'primary', icon: 'add',
                 detail: $tc('messages.process_create'),
+                hidden: !$app.can('work-orders-create'),
                 actions: () => {
                   $router.push(`${VIEW.resource.uri}/create`)
                 }
               },
-              { label: 'Delete', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
+              { label: $tc('form.confirm'), color:'teal', icon: 'check',
+                hidden: !IS_EDITABLE || !$app.can('work-process-confirm'),
+                detail:$tc('messages.process_validation'),
+                actions: () => {
+                  setValidation()
+                }
+              },
+              { label: 'Delete', color:'red', icon: 'delete',
                 detail: $tc('messages.process_delete'),
+                hidden: !IS_EDITABLE || !$app.can('work-orders-delete'),
                 actions: () => {
                   VIEW.delete()
                 }
               },
-              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+              { label: 'VOID', color:'red', icon: 'block',
                 detail: $tc('messages.process_void'),
+                hidden: !IS_VOID || !$app.can('work-orders-void'),
                 actions: () => {
                   VIEW.void(()=> init() )
                 }
@@ -98,7 +107,7 @@
     </page-print>
 
     <q-inner-loading :showing="VIEW.loading">
-        <q-spinner-gears size="50px" color="primary" />
+        <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </q-page>
 </template>
@@ -149,25 +158,21 @@ export default {
         this.setView(data || {})
       })
     },
-    btnIcon (str) {
-      return !this.$q.screen.lt.sm ? str : ''
-    },
     print() {
       window.print()
     },
-    getBaseUnit(detail) {
-      if(detail.unit_rate == 1) return ''
-      return `(${detail.unit_amount} ${detail.item.unit.code})`
-    },
     getStockistFrom(val) {
-    const stockist = [
-      {value: 'FM', label: 'FRESH MATERIAL'},
-      {value: 'NG', label: 'NOT GOOD',  color: 'warning' },
-      {value: 'NGR', label: 'REPAIR',  color: 'orange-8' },
-    ]
-    const v = stockist.find(x => x.value === val)
-    return v ? v.label : 'N/A'
+      const stockist = [
+        {value: 'FM', label: 'FRESH MATERIAL'},
+        {value: 'NG', label: 'NOT GOOD',  color: 'warning' },
+        {value: 'RET', label: 'REPAIR',  color: 'orange-8' },
+      ]
+      const v = stockist.find(x => x.value === val)
+      return v ? v.label : 'N/A'
 
+    },
+    setValidation() {
+      this.$router.push(`/admin/factories/work-process/${this.ROUTE.params.id}/edit`)
     },
     setView(data) {
       this.rsView =  data

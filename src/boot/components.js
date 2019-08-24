@@ -4,6 +4,7 @@ import AdminTabs from 'components/AdminTabs'
 import AdminHeader from 'components/AdminHeader'
 import ListItem from '@/components/ListItem'
 
+import UXModalView from '@/components/UXModalView'
 import UXSelectFilter from '@/components/UXSelectFilter'
 import UXBtnSelect from '@/components/UXBtnSelect'
 import UXNumeric from '@/components/UXNumeric'
@@ -22,6 +23,8 @@ export default async ({ app, store, router, Vue }) => {
   Vue.component('list-item', ListItem)
 
   // Form Components //
+  // Vue.component('ux-modal-source', UXModalSource)
+  Vue.component('ux-modal-view', UXModalView)
   Vue.component('ux-select-filter', UXSelectFilter)
   Vue.component('ux-btn-select', UXBtnSelect)
   Vue.component('ux-numeric', UXNumeric)

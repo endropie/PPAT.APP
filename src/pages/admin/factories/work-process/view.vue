@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="row justify-center" :dark="LAYOUT.isDark" style="min-width:210mm;">
-    <page-print class="q-ma-md shadow-2" v-if="VIEW.show" style="max-width:210mm;">
+    <page-print v-if="VIEW.show" class="q-ma-md shadow-2" style="max-width:210mm;">
       <div slot="header-tags">
         <ux-chip-status :row="rsView" tag outline small square icon='bookmark'/>
       </div>
@@ -74,7 +74,7 @@
         </div>
         <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
           <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <!-- <q-btn :label="$tc('form.edit')" color="positive" :icon-right="btnIcon('edit')" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn> -->
+          <!-- <q-btn :label="$tc('form.edit')" color="positive" :icon-right="btnIcon('edit')" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`" v-if="IS_EDITABLE"></q-btn> -->
           <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
           <!-- <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn> -->
         </div>
@@ -82,7 +82,7 @@
     </page-print>
 
     <q-inner-loading :showing="VIEW.loading">
-        <q-spinner-gears size="50px" color="primary" />
+        <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </q-page>
 </template>
@@ -139,7 +139,7 @@ export default {
     const stockist = [
       {value: 'FM', label: 'FRESH MATERIAL'},
       {value: 'NG', label: 'NOT GOOD',  color: 'warning' },
-      {value: 'NGR', label: 'REPAIR',  color: 'orange-8' },
+      {value: 'RET', label: 'REPAIR',  color: 'orange-8' },
     ]
     const v = stockist.find(x => x.value === val)
     return v ? v.label : 'N/A'

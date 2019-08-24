@@ -1,76 +1,75 @@
 <template>
-<q-page padding class="form-page row justify-center" v-if="FORM.show">
-  <q-card inline class="main-box self-start" :dark="LAYOUT.isDark">
+<q-page padding class="form-page row justify-center">
+  <q-card v-if="FORM.show" class="main-box self-start" :dark="LAYOUT.isDark">
     <q-card-section>
-      <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
+      <form-header :title="FORM.title()" :subtitle="FORM.subtitle()">
         <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
+          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="ROUTE.params.id"/>
         </template>
       </form-header>
     </q-card-section>
     <q-card-section>
-      <div class="row q-col-gutter-sm q-gutter-x-lg q-mb-lg">
-        <q-input class="col-12 col-sm-6"
-          name="code"
-          :label="$tc('label.code')"
-          v-model="rsForm.code"
-          v-validate="'required'"
-          :dark="LAYOUT.isDark"
-          :error="errors.has('code')"
-          :error-message="errors.first('code')"
-           />
+      <div class="row q-col-gutter-md q-mb-lg">
+        <div class="col-12 col-sm-6">
+          <div class="row q-col-gutter-sm">
+            <q-input class="col-12"
+              name="code"
+              :label="$tc('label.code')"
+              v-model="rsForm.code" disable
+              v-validate="''"
+              :dark="LAYOUT.isDark"
+              :error="errors.has('code')"
+              :error-message="errors.first('code')"
+              />
 
-        <q-input class="col-12 col-sm-6"
-          name="name"
-          :label="$tc('label.name')"
-          v-model="rsForm.name"
-          v-validate="'required'"
-          :dark="LAYOUT.isDark"
-          :error="errors.has('name')"
-          :error-message="errors.first('name')"/>
+            <q-input class="col-12"
+              name="name"
+              :label="$tc('label.name')"
+              v-model="rsForm.name"
+              v-validate="'required'"
+              :dark="LAYOUT.isDark"
+              :error="errors.has('name')"
+              :error-message="errors.first('name')"/>
+          </div>
 
-        <q-input class="col-12 col-sm-4"
-          name="times_spray_white"
-          :label="$tc('items.white_spray')"
-          :hint="$tc('label.in', 1, {v:$tc('label.second', 2)})"
-          v-model="rsForm.times_spray_white"
-          type="number"
-          v-validate="'required'"
-          :dark="LAYOUT.isDark"
-          :error="errors.has('times_spray_white')"
-          :error-message="errors.first('times_spray_white')"/>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="row q-col-gutter-sm">
+            <q-input class="col-12 col-sm-6"
+              name="salt_white" type="number"
+              :label="$tc('items.white_spray')"
+              :hint="$tc('label.unit', 1, {v:$tc('label.second', 2)})"
+              v-model="rsForm.salt_white"
+              v-validate="'required'"
+              :dark="LAYOUT.isDark"
+              :error="errors.has('salt_white')"
+              :error-message="errors.first('salt_white')"/>
 
-        <q-input class="col-12 col-sm-4"
-          name="times_spray_red"
-          :label="$tc('items.red_spray')"
-          :hint="$tc('label.in', 1, {v:$tc('label.second', 2)})"
-          type="number"
-          v-model="rsForm.times_spray_red"
-          v-validate="'required'"
-          :dark="LAYOUT.isDark"
-          :error="errors.has('times_spray_red')"
-          :error-message="errors.first('times_spray_red')"/>
+            <q-input class="col-12 col-sm-6"
+              name="salt_red" type="number"
+              :label="$tc('items.red_spray')"
+              :hint="$tc('label.unit', 1, {v:$tc('label.second', 2)})"
+              v-model="rsForm.salt_red"
+              v-validate="'required'"
+              :dark="LAYOUT.isDark"
+              :error="errors.has('salt_red')"
+              :error-message="errors.first('salt_red')"/>
 
-        <q-select class="col-12 col-sm-4"
-          name="color_id"
-          :label="$tc('label.color')"
-          v-model="rsForm.color_id"
-          v-validate="'required'" :dark="LAYOUT.isDark"
-          :options="ColorOptions"
-          map-options
-          :error="errors.has('color_id')"
-          :error-message="errors.first('color_id')" />
-
-        <q-input class="col-12 q-mb-md"
-          :label="$tc('label.description')"
-          v-model="rsForm.description"
-          type="textarea" rows="3"
-          dense
-          :dark="LAYOUT.isDark"/>
+            <q-select class="col-12 "
+              name="color_id"
+              :label="$tc('label.color')"
+              v-model="rsForm.color_id"
+              v-validate="'required'" :dark="LAYOUT.isDark"
+              :options="ColorOptions"
+              map-options emit-value
+              :error="errors.has('color_id')"
+              :error-message="errors.first('color_id')" />
+          </div>
+        </div>
 
         <!-- PLATING DETAIL -->
         <form-detail class="col-12" :list="$q.screen.lt.md"
-          :title="$tc('label.of', 2, {b:$tc('items.specification',2), a:$tc('label.detail') })"
+          :title="$tc('label.detail', 1, {v: $tc('items.specification')})"
           :columns="[
             {name:'thick', label: 'Label Thick'},
             {name:'plate', label: 'Label Plate'},
@@ -87,11 +86,11 @@
             :label="$tc('items.thick',2)"
             type="number"
             v-model="rs.row.thick"
-            v-validate="'required'"
+            v-validate="''"
             filled dense hide-bottom-space
             :dark="LAYOUT.isDark"
-            :error="errors.has(`specification_details.${rs.row.__index}.plate`)"
-            :error-message="errors.first(`specification_details.${rs.row.__index}.plate`)">
+            :error="errors.has(`specification_details.${rs.row.__index}.thick`)"
+            :error-message="errors.first(`specification_details.${rs.row.__index}.thick`)">
             </q-input>
 
           </template>
@@ -111,6 +110,15 @@
 
 
         </form-detail>
+
+        <q-input class="col-12 q-mb-md"
+          :label="$tc('label.description')" stack-label
+          v-model="rsForm.description"
+          type="textarea" rows="3"
+          filled dense
+          :dark="LAYOUT.isDark"/>
+
+
       </div>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
@@ -148,8 +156,8 @@ export default {
           name:null,
           description:null,
           color_id:null,
-          times_spray_white:null,
-          times_spray_red:null,
+          salt_white:null,
+          salt_red:null,
 
 
           specification_details:[ {id:null} ],
@@ -173,7 +181,7 @@ export default {
     }
   },
   watch:{
-      '$route' : 'init',
+    '$route' : 'init',
   },
   methods: {
     init() {
@@ -183,32 +191,6 @@ export default {
     },
     setForm(data) {
       this.rsForm = JSON.parse(JSON.stringify(data))
-    },
-
-    routing() {
-      if(this.$route.meta.mode === 'edit') {
-
-        this.FORM.loading = true
-        let url = this.FORM.resource.api +'/'+ this.$route.params.id
-        this.$axios.get(url)
-          .then((response) => {
-
-            this.rsForm = response.data
-            this.FORM.show = true;
-            this.FORM.loading = false
-          })
-          .catch(error => {
-            console.warn('[FORM:routing]', error)
-
-            this.$app.response.error(error.response, 'Load Form')
-
-          })
-
-      }
-      else{
-        this.rsForm = this.setDefault()
-        this.FORM.show = true;
-      }
     },
 
     addNewDetail () {
@@ -243,7 +225,7 @@ export default {
         .catch((error) => {
 
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, 'Submit')
+          this.FORM.response.error(error.response || error, 'Submit')
         })
         .finally(()=>{
           this.FORM.loading = false

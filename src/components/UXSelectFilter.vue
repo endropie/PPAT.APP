@@ -21,7 +21,7 @@
         v-on="scope.itemEvents"
       >
 
-         <slot name="option-prepend" :option="scope.opt">
+        <slot name="option-prepend" :option="scope.opt">
           <q-item-section side  v-if="scope.opt.icon">
             <q-item-section avatar v-if="scope.opt.icon">
               <q-icon :name="scope.opt.icon" />
@@ -29,8 +29,10 @@
           </q-item-section>
         </slot>
         <q-item-section>
-          <q-item-label v-html="scope.opt.label" />
-          <q-item-label caption>{{ scope.opt.sublabel }}</q-item-label>
+          <slot name="option-item" :option="scope.opt">
+            <q-item-label v-html="scope.opt.label" />
+            <q-item-label caption>{{ scope.opt.sublabel }}</q-item-label>
+          </slot>
         </q-item-section>
         <slot name="option-append" :option="scope.opt">
           <q-item-section side v-if="scope.opt.stamp">
@@ -63,6 +65,9 @@
     <template v-slot:append><slot name="append" /></template>
     <template v-slot:after><slot name="after" /></template>
 
+    <template v-slot:hint><slot name="hint" /></template>
+    <template v-slot:counter><slot name="counter" /></template>
+
     <template v-slot:default>
       <slot></slot>
     </template>
@@ -76,6 +81,7 @@ export default {
   name: 'ux-select-filter',
   inheritAttrs: false,
   props: {
+    initFilter: Function,
     injectFilter: Function,
     selfFilter: {type: Boolean, default: true },
     useInput: {type: Boolean, default: true },
@@ -94,18 +100,19 @@ export default {
     // console.warn('MOUNTED', this.$refs)
 
     this.$nextTick(() => {
+      // console.warn('select', this);
 
-      this.$watch('$refs.QSelect.innerValue', function(newValue, oldValue) {
+      // this.$watch('$refs.QSelect.innerValue', function(newValue, oldValue) {
 
-      })
-      this.$watch('$refs.QSelect.focused', function(newValue, oldValue) {
-        // // console.warn('Watch Qselect ', this.$refs.QSelect)
-        // // console.warn('multiple',this.$refs.QSelect.multiple)
+      // })
+      // this.$watch('$refs.QSelect.focused', function(newValue, oldValue) {
+      //   // // console.warn('Watch Qselect ', this.$refs.QSelect)
+      //   // // console.warn('multiple',this.$refs.QSelect.multiple)
 
-        // if(!this.$refs.QSelect.multiple) {
-        //   this.$attrs.hideSelected = newValue
-        // }
-      })
+      //   // if(!this.$refs.QSelect.multiple) {
+      //   //   this.$attrs.hideSelected = newValue
+      //   // }
+      // })
     })
   },
   watch:{
@@ -121,10 +128,14 @@ export default {
       this.options = v
     },
     // use this default filter function
-    filterFn (val, update) {
+    filterFn (val, update, abort) {
       if (!this.selfFilter) {
         this.$emit('filter', v, u, a)
         return
+      }
+
+      if(this.initFilter) {
+        this.initFilter(val, update, abort)
       }
 
       update(() => {
@@ -176,4 +187,16 @@ export default {
 .q-field__before:empty,
 .q-field__prepend:empty
   display none
+
+.q-field__bottom
+  // display none
+  min-height: 0px;
+  padding-top: 0;
+
+  .q-field__messages:not(:empty),
+  .q-field__counter:not(:empty)
+    min-height: 12px
+    margin-top: 4px
+
+
 </style>

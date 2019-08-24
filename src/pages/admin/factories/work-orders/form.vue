@@ -3,24 +3,11 @@
   <q-card inline class="main-box q-ma-sm" v-if="FORM.show" :dark="LAYOUT.isDark">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
-        <template slot="menu-item">
-          <list-item :label="$tc('form.remove')" icon="delete" clickable @click="FORM.delete" v-close-popup v-if="$route.params.id"/>
-        </template>
       </form-header>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-section class="row q-col-gutter-x-sm">
       <!-- COLUMN::1st customer Identitity -->
-      <q-input class="col-12 col-sm-6 hidden"
-        name="number"
-        :label="$tc('label.number')"
-        v-model="rsForm.number"
-        placeholder="[Auto Generate]"
-         :dark="LAYOUT.isDark"
-        v-validate="$route.meta.mode == 'edit' ? 'required':''"
-        :error="errors.has('number')"
-        :error-message="errors.first('number')"
-        autofocus/>
 
       <ux-select-filter class="col-12 col-sm-6"
         name="line_id"
@@ -28,10 +15,11 @@
         :label="$tc('label.line_production')"
         :disable="IssetWorkOrderItems"
         :dark="LAYOUT.isDark"
-        v-validate="'required'"
         :options="LineOptions.filter(x => x.row.ismain)" clearable
+        v-validate="'required'"
         :error="errors.has('line_id')"
-        :error-message="errors.first('line_id')">
+        :error-message="errors.first('line_id')"
+        @input="(val) => val ? loadItemOptions() : false">
         <q-tooltip v-if="Boolean(IssetWorkOrderItems)" :offset="[0, 10]">To change, Please delete Work-Order items first!</q-tooltip>
       </ux-select-filter>
 
@@ -51,9 +39,10 @@
             name="shift_id"
             :label="$tc('label.shift')" stack-label
             v-model="rsForm.shift_id"
-            v-validate="'required'"
+            :dark="LAYOUT.isDark"
             :options="ShiftOptions" filter
             map-options emit-value
+            v-validate="'required'"
             :error="errors.has('shift_id')"
           />
 
@@ -62,30 +51,27 @@
 
       <!-- COLUMN::2th Detail Items & Lines -->
       <q-field class="col-12" prefix="Material production" borderless dense
+        :disable="IssetWorkOrderItems"
         :dark="LAYOUT.isDark"
         :error="errors.has(`stockist_from`)"
         :error-message="errors.first('stockist_from')">
         <q-option-group :name="`stockist_from`" type="radio"
           v-model="rsForm.stockist_from" inline
-          :dark="LAYOUT.isDark"
-          :options="[
-            {value: 'FM', label: 'FRESH MATERIAL'},
-            {value: 'NG', label: 'NOT GOOD',  color: 'warning' },
-            {value: 'NGR', label: 'REPAIR',  color: 'orange-8' },
-          ]"
           v-validate="'required'"
-
-        />
+          :dark="LAYOUT.isDark"
+          :disable="IssetWorkOrderItems"
+          :options="CONFIG.items['stockists'].filter(stockist => ['FM','NG','RET'].indexOf(stockist.value) > -1 )" />
       </q-field>
       <div class="col-12">
         <q-table ref="table-items" dense hide-bottom
-          class="no-shadow inline full-width no-highlight" color="secondary"  style="display:grid"
+          class="no-shadow th-uppercase no-highlight" color="secondary"  style="display:grid"
           :dark="LAYOUT.isDark"
           :data="rsForm.work_order_items"
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'prefix', label: '',  align: 'left', visibility:false},
-            { name: 'item_id', label: 'Part item ', align: 'left'},
+            { name: 'item_id', label: $tc('items.part_name'), align: 'left'},
+            { name: 'part_number', label: $tc('items.part_number'), align: 'left'},
             { name: 'target', label: $tc('label.quantity'), align: 'center'},
             { name: 'unit_id', label: $tc('label.unit'), align: 'center'},
             { name: 'ngratio', label: 'NG Ratio', align: 'center'},
@@ -95,23 +81,30 @@
           <template slot="body" slot-scope="rsItem">
             <q-tr :rsItem="rsItem">
               <q-td key="prefix" :rsItem="rsItem" style="width:50px">
-                <q-btn dense flat round icon="clear" color="negative" @click="removeItem(rsItem.row.__index)"/>
+                <q-btn dense flat round icon="clear" size="md" color="negative" @click="removeItem(rsItem.row.__index)"/>
               </q-td>
-              <q-td key="item_id" width="40%" >
-                <ux-select-filter
+              <q-td key="item_id" width="35%" >
+                <ux-select-filter autofocus
                   :name="`work_order_items.${rsItem.row.__index}.item_id`"
                   :dark="LAYOUT.isDark"
                   v-model="rsItem.row.item_id"
                   v-validate="'required'"
-                  filled dense hide-bottom-space color="blue-grey-4"
-                  :disable="!rsForm.line_id" autofocus
+                  outlined dense hide-bottom-space color="blue-grey-4"
+                  :disable="!rsForm.line_id"
                   :options="ItemOptions" clearable
                   @input="(val) => setItemReference(rsItem.row.__index, val)"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.item_id`)"
+                  :loading="SHEET.items.loading"
                 >
                   <q-tooltip v-if="!rsForm.line_id" :offset="[0, 10]">Select a Pre-Line , first! </q-tooltip>
                 </ux-select-filter>
 
+              </q-td>
+              <q-td key="part_number" width="35%" style="min-width:150px">
+                <q-input readonly
+                  :value="rsItem.row.item ? rsItem.row.item.part_number : null"
+                  outlined dense hide-bottom-space color="blue-grey-5"
+                  :dark="LAYOUT.isDark" />
               </q-td>
               <q-td key="target"  width="15%">
                 <q-input style="min-width:70px"
@@ -119,8 +112,8 @@
                   type="number" :min="0" align="center"
                   v-model="rsItem.row.target"
                   :dark="LAYOUT.isDark" color="blue-grey-4"
-                  filled dense hide-bottom-space no-error-icon
-                  v-validate="FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index])"
+                  outlined dense hide-bottom-space no-error-icon
+                  v-validate="`required|gt_value:0|max_value:${MaxStock[rsItem.row.__index]}`"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.target`)"
                   @input="() => { rsItem.row.quantity = calcQuantity(rsItem.row)}"
                 />
@@ -130,9 +123,9 @@
                   :name="`work_order_items.${rsItem.row.__index}.unit_id`"
                   :dark="LAYOUT.isDark"
                   v-model="rsItem.row.unit_id"
-                  filled dense hide-bottom-space color="blue-grey-4"
+                  outlined dense hide-bottom-space color="blue-grey-4"
                   :options="ItemUnitOptions[rsItem.row.__index]"
-                  map-options
+                  map-options  emit-value
                   v-validate="rsItem.row.item_id ? 'required' : ''"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.unit_id`)"
                   :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
@@ -140,14 +133,14 @@
                 />
               </q-td>
               <q-td key="ngratio"  width="15%">
-                <q-input  style="min-width:60px" input-class="text-center"
-                  :name="`work_order_items.${rsItem.row.__index}.ngratio`"
-                  type="number" align="right" suffix="%"
+                <q-input  style="min-width:80px"
+                  v-model="rsItem.row.ngratio" type="number" min="0"
+                  outlined dense hide-bottom-space no-error-icon align="right" suffix="%"
                   :dark="LAYOUT.isDark" color="blue-grey-4"
-                  v-model="rsItem.row.ngratio"
-                  filled dense hide-bottom-space no-error-icon
                   v-validate="'required'"
+                  :name="`work_order_items.${rsItem.row.__index}.ngratio`" data-vv-as="ngratio"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.ngratio`)"
+                  :error-message="errors.first(`work_order_items.${rsItem.row.__index}.ngratio`)"
                   :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
                   @input="() => { rsItem.row.quantity = calcQuantity(rsItem.row) }"
                   />
@@ -155,79 +148,15 @@
               <q-td key="quantity"  width="15%">
                 <q-input style="min-width:120px"
                   :name="`work_order_items.${rsItem.row.__index}.quantity`" type="number"
-                  :dark="LAYOUT.isDark"
-                  v-model="rsItem.row.quantity"
-                  filled dense hide-bottom-space disable align="right" color="blue-grey-6"
-                  no-error-icon
-                  v-validate="rsItem.row.item_id ? FORM.validator.quantity(rsItem.row, loadItemStock[rsItem.row.__index]) : ''"
+                  :dark="LAYOUT.isDark" color="blue-grey-6"
+                  v-model="rsItem.row.quantity" disable
+                  outlined dense hide-bottom-space no-error-icon align="right"
+                  v-validate="`required|gt_value:0|max_value:${MaxStock[rsItem.row.__index]}`"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.quantity`)"
-                  :suffix="' / '+ convertStock(rsItem.row, loadItemStock[rsItem.row.__index])"
-                  :before="[{icon: 'warning', warning: true, handler () { return true } }]"
+                  :suffix="' / '+ convertStock(rsItem.row, MaxStock[rsItem.row.__index])"
                 />
               </q-td>
             </q-tr>
-            <!-- <q-tr  :rsItem="rsItem">
-              <q-td></q-td>
-              <q-td colspan="100%">
-                <q-table ref="table-itemlines" class="no-shadow inline full-width" style="display:grid"
-                  dense hide-bottom color="secondary" separator="none"
-                  :dark="LAYOUT.isDark"
-                  :data="rsItem.row.work_order_item_lines"
-                  :rows-per-page-options ="[0]"
-                  :columns="[
-                    { name: 'prefix', label: '',  align: 'left', visibility:false},
-                    { name: 'line_id', label: 'Line production', align: 'left'},
-                    { name: 'begin_date', label: 'Starting', align: 'center'},
-                    { name: 'until_date', label: 'Finished', align: 'center'},
-                  ]"
-                  :pagination="{sortBy: null, descending: false, page: null, rowsPerPage: 0}">
-                  <template slot="body" slot-scope="propLine">
-                    <q-tr :propLine="propLine" style="height:20px">
-                      <q-td key="prefix" style="width:50px">
-                        <q-btn dense flat @click="removeItemLine(rsItem.row.__index, propLine.row.__index)" icon="delete" color="blue-grey-2 no-shadow" text-color="grey-8"
-                          v-if="SETTING.work_orders.item_lines_customize"
-                        />
-                      </q-td>
-                      <q-td key="line_id" width="50%" >
-                        <ux-select-filter class="field-auto-hight"
-                          :name="`work_order_item_lines.${propLine.row.__index}.line_id`"
-                          borderless dense hide-bottom-space hide-dropdown-icon readonly color="blue-grey-1"
-                          :dark="LAYOUT.isDark"
-                          v-model="propLine.row.line_id"
-                          v-validate="'required'"
-                          :error="errors.has(`work_order_item_lines.${propLine.row.__index}.line_id`)"
-                          :options="LineOptions" filter
-                        />
-                        <q-tooltip v-if="!rsForm.work_order_items[rsItem.row.__index].item_id" :offset="[0, 10]">Select a Part item, first! </q-tooltip>
-
-                      </q-td>
-                      <q-td key="begin_date" width="25%">
-
-                        <q-input class="field-auto-hight"
-                          v-model="propLine.row.begin_date" type="date"
-                          :dark="LAYOUT.isDark"
-                          filled dense hide-bottom-space color="blue-grey-1"
-                          :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
-                        />
-                      </q-td>
-                      <q-td key="until_date"  width="25%">
-                        <q-input class="field-auto-hight"
-                          v-model="propLine.row.until_date" type="date"
-                          :dark="LAYOUT.isDark"
-                          filled dense hide-bottom-space color="blue-grey-1"
-                          :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
-                        />
-                      </q-td>
-                    </q-tr>
-                  </template>
-                  <q-tr slot="bottom-row" slot-scope="propLine" :rsItem="propLine"  v-if="SETTING.work_orders.item_lines_customize">
-                    <q-td colspan="100%">
-                      <q-btn dense  @click="addNewItemLine(rsItem.row.__index)" icon="add" color="positive" />
-                    </q-td>
-                  </q-tr>
-                </q-table>
-              </q-td>
-            </q-tr> -->
           </template>
           <q-tr slot="bottom-row" slot-scope="rsItem" :rsItem="rsItem">
             <q-td colspan="100%">
@@ -267,36 +196,17 @@ export default {
   data () {
 
     return {
-      SETTING:{
-        work_orders: {
-          item_lines_of_items : false,
-          item_lines_customize : false,
-        }
-      },
       SHEET:{
-        customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
-        units: {data:[], api:'/api/v1/references/units?mode=all'},
-        items: {data:[], api:'/api/v1/common/items?mode=all&with=prelines'},
-        // itemstocks: {data:[], api:'/api/v1/common/items?mode=itemstock'},
-        lines: {data:[], api:'/api/v1/references/lines?mode=all'},
-        shifts: {data:[], api:'/api/v1/references/shifts?mode=all'}
+        customers: {api:'/api/v1/incomes/customers?mode=all'},
+        units: {api:'/api/v1/references/units?mode=all'},
+        items: {api:'/api/v1/common/items?mode=all', autoload:false},
+        lines: {api:'/api/v1/references/lines?mode=all'},
+        shifts: {api:'/api/v1/references/shifts?mode=all'}
       },
       FORM: {
         resource:{
           uri: '/admin/factories/work-orders',
           api: '/api/v1/factories/work-orders',
-        },
-        validator: {
-          quantity: (row, max) => {
-            let
-              validation = ['required'],
-              isMaxValidation = true
-
-            if (row.item_id && isMaxValidation === true) {
-              validation.push(`max_value:${max}`)
-            }
-            return validation.join('|')
-          }
         }
       },
       rsForm: {},
@@ -349,18 +259,18 @@ export default {
     ShiftOptions() {
       return (this.SHEET.shifts.data.map(line => ({label: line.name, value: line.id})) || [])
     },
-    CustomerOptions() {
-      return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
-    },
     UnitOptions() {
       return (this.SHEET.units.data.map(item => ({label: item.code, value: item.id})) || [])
     },
     ItemOptions() {
-      let orKeys = this.FORM.data.work_order_items.map(x => x.item_id, [])
+      if (this.SHEET.items.data.length <= 0) return []
+
+      const stockist = this.rsForm.stockist_from || 'FM'
+      let OrKeys = this.FORM.data.work_order_items.map(x => x.item_id, [])
 
       let ITEM = this.SHEET.items.data.filter((item) => {
         if (item.item_prelines[0].line_id !== this.rsForm.line_id) return false
-        if(item.totals['FM'] <= 0 && !orKeys.find(x=> x === item.id)) return false
+        if(item.totals[stockist] <= 0 && !OrKeys.find(x=> x === item.id)) return false
         else return true
       })
       return (ITEM.map(item => ({
@@ -394,7 +304,7 @@ export default {
       }
       return vars
     },
-    loadItemStock() {
+    MaxStock() {
       const stockist = this.rsForm.stockist_from
 
       let stockItem =  JSON.parse(JSON.stringify(this.MAPINGKEY['items']))
@@ -410,7 +320,7 @@ export default {
 
       this.FORM.data.work_order_items.forEach(item => {
         if (stockItem.hasOwnProperty(item.item_id)) {
-          stockItem[item.item_id].totals[this.FORM.data.stockist_from] += Number(item.quantity)
+          stockItem[item.item_id].totals[this.FORM.data.stockist_from] += Number(item.unit_amount)
         }
       })
 
@@ -418,7 +328,7 @@ export default {
       this.rsForm.work_order_items.map((detail, index) => {
         if (stockItem[detail.item_id] && detail.item_id) {
           data[index] = Number(stockItem[detail.item_id].totals[stockist] || 0) - Number(moveItem.get(detail.item_id) || 0)
-          moveItem.set(detail.item_id, detail.quantity)
+          moveItem.set(detail.item_id, detail.quantity * detail.unit_rate)
         }
       })
 
@@ -448,8 +358,8 @@ export default {
       })
     },
     setForm(data) {
-      this.rsForm =  data
-
+      this.rsForm =  JSON.parse(JSON.stringify(data))
+      if(data.id) this.loadItemOptions(data)
       if(data.hasOwnProperty('has_relationship') && data['has_relationship'].length > 0) {
         this.FORM.has_relationship = data.has_relationship
 
@@ -469,11 +379,23 @@ export default {
     },
     convertStock(row, val = 0) {
       if(val < 0) return '(-)'
-      return Number(val || 0) / Number(row.unit_rate || 1)
+      return this.$app.number_format(Number(val || 0) / Number(row.unit_rate || 1))
     },
     calcQuantity(row) {
       // console.log(this.FORM)
       return Math.ceil(Number(row.target) + (Number(row.target) * Number(row.ngratio) / 100))
+    },
+    loadItemOptions(data = this.FORM.data) {
+      let params = ['has_stocks=FM,NG,RET']
+
+      if (data.line_id) params.push(`main_line=${data.line_id}`)
+
+      if (data.work_order_items && data.work_order_items.length > 0) {
+        let ids = data.work_order_items.map(x => x.item_id)
+        params.push(`or_ids=${ids.join(',')}`)
+      }
+
+      this.SHEET.load('items', params.join('&'))
     },
     setItemReference(index, val) {
 
@@ -533,8 +455,8 @@ export default {
       this.rsForm.work_order_items[itemIndex].work_order_item_lines.push(newEntri)
     },
     removeItemLine(itemIndex, lineIndex) {
-        this.rsForm.work_order_items[itemIndex].work_order_item_lines.splice(lineIndex, 1)
-        if(this.rsForm.work_order_items[itemIndex].work_order_item_lines.length < 1) this.addNewItemLine(itemIndex)
+      this.rsForm.work_order_items[itemIndex].work_order_item_lines.splice(lineIndex, 1)
+      if(this.rsForm.work_order_items[itemIndex].work_order_item_lines.length < 1) this.addNewItemLine(itemIndex)
     },
     onSave() {
 
@@ -556,7 +478,7 @@ export default {
         })
         .catch((error) => {
           this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response, this.$tc('messages.fail', 1, {v:this.$tc('form.save')}).toUpperCase())
+          this.FORM.response.error(error.response || error, this.$tc('messages.fail', 1, {v:this.$tc('form.save')}).toUpperCase())
         })
         .finally(()=>{
           this.FORM.loading = false
@@ -567,3 +489,21 @@ export default {
   },
 }
 </script>
+
+<style lang="stylus">
+.fit-input.q-field
+  .q-field__control,
+  .q-field__native
+    min-height 24px !important
+
+  .q-field__control, .q-field__marginal
+    height 36px
+    padding 0 6px
+  .q-field__native, .q-field__prefix, .q-field__suffix
+    line-height 24px
+
+  .q-select__input
+    line-height 24px
+
+</style>
+

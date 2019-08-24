@@ -35,7 +35,7 @@
           flat rounded no-caps color="grey-7"
           class="absolute-bottom-right q-mt-sm"
           @click.native="openSetURL()"
-          
+
         />
 
         <privacy-policy ref="privacy" />
@@ -51,7 +51,7 @@
             </div>
           </template>
           <div class="column" style="min-width:300px">
-            <q-select 
+            <q-select
               label="Host API"
               v-model="baseURL"
               :options="servers"
@@ -61,9 +61,9 @@
                   :disable="baseURL === BASEURL"
                   :flat="baseURL === BASEURL"
                   :icon="baseURL !== BASEURL ? 'refresh' : 'done'"
-                  :color="baseURL !== BASEURL ? 'warning' : 'primary'" 
+                  :color="baseURL !== BASEURL ? 'warning' : 'primary'"
                  @click="saveBaseURL()" />
-                
+
               </template>
             </q-select>
           </div>
@@ -95,15 +95,6 @@ export default {
   computed: {
     BASEURL() {
       return this.$store.state.admin.CONFIG.general.baseURL
-      // get() {
-        
-      // },
-      // set(v) {
-      //   this.loadingSeturl = true
-      //   const newURL = this.$store.commit('admin/setBaseURL', v)
-      //   console.warn('new', newURL)
-      //   this.loadingSeturl = false
-      // }
     }
   },
   methods: {

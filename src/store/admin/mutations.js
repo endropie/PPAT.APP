@@ -37,37 +37,37 @@ export const setPageMeta = (state, meta) => {
 export const setLogin = (state, val) => {
   state.AUTH = val.auth
   state.USER = val.user
-  LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
-  LocalStorage.set('store:user', JSON.stringify(state.USER))
+  LocalStorage.set('AUTH', JSON.stringify(state.AUTH))
+  LocalStorage.set('USER', JSON.stringify(state.USER))
 }
 
 export const setLocked = (state) => {
   state.AUTH = Object.assign({})
-  LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
+  LocalStorage.set('AUTH', JSON.stringify(state.AUTH))
 }
 
 export const setLogoff = (state) => {
   state.AUTH = Object.assign({})
   state.USER = Object.assign({})
-  LocalStorage.set('store:auth', JSON.stringify(state.AUTH))
-  LocalStorage.set('store:user', JSON.stringify(state.USER))
-  // LocalStorage.remove('store:auth')
+  LocalStorage.set('AUTH', JSON.stringify(state.AUTH))
+  LocalStorage.set('USER', JSON.stringify(state.USER))
+  // LocalStorage.remove('AUTH')
 }
 
 export const setSetting = (state, values) => {
   state.SETTING = Object.assign(state.SETTING, values)
-  LocalStorage.set('store:setting', JSON.stringify(state.SETTING))
+  LocalStorage.set('SETTING', JSON.stringify(state.SETTING))
 }
 
 export const setConfig = (state, values) => {
   state.CONFIG = Object.assign(state.CONFIG, values)
-  LocalStorage.set('store:setting', JSON.stringify(state.CONFIG))
+  LocalStorage.set('SETTING', JSON.stringify(state.CONFIG))
 }
 
 export const setBaseURL = (state, value) => {
   state.CONFIG.general.baseURL = value
   axios.defaults.baseURL = value
-  LocalStorage.set('store:setting', JSON.stringify(state.CONFIG))
+  LocalStorage.set('SETTING', JSON.stringify(state.CONFIG))
 
   return value
 }
@@ -84,7 +84,7 @@ export const setTheme = (state, name) => {
     }
   }
   // Save to storage
-  LocalStorage.set('store:layout', JSON.stringify(state.LAYOUT))
+  LocalStorage.set('LAYOUT', JSON.stringify(state.LAYOUT))
 }
 
 export const setMode = (state, mode) => {
@@ -94,5 +94,5 @@ export const setMode = (state, mode) => {
     state.LAYOUT.isDark = !state.LAYOUT.isDark
   }
   // Save to storage
-  LocalStorage.set('store:layout', JSON.stringify(state.LAYOUT))
+  LocalStorage.set('LAYOUT', JSON.stringify(state.LAYOUT))
 }

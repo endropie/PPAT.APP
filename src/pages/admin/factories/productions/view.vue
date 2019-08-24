@@ -1,6 +1,6 @@
 <template>
   <q-page padding class="row justify-center" :dark="LAYOUT.isDark">
-    <page-print class="q-pa-md q-pr-lg shadow-2" v-if="FORM.show" style="max-width:210mm;">
+    <page-print v-if="VIEW.show" class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
       <div slot="header-tags">
         <q-chip label="Revised" v-if="!!rsView.revise_id"
           icon="bookmark" color="negative"
@@ -54,7 +54,7 @@
         </div>
         <div class="q-gutter-xs print-hide " style="padding-top:50px">
           <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <q-btn :label="$tc('form.edit')" :icon-right="btnIcon('edit')" color="positive" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
+          <q-btn :label="$tc('form.edit')" :icon-right="btnIcon('edit')" color="positive" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
           <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
           <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" outline @click="VIEW.delete" v-if="IS_EDITABLE"></q-btn>
         </div>
@@ -62,7 +62,7 @@
     </page-print>
 
     <q-inner-loading :showing="VIEW.loading">
-        <q-spinner-gears size="50px" color="primary" />
+        <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </q-page>
 </template>
@@ -112,13 +112,9 @@ export default {
       window.print()
     },
     getWorktime(val) {
-    const stockist = [
-        { label: 'Reguler', value: 'REGULER' },
-        { label: 'Overtime', value: 'OVERTIME', color: 'secondary' },
-    ]
-    const v = stockist.find(x => x.value === val)
-    return v ? v.label : 'N/A'
-
+      const worktimes = this.CONFIG.options['worktime']
+      const v = worktimes.find(x => x.value === val)
+      return v ? v.label : 'N/A'
     },
     setView(data) {
       this.rsView =  data

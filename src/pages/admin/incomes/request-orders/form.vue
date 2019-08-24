@@ -1,6 +1,6 @@
 <template>
-<q-page padding class="main-page justify-center" v-if="FORM.show">
-  <q-card inline class="main-box" :dark="LAYOUT.isDark">
+<q-page padding class="main-page justify-center">
+  <q-card inline class="main-box" :dark="LAYOUT.isDark" v-if="FORM.show">
     <q-card-section>
       <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" hide-menu>
           <q-chip slot="optional" v-if="rsForm.order_mode"
@@ -22,7 +22,7 @@
             placeholder="[Auto Generate]"
             v-model="rsForm.number"
             :dark="LAYOUT.isDark"
-            v-validate="$route.meta.mode == 'edit' ? 'required':''"
+            v-validate="ROUTE.meta.mode == 'edit' ? 'required':''"
             :error="errors.has('number')" :error-message="errors.first('number')"/>
 
           <ux-date class="col-12" name="date"
@@ -132,11 +132,12 @@
                 />
               </q-td>
               <q-td key="unit_id" :rsItem="rsItem" width="10%">
-                <ux-select-filter :name="`request_orders_items.${rsItem.row.__index}.unit_id`"
+                <q-select :name="`request_orders_items.${rsItem.row.__index}.unit_id`"
+                  v-model="rsItem.row.unit_id"
                   :options="ItemUnitOptions[rsItem.row.__index]"
+                  map-options emit-value
                   outlined dense hide-bottom-space
                   color="blue-grey-5" style="width:80px"
-                  v-model="rsItem.row.unit_id"
                   v-validate="rsItem.row.item_id ? 'required' : ''"
                   :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
                   :error="errors.has(`request_orders_items.${rsItem.row.__index}.unit_id`)"
@@ -298,7 +299,7 @@ export default {
     CustomerOptions() {
 
       let data = this.SHEET.customers.data
-      if(this.$route.meta.mode !== 'edit'){
+      if(this.ROUTE.meta.mode !== 'edit'){
         data = data.filter(item => item.order_mode === 'PO')
       }
 
@@ -423,10 +424,10 @@ export default {
       }
     },
     routing() {
-      if(this.$route.meta.mode === 'edit') {
+      if(this.ROUTE.meta.mode === 'edit') {
 
         this.FORM.loading = true
-        let url = this.FORM.resource.api +'/'+ this.$route.params.id
+        let url = this.FORM.resource.api +'/'+ this.ROUTE.params.id
         this.$axios.get(url)
           .then((response) => {
             const data = response.data
@@ -477,7 +478,7 @@ export default {
           this.FORM.toView(response.data.id)
         })
         .catch((error) => {
-          this.FORM.response.error(error.response)
+          this.FORM.response.error(error.response || error)
           this.FORM.response.fields(error.response)
         })
         .finally(()=>{

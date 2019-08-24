@@ -25,6 +25,12 @@ import('./quasar.variables.styl')
 
 .inset-xs { margin-left: 35%; margin-right: 35%; width: 30%;}
 
+.no-field-after.q-field--standard
+  .q-field__control:before
+    border-bottom 0
+  .q-field__control:after
+    display none
+
 .hide-arrow
   .q-btn-dropdown__arrow
     display none

@@ -109,8 +109,8 @@
         </q-td>
 
         <q-td slot="body-cell-shift_id" slot-scope="rs" :props="rs">
-          <q-badge class="shadow-1"
-            :label="rs.row.shift.name"
+          <q-badge class="shadow-1 q-pa-xs"
+            :label="`SHIFT ${rs.row.shift.name}`"
             dense color="light" text-color="white"
             v-if="rs.row.shift_id" />
         </q-td>

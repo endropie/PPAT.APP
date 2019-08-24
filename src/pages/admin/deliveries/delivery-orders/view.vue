@@ -1,6 +1,6 @@
 <template>
-  <q-page padding class="row justify-center">
-    <page-print class="q-pa-md q-pr-lg shadow-2 scroll" v-if="VIEW.show" style="max-width:210mm">
+  <q-page padding class="row justify-center" style="min-width:100mm">
+    <page-print v-if="VIEW.show" class="q-pa-md q-pr-lg shadow-2 scroll" style="max-width:210mm">
       <div slot="header-tags">
         <q-chip tag outline small color="negative" v-if="(rsView.revise_id != null)">
           Revised
@@ -20,7 +20,7 @@
             </tr>
             <tr>
               <th>{{$tc('label.date')}}</th>
-              <td>{{ rsView.date ? $app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm') : '-'}}</td>
+              <td>{{ rsView.date ? $app.moment(rsView.date).format('DD/MM/YYYY') : '-'}}</td>
             </tr>
             <tr>
               <th>SALE ORDER</th><td>{{ rsView.request_order ? rsView.request_order.number : '-' }}</td>
@@ -45,32 +45,34 @@
             <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 q-gutter-xs print-hide" style="padding-top:50px">
-          <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-          <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
-          <!-- <q-btn color="negative" :icon-right="btnIcon('file_copy')" label="Revision" :to="`${VIEW.resource.uri}/${$route.params.id}/revision`" v-if="IS_EDITABLE"></q-btn> -->
+      </div>
 
-          <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
-            :options="[
-              { label: 'Delete', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
-                detail: $tc('messages.process_delete'),
-                actions: () => {
-                  VIEW.delete()
-                }
-              },
-              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
-                detail: $tc('messages.process_void'),
-                actions: () => {
-                  VIEW.void(()=> init() )
-                }
-              },
-            ]"/>
-        </div>
+      <div class="q-gutter-xs print-hide modal-hide" style="padding-top:50px">
+        <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
+        <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
+
+        <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
+          :options="[
+            { label: 'Delete', color:'red', icon: 'delete',
+              detail: $tc('messages.process_delete'),
+              hidden: !IS_EDITABLE || !$app.can('sj-delivery-orders-delete'),
+              actions: () => {
+                VIEW.delete()
+              }
+            },
+            { label: 'VOID', color:'red', icon: 'block',
+              detail: $tc('messages.process_void'),
+              hidden: !IS_VOID || !$app.can('sj-delivery-orders-void'),
+              actions: () => {
+                VIEW.void(()=> init() )
+              }
+            },
+          ]"/>
       </div>
     </page-print>
 
     <q-inner-loading :showing="VIEW.loading">
-        <q-spinner-gears size="50px" color="primary" />
+        <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
   </q-page>
 </template>
@@ -89,7 +91,7 @@ export default {
       VIEW: {
         resource:{
           api: '/api/v1/incomes/delivery-orders',
-          uri: '/admin/incomes/delivery/delivery-orders',
+          uri: '/admin/deliveries/delivery-orders',
           params: '?mode=view'
         }
       },
@@ -134,7 +136,7 @@ export default {
     routing() {
         this.VIEW.show = false
         this.VIEW.loading = true
-        let url = this.VIEW.resource.api +'/'+ this.$route.params.id + '?mode=view'
+        let url = this.VIEW.resource.api +'/'+ this.ROUTE.params.id + '?mode=view'
         this.$axios.get(url)
           .then((response) => {
             // console.warn('response->', response.data)

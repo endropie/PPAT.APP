@@ -131,6 +131,34 @@ export default async ({ app, store, router, Vue }) => {
         Notify.create({ ...this.getMode(values, desc), color: 'green-7', icon: 'check_circle' })
       }
     },
+    number_format (number, decimals, decimator, separator, isABS = false) {
+      var settings = {
+        decimals: 2,
+        decimator: ',',
+        separator: '.'
+      }
+
+      if (isABS) number = Math.abs(number)
+
+      let n = !isFinite(+number) ? 0 : +number,
+        prec = !isFinite(+decimals) ? Math.abs(settings.decimals) : Math.abs(decimals),
+        sep = (typeof separator === 'undefined') ? settings.separator : separator,
+        dec = (typeof decimator === 'undefined') ? settings.decimator : decimator,
+        toFixedFix = function (n, prec) {
+          // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+          let k = Math.pow(10, prec)
+          return Math.round(n * k) / k
+        },
+        s = (prec ? toFixedFix(n, prec) : Math.round(n)).toString().split('.')
+      if (s[0].length > 3) {
+        s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep)
+      }
+      if ((s[1] || '').length < prec && Number(decimals) > 0) {
+        s[1] = s[1] || ''
+        s[1] += new Array(prec - s[1].length + 1).join('0')
+      }
+      return s.join(dec)
+    },
     moment: moment,
     date: date
   }

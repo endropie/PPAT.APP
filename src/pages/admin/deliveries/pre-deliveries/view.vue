@@ -1,18 +1,17 @@
 <template>
-  <q-page padding class="row justify-center"  v-if="VIEW.show" style="min-width:210mm;">
-    <page-print :class="{'header-minimaze':$q.screen.lt.sm}" style="max-width:210mm;">
+  <q-page padding class="row justify-center"  style="min-width:210mm;">
+    <page-print v-if="VIEW.show" :class="{'header-minimaze':$q.screen.lt.sm}" style="max-width:210mm;">
       <div slot="header-title">PPA - Pre Delivery </div>
 
       <div class="row justify-between q-col-gutter-y-sm" >
         <div class="profile">
-          <div class="text-weight-regular uppercase">To: {{rsView.customer_name}}</div>
-          <address class="text-weight-light">{{rsView.customer_address}}</address>
-          <div class="text-weight-light ">Phone: {{rsView.customer_phone}}</div>
+
         </div>
         <div class="info">
           <q-markup-table class="bordered super-dense th-text-left no-shadow" separator="cell" dense>
             <tr><th class="text-weight-light">No</th><td>{{ rsView.number }}</td></tr>
             <tr><th class="text-weight-light">{{$tc('label.date')}}</th><td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td></tr>
+            <tr><th class="text-weight-light">{{$tc('label.transaction')}}</th><td class="text-weight-medium">{{ rsView.transaction }}</td></tr>
           </q-markup-table>
         </div>
         <div class="col-12">
@@ -33,30 +32,34 @@
 
           </q-table>
         </div>
-        <div class="col-12 text-weight-light text-italic" v-if="rsView.plan_begin_date || rsView.plan_until_date">
-            Delivery plan from {{ rsView.plan_begin_date ? $app.moment(rsView.plan_begin_date).format('DD/MM/YYYY') : '' }}
-            until then {{ rsView.plan_until_date ? $app.moment(rsView.plan_until_date).format('DD/MM/YYYY') : '' }}
-        </div>
         <div class="col-12">
             <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
         <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
-          <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`" />
-          <q-btn :label="$tc('form.edit')" :icon-right="btnIcon('edit')" color="positive" v-if="IS_EDITABLE" :to="`${VIEW.resource.uri}/${$route.params.id}/edit`"  />
-          <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" />
-          <!-- <q-btn :label="$tc('form.delete')" :icon-right="btnIcon('delete')" color="negative" v-if="IS_EDITABLE" @click="VIEW.delete" outline
-            :class="{'float-right':$q.screen.gt.md}" /> -->
+          <q-btn :label="$tc('form.back')" icon="cancel"  color="dark" :to="`${VIEW.resource.uri}?return`" />
+          <q-btn :label="$tc('form.edit')" icon="edit" color="positive" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`"  v-if="IS_EDITABLE && $app.can('pre-deliveries-update')" />
+          <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="print()" />
+
           <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
             :options="[
-              { label: 'Delete', color:'red', icon: 'delete', hidden: !IS_EDITABLE,
+              { label: $tc('form.add_new'), color:'green', icon: 'add',
+                detail: $tc('messages.process_create'),
+                hidden: !$app.can('pre-deliveries-create'),
+                actions: () => {
+                  $router.push(`${VIEW.resource.uri}/create`)
+                }
+              },
+              { label: 'Delete', color:'red', icon: 'delete',
                 detail: $tc('messages.process_delete'),
+                hidden: !IS_EDITABLE || !$app.can('pre-deliveries-delete'),
                 actions: () => {
                   VIEW.delete()
                 }
               },
-              { label: 'VOID', color:'red', icon: 'block', hidden: !IS_VOID,
+              { label: 'VOID', color:'red', icon: 'block',
                 detail: $tc('messages.process_void'),
+                hidden: !IS_VOID || !$app.can('pre-deliveries-void'),
                 actions: () => {
                   VIEW.void(()=> init() )
                 }
@@ -83,7 +86,7 @@ export default {
         data: {},
         resource:{
           api: '/api/v1/incomes/pre-deliveries',
-          uri: '/admin/incomes/delivery/pre-deliveries',
+          uri: '/admin/deliveries/pre-deliveries',
         }
       },
       rsView: {},
@@ -102,7 +105,6 @@ export default {
     },
     IS_EDITABLE() {
       if (this.rsView.revise_id) return false
-      if (this.rsView.order_mode === 'NONE') return false
       if (this.rsView.deleted_at) return false
       if (Object.keys(this.rsView.has_relationship || {}).length > 0) return false
       return true

@@ -16,23 +16,23 @@
         <template v-slot:top>
           <table-header
             :title="TABLE.getTitle()"
-            :TABLE.sync="TABLE"
             :filter.sync="TABLE.filter"
-          >
-            <template v-slot:menu-item>
-              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
-                <q-item-section>Add new</q-item-section>
-                <q-item-section avatar><q-icon name="add_circle"/></q-item-section>
-              </q-item>
-              <q-separator :dark="LAYOUT.isDark"/>
-            </template>
-          </table-header>
+            :menus="[
+              { shortcut: true,
+                label: $tc('form.add'),
+                detail: $tc('messages.form_new'),
+                icon: 'add',
+                hidden:!$app.can('sizes-create'),
+                to: `${TABLE.resource.uri}/create`
+              }
+            ]" />
+
         </template>
 
         <!-- slot name syntax: body-cell-<column_name> -->
         <q-td slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
-          <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" />
-          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" />
+          <q-btn dense flat color="light" icon="edit"   :to="`${TABLE.resource.uri}/${rs.row.id}/edit`" v-if="isCanUpdate" />
+          <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" v-if="isCanDelete" />
         </q-td>
       </q-table>
     </q-pull-to-refresh>
@@ -62,6 +62,14 @@ export default {
   created () {
     // Page Component mounted!
     this.INDEX.load()
+  },
+  computed: {
+    isCanUpdate(){
+      return this.$app.can('sizes-update')
+    },
+    isCanDelete(){
+      return this.$app.can('sizes-delete')
+    },
   }
 }
 </script>

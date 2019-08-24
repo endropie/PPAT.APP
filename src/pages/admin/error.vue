@@ -7,8 +7,8 @@
           size="80px"
           icon="mdi-wifi-off"
           color="grey-4" text-color="grey-6"> </q-avatar>
-        <q-chip v-show="this.$route.query.code"
-          :label="this.$route.query.code"
+        <q-chip v-show="$route.query.code"
+          :label="$route.query.code"
           color="grey-4" text-color="grey-6"
           class="text-weight-bolder"
           style="font-size:60px;height:72px"  />

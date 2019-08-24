@@ -18,23 +18,16 @@
             :title="TABLE.getTitle()"
             subtitle="Data option of Spesifications"
             :filter.sync="TABLE.filter"
-            menu
-            menu-preferences
-            :menu-new="`${TABLE.resource.uri}/create`"
-          >
-            <template v-slot:menu-item>
-              <q-item clickable v-close-popup prop-preferences>
-                <q-item-section>Preferences</q-item-section>
-                <q-item-section avatar><q-icon name="keyboard_arrow_right" color="light"/></q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup :to="`${TABLE.resource.uri}/create`" class="vertical-middle">
-                <q-item-section>Add new</q-item-section>
-                <q-item-section avatar><q-icon name="add_circle" color="light"/></q-item-section>
-              </q-item>
-              <q-separator :dark="LAYOUT.isDark" />
-            </template>
-            <table-preferences/>
-          </table-header>
+            :menus="[
+              { shortcut: true,
+                label: $tc('form.add'),
+                detail: $tc('messages.form_new'),
+                icon: 'add',
+                hidden:!$app.can('specifications-create'),
+                to: `${TABLE.resource.uri}/create`
+              }
+            ]" />
+
         </template>
 
         <!-- slot name syntax: body-cell-<column_name> -->
@@ -86,8 +79,8 @@ export default {
           },
           { name: 'color', label: 'Color', field: 'color', align: 'center'},
           // { name: 'thick', label: 'Thickness (mm)', field: 'thick', sortable: true },
-          { name: 'times_spray_white', label: 'White spray (h)', field: 'times_spray_white', sortable: true },
-          { name: 'times_spray_red', label: 'Red spray (h)', field: 'times_spray_red', sortable: true },
+          { name: 'salt_white', label: 'White spray (h)', field: 'salt_white', sortable: true },
+          { name: 'salt_red', label: 'Red spray (h)', field: 'salt_red', sortable: true },
           { name: 'description', label: this.$tc('label.description'), field: 'description', align: 'left'},
         ]
       }
