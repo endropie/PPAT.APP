@@ -18,7 +18,7 @@
         <q-option-group slot="control" type="radio" inline
           name="transaction"
           v-model="rsForm.transaction"
-          :disable="ROUTE.meta.mode == 'edit' || IssetItemDetails"
+          :disable="IssetItemDetails"
           :options="CONFIG.options.transaction_mode"
           :dark="LAYOUT.isDark"
           v-validate="'required'"
@@ -239,10 +239,10 @@ export default {
     ItemOptions() {
       // if (this.MAPINGKEY['itemstocks'].length == 0) return []
       const STOCKIST = this.rsForm.transaction === 'RETURN' ? 'RDO.RET' : 'RDO.REG'
-
+      console.warn('STOCKIST', STOCKIST);
       let olditems = this.FORM.data.pre_delivery_items.map(x => x.item_id)
       let data = this.SHEET.items.data.filter((item) => {
-        if (olditems.some(x => x === item.id)) return true
+        if (this.rsForm.transaction == this.FORM.data.transaction && olditems.some(x => x === item.id)) return true
         if (item.customer_id !== this.rsForm.customer_id) return false
         return (Number(item.totals[STOCKIST]) > 0)
       })

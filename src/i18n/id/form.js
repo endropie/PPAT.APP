@@ -19,6 +19,7 @@ export default {
   show: 'Tampilkan {v}',
   submit: 'Submit | Submit',
   print: 'Print',
+  revision: 'Revisi',
   update: 'Perubahan | dirubah',
   validation: 'Validasi {v}| Ter-validasi',
   void: 'Batal'

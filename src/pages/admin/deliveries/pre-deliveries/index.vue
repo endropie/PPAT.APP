@@ -101,9 +101,8 @@
         </q-td>
 
         <q-td slot="body-cell-transaction" slot-scope="rs" :props="rs" style="width:35px">
-          <q-chip class="shadow-1 " dense
-            color="blue-grey"
-            text-color="white"
+          <q-chip class="shadow-1" dense square
+            color="blue-grey" text-color="white"
             :label="rs.row.transaction"
             :outline="rs.row.transaction === 'RETURN'" />
         </q-td>

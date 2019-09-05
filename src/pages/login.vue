@@ -64,6 +64,18 @@
       </div>
       <a class="ribbon" :title="`PPA Administration Built on v${$q.version}`" />
     </div>
+    <div class="fixed-top-left q-ma-md">
+      <q-btn-dropdown color="lime-8" label="EXAMPLE USER">
+        <q-list v-for="(user, index) in userlists" :key="index" style="max-width:200px">
+          <q-item clickable v-close-popup
+            @click="rsLogin = {email: `${String(user)}@ppa.com`, password: `${String(user)}ppa`}">
+            <q-item-section>
+              <q-item-label>{{ `${String(user)}@ppa.com` }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
     <q-inner-loading :showing="FORM.loading">
       <q-spinner-dots size="50px" color="primary" />
     </q-inner-loading>
@@ -79,6 +91,19 @@ export default {
   mixins: [MixForm],
   data() {
     return {
+      userlists: [
+        'admin',
+        'viewer',
+        'packing',
+        'work-order',
+        'work-process',
+        'marketing' ,
+        'outgoing.verify' ,
+        'outgoing.good' ,
+        'sj.delivery' ,
+        'pre.delivery' ,
+        'incoming.good'
+      ],
       rsLogin: {
         email: null,
         password: null,

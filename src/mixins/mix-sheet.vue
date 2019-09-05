@@ -66,13 +66,13 @@ export default {
         this.SHEET[i].data = []
         this.$axios.get(uri)
           .then(response => {
-            // if(process.env.DEV) console.info('[PLAY] SHEET.LOAD.SUCCESS => ', response)
+            if(process.env.DEV) console.info('[PLAY] SHEET.LOAD.SUCCESS => ', response)
             this.SHEET[i].data = response.data
             if(typeof callback === 'function') callback(response)
           })
           .catch(error => {
             if(process.env.DEV) console.error('[PLAY] SHEET.LOAD.ERROR => ', error.response || error)
-            if(typeof callback === 'function') callback(error.response || error)
+            if(typeof callback === 'function') callback()
           })
           .finally(() => {
             setTimeout(() => {

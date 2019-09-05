@@ -9,6 +9,7 @@
         :selected.sync="TABLE.selected"
         row-key="id"
         :pagination.sync="TABLE.pagination"
+        :rows-per-page-options="[10, 20, 50, 100, 500, 0]"
         @request="TABLE.compute"
         :loading="TABLE.loading">
 
@@ -160,7 +161,7 @@ export default {
           { name: 'prefix', label: '', align: 'left'},
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
           { name: 'status', label: '', align: 'left', field: 'status'},
-          { name: 'date', label: this.$tc('label.date'), align: 'center', field: 'date'},
+          { name: 'date', label: this.$tc('label.date'), field: 'date', align: 'center', sortable: true },
           { name: 'customer_id', label: this.$tc('general.customer'), align: 'left', field: (row) => row.customer.name , sortable: true },
           { name: 'reference_number', label: 'No. Reference', field: 'reference_number', align: 'left', sortable: true },
           { name: 'created_at', label: 'Create', align: 'center', sortable: true, field: 'created_at'},

@@ -1,11 +1,5 @@
 <template>
-  <q-toolbar color="primary" >
-    <q-separator vertical spaced color="primary"></q-separator>
-    <q-btn class="cordova-only electron-only" icon="arrow_back" aria-label="Go back" flat round dense v-go-back.single="PAGEMETA.backRoute" />
-    <q-toolbar-title>
-        <q-icon v-show="$route.meta.icon" style="font-size: 2rem; margin-right: 5px;" :name="$route.meta.icon" />
-        {{ $route.meta.title }}
-    </q-toolbar-title>
+
     <q-btn-dropdown
       flat stretch
       :align="align"
@@ -55,10 +49,7 @@
         </div>
       </div>
     </q-btn-dropdown>
-    <q-btn aria-label="Menu" class="within-iframe-hide" icon="menu" flat round dense @click="LEFTDRAWER = !LEFTDRAWER" />
 
-    <!-- <q-btn v-show="false" aria-label="Menu" class="within-iframe-hide" icon="assignment" flat round dense @click="RIGHTDRAWER = !RIGHTDRAWER" /> -->
-  </q-toolbar>
 </template>
 
 <script>

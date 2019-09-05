@@ -30,11 +30,13 @@ export default {
 
   to_waiting: 'Mohon tunggu',
 
-  process_create: 'Form penambahan data.',
+  process_create: 'Form Penambahan data.',
   process_update: 'Form Perubahan data.',
-  process_delete: 'Proses penghapusan data.',
-  process_validation: 'Proses validasi data.',
-  process_void: 'Proses pembatalan data.',
+  process_delete: 'Proses Penghapusan data.',
+  process_validation: 'Proses Validasi data.',
+  process_confirm: 'Proses Konfirmasi data.',
+  process_revise: 'Proses Revisi data.',
+  process_void: 'Proses Pembatalan data.',
 
   yes_to: 'Ya, {v}!'
 }

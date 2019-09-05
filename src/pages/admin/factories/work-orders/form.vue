@@ -28,8 +28,8 @@
           <ux-date name="date" type="date" class="col-12 col-sm-6"
             :label="$tc('label.date')" stack-label
             v-model="rsForm.date"
-            v-validate="`required|date_format:yyyy-MM-dd|after:${$app.moment().add(-1,'days').format('YYYY-MM-DD')}`"
-            :date-options="(date) => date >= $app.moment().format('YYYY/MM/DD')"
+            v-validate="`required|date_format:yyyy-MM-dd` + FORM.ifCreate(`|after:${$app.moment().add(-1,'days').format('YYYY-MM-DD')}`,'')"
+            :date-options="(date) => FORM.ifCreate(date >= $app.moment().format('YYYY/MM/DD'), true)"
             :dark="LAYOUT.isDark"
             :error="errors.has('date')"
             :error-message="errors.first('date')">
@@ -269,6 +269,7 @@ export default {
       let OrKeys = this.FORM.data.work_order_items.map(x => x.item_id, [])
 
       let ITEM = this.SHEET.items.data.filter((item) => {
+        if (!item.item_prelines || !item.item_prelines.length) return false
         if (item.item_prelines[0].line_id !== this.rsForm.line_id) return false
         if(item.totals[stockist] <= 0 && !OrKeys.find(x=> x === item.id)) return false
         else return true
@@ -468,6 +469,9 @@ export default {
           })
           return
         }
+
+        // console.warn(this.rsForm)
+        // return;
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();
         this.$axios.set(method, apiUrl, this.rsForm)

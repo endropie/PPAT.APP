@@ -97,14 +97,20 @@
         </q-td>
 
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
-          {{ rs.row.number }}
-          <q-badge label="RET" class=""
-            dense color="dark" text-color="white"
-            v-if="rs.row.transaction == 'RETURN'"/>
+          <div :class="{'text-strike': Boolean(rs.row.revise_id)}">
+            {{ rs.row.number }}
+            <span v-text="'REV.'+rs.row.revise_number" v-if="Boolean(rs.row.revise_number)"/>
+          </div>
         </q-td>
 
         <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px">
-          <ux-badge-status :row="rs.row" class=" on-right shadow-0" />
+          <div class="row q-gutter-xs no-wrap">
+            <ux-badge-status :row="rs.row" class="shadow-1" />
+            <q-badge label="RET" class="shadow-1 q-pa-xs"
+              dense color="blue-grey" text-color="white"
+              v-if="rs.row.transaction == 'RETURN'"/>
+
+          </div>
         </q-td>
 
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
@@ -177,7 +183,7 @@ export default {
       return this.$app.can('incoming-goods-delete')
     },
     CustomerOptions() {
-      return (this.SHEET.customers.data.map(item => ({label: item.name, value: item.id})) || [])
+      return (this.SHEET.customers.data.map(item => ({label: `${item.code} - ${item.name}`, value: item.id})) || [])
     },
   },
   methods:{

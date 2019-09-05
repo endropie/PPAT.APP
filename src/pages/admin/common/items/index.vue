@@ -5,6 +5,7 @@
         ref="table"
         inline dense
         class="table-index table-sticky-column th-uppercase"
+        :table-style="{'height:calc(100vh - 280px)': $q.screen.lt.sm}"
         separator="horizontal"
         color="primary"
         :dark="LAYOUT.isDark"
@@ -178,13 +179,11 @@ export default {
           { name: 'NG', field: (item)=> item.totals['NG'] || '-', label: 'NC', sortable: true },
           { name: 'RET', field: (item)=> item.totals['RET'] || '-', label: 'NCR', sortable: true },
 
-          { name: 'RDOREG', field: (item)=> item.totals['RDO.REG'] || '-', label: 'RDO [REG]', sortable: true, hidden: !process.env.DEV },
-          { name: 'RDORET', field: (item)=> item.totals['RDO.RET'] || '-', label: 'RDO [RET]', sortable: true, hidden: !process.env.DEV },
-          { name: 'PDO', field: (item)=> item.totals['PDO'] || '-', label: 'PDO', sortable: true, hidden:  !process.env.DEV },
+          { name: 'RDOREG', field: (item)=> item.totals['RDO.REG'] || '-', label: 'RDO [REG]', hidden: !process.env.DEV },
+          { name: 'RDORET', field: (item)=> item.totals['RDO.RET'] || '-', label: 'RDO [RET]', hidden: !process.env.DEV },
+          { name: 'PDOREG', field: (item)=> item.totals['PDO.REG'] || '-', label: 'PDO [REG]', align: 'center', clases:'bg-faded', hidden:  !process.env.DEV },
+          { name: 'PDORET', field: (item)=> item.totals['PDO.RET'] || '-', label: 'PDO [RET]', align: 'center', clases:'bg-faded', hidden:  !process.env.DEV },
           { name: 'VDO', field: (item)=> item.totals['VDO'] || '-', label: 'VDO', sortable: true, hidden:  !process.env.DEV },
-
-          { name: 'PDOREG', label: 'PDO [REG]', align: 'center', clases:'bg-faded', hidden:  !process.env.DEV },
-          { name: 'PDORET', label: 'PDO [RET]', align: 'center', clases:'bg-faded', hidden:  !process.env.DEV },
 
           { name: 'price', label: 'Price', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },
           { name: 'price_dm', label: 'Price in DM', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },

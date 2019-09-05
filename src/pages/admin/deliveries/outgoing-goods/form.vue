@@ -430,7 +430,7 @@ export default {
         if (res.status === 200 && res.data.length > 0) {
           this.rsForm.outgoing_good_items = res.data.map(item => {
 
-            console.warn('ITEM->', item.totals)
+            // console.warn('ITEM->', item.totals)
             const maximum = this.rsForm.transaction === 'RETURN'
               ? pickMax(item.totals['PDO.RET'], item.totals['VDO'])
               : pickMax(item.totals['PDO.REG'], item.totals['VDO'])
@@ -445,6 +445,7 @@ export default {
               MAX: maximum
             }
           })
+          .filter(detail => detail.MAX > 0)
         }
       })
     },

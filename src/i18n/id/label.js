@@ -1,6 +1,7 @@
 export default {
   active: 'Active',
   actual: 'Aktual',
+  address: 'Alamat {v}',
   all: 'Semua',
   area: 'Area',
   available: 'Tersedia',
@@ -9,7 +10,6 @@ export default {
   code: 'Kode {v}',
   code_intern: 'Internal Code',
   continue: 'Lanjutkan',
-  name: 'Nama {v}',
   category: 'Kategori {v}',
   color: 'Warna',
   date: 'Tanggal',
@@ -25,6 +25,7 @@ export default {
   line_production: 'Line Produksi',
   minute: 'Menit',
   mode: 'Jenis {v}',
+  name: 'Nama {v}',
   no: 'No. {v} ',
   note: 'Catatan',
   number: 'Nomor {v}',

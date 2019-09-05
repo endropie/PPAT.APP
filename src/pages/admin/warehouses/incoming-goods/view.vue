@@ -4,8 +4,9 @@
       <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
       <span slot="header-subtitle" style="font-size:16px">Warehouses - Incoming Good</span>
       <div slot="header-tags">
-        <q-chip tag outline small color="negative" label="Revised"
-          v-if="rsView.revise_id" />
+      <q-chip class="shadow-1" square outline
+        color="blue-grey" text-color="white"
+        label="RET" v-if="rsView.transaction === 'RETURN'" />
         <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
       </div>
       <div class="row q-col-gutter-md" >
@@ -40,6 +41,10 @@
                   <th>{{$tc('warehouses.registration')}}</th>
                   <td>{{rsView.registration}}</td>
                 </tr>
+                <tr v-if="rsView.request_order">
+                  <th>{{$tc('general.request_order')}}</th>
+                  <td>{{rsView.request_order.number}}</td>
+                </tr>
               </q-markup-table>
             </div>
           </div>
@@ -47,7 +52,9 @@
         <div class="col-12">
           <q-table ref="table" class="no-highlight bordered no-shadow" color="secondary" separator="vertical" dense hide-bottom :dark="LAYOUT.isDark"
             :data="rsView.incoming_good_items"
-            no-data-label = "No Production"
+            no-data-label = "No Detail"
+            :rows-per-page-options ="[0]"
+            :pagination="{page: null, rowsPerPage: 0 }"
             :columns="[
               { name: 'code', label:  this.$tc('label.code'), align: 'left', field: (v)=> v.item.code},
               { name: 'part_name', label: this.$tc('items.part_name'), align: 'left', field: (v)=> v.item.part_name},
@@ -68,7 +75,7 @@
         </div>
       </div>
       <div class="q-gutter-xs print-hide" style="padding-top:50px">
-        <q-btn :label="$tc('form.cancel')" color="dark" icon="cancel" :to="`${VIEW.resource.uri}?return`" />
+        <q-btn :label="$tc('form.back')" color="dark" icon="cancel" :to="`${VIEW.resource.uri}?return`" />
         <q-btn :label="$tc('form.print')" color="grey" icon="print" @click.native="print()" />
         <q-btn :label="$tc('form.edit')" color="green" icon="edit" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`"
           v-if="IS_EDITABLE && isCanUpdate" />
@@ -83,18 +90,25 @@
                 $router.push(`${VIEW.resource.uri}/create`)
               }
             },
-            { label: 'Delete', color:'red', icon: 'delete',
+            { label: String('Delete').toUpperCase(), color:'red', icon: 'delete',
               hidden: !IS_EDITABLE || !isCanDelete,
               detail: $tc('messages.process_delete'),
               actions: () => {
                 VIEW.delete()
               }
             },
-            { label: $tc('form.validation'), color:'teal', icon: 'check',
-              hidden: !IS_EDITABLE || !isCanValidation,
+            { label: $tc('form.validation').toUpperCase(), color:'teal', icon: 'check',
+              hidden: !IS_EDITABLE || !this.$app.can('incoming-goods-validation'),
               detail:$tc('messages.process_validation'),
               actions: () => {
                 setValidation()
+              }
+            },
+            { label: $tc('form.revision').toUpperCase(), color:'teal', icon: 'check',
+              hidden: IS_EDITABLE || !this.$app.can('incoming-goods-read'),
+              // detail:$tc('messages.process_validation'),
+              actions: () => {
+                setRevision()
               }
             },
             { label: 'VOID', color:'red', icon: 'block',
@@ -149,8 +163,12 @@ export default {
     isCanDelete() {
       return this.$app.can('incoming-goods-delete')
     },
-    isCanValidation() {
-      return this.$app.can('incoming-goods-delete')
+    IS_REVISE() {
+      if (this.IS_EDITABLE) return false
+      if (this.rsView.deleted_at) return false
+      if (!this.$app.can('incoming-goods-void')) return false
+      if (['VOID','OPEN'].find(x => x === this.rsView.status)) return false
+      return true
     },
     IS_VOID() {
       if (this.IS_EDITABLE) return false
@@ -166,31 +184,11 @@ export default {
     },
   },
   methods: {
+    setRevision () {
+      this.$router.push(`${this.VIEW.resource.uri}/${this.ROUTE.params.id}/revision`)
+    },
     setValidation () {
       this.$router.push(`${this.VIEW.resource.uri}/${this.ROUTE.params.id}/validation`)
-      return false
-
-      this.$q.dialog({
-        title: this.$tc('form.validation'),
-        message: this.$tc('messages.to_sure', 1, {v:this.$tc('form.validation')}),
-        dark: this.LAYOUT.isDark, cancel: true, persistent: true,
-      }).onOk(() => {
-
-        this.$axios.set('PUT', `${this.VIEW.resource.api}/${this.rsView.id}?mode=validation&nodata`, null)
-        .then(response => {
-          this.$app.notify.success({
-            message: this.$tc('messages.success_validated').toUpperCase(),
-            detail: this.$tc('messages.form_has_validated',1, {v: this.rsView.number})
-          })
-          setTimeout(() => {
-            this.init()
-          }, 500)
-
-        })
-        .catch(error => {
-          this.$app.response.error(error.response, this.$tc('messages.fail', 1, {v: this.$tc('form.validation')}))
-        })
-      })
     },
     init() {
       this.VIEW.load((data) => {
@@ -204,7 +202,7 @@ export default {
       window.print()
     },
     setView(data) {
-      this.rsView =  data
+      this.rsView =  JSON.parse(JSON.stringify(data))
     },
   }
 }

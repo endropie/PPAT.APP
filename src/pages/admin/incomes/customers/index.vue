@@ -27,7 +27,6 @@
               }
             ]">
 
-
             <div class="row q-col-gutter-xs" >
               <q-select class="col-12" autocomplete="off"
                 multiple use-chips use-input new-value-mode="add"
@@ -87,7 +86,7 @@ export default {
 
           { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true },
           { name: 'name', field: 'name', label: 'Name', align: 'left', sortable: true},
-          { name: 'order_mode', field: 'order_mode', label: this.$tc('label.mode', 1 ,{v:'Order'}), align: 'left', sortable: false},
+          { name: 'order_mode', field: 'order_mode', label: this.$tc('label.mode', 1 ,{v:'Order'}), align: 'left', sortable: true},
           { name: 'phone', label: 'Phone', field: 'phone', align: 'left'},
           { name: 'email', label: 'Email', field: 'email', align: 'left', sortable: true },
           // { name: 'fax', label: 'Fax', field: 'fax', align: 'left', sortable: true },

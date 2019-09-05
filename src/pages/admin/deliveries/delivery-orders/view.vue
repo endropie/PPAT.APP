@@ -2,17 +2,15 @@
   <q-page padding class="row justify-center" style="min-width:100mm">
     <page-print v-if="VIEW.show" class="q-pa-md q-pr-lg shadow-2 scroll" style="max-width:210mm">
       <div slot="header-tags">
-        <q-chip tag outline small color="negative" v-if="(rsView.revise_id != null)">
-          Revised
-        </q-chip>
+        <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
       </div>
       <div class="row justify-between q-gutter-y-md" >
-        <div class="profile">
+        <div class="profile" style="max-width:50%">
           <div class="text-weight-regular uppercase">To: {{rsView.customer_name}}</div>
           <address class="text-weight-light">{{rsView.customer_address}}</address>
           <div class="text-weight-light ">Phone: {{rsView.customer_phone}}</div>
         </div>
-        <div class="info">
+        <div class="info" style="max-width:50%">
           <q-markup-table separator="cell" dense:dark="LAYOUT.isDark"
             class="bordered super-dense no-shadow no-margin th-text-left">
             <tr>
@@ -32,12 +30,17 @@
             :data="rsView.delivery_order_items"
             no-data-label = "No Production"
             :columns="[
-              { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code},
-              { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
+              { name: 'part_name', label: this.$tc('items.part_name'), align: 'left', field: (v)=> v.item.part_name},
+              { name: 'part_number', label: this.$tc('items.part_number'), align: 'left', field: (v)=> v.item.part_number},
               { name: 'quantity', label: $tc('label.quantity'), align: 'right', field: (v)=> v.quantity},
               { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
+              { name: 'request_order_id', label: '#', align: 'left', field: (v)=> v.item.request_order_id},
             ]"
           >
+          <q-td slot="body-cell-request_order_id" slot-scope="rsItem" :scope="rsItem">
+            <span v-if="rsItem.row.request_order_item_id" >#{{rsItem.row.request_order_item_id}}</span>
+            <q-icon v-else name="clear" color="red" />
+          </q-td>
 
           </q-table>
         </div>
@@ -48,8 +51,8 @@
       </div>
 
       <div class="q-gutter-xs print-hide modal-hide" style="padding-top:50px">
-        <q-btn :label="$tc('form.back')" :icon-right="btnIcon('cancel')"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
-        <q-btn :label="$tc('form.print')" :icon-right="btnIcon('print')" color="grey" @click.native="print()" ></q-btn>
+        <q-btn :label="$tc('form.back')" icon="cancel"  color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
+        <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="print()" ></q-btn>
 
         <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
           :options="[
@@ -60,13 +63,27 @@
                 VIEW.delete()
               }
             },
+            { label: $tc('form.confirm').toUpperCase(), color:'green', icon: 'block',
+              detail: $tc('messages.process_confirm'),
+              hidden: !IS_VOID || !$app.can('sj-delivery-orders-read'),
+              actions: () => {
+                setConfirmation()
+              }
+            },
+            { label: $tc('form.revision').toUpperCase(), color:'red', icon: 'block',
+              detail: $tc('messages.process_revise'),
+              hidden: !IS_VOID || !$app.can('sj-delivery-orders-read'),
+              actions: () => {
+                setRevision()
+              }
+            },
             { label: 'VOID', color:'red', icon: 'block',
               detail: $tc('messages.process_void'),
               hidden: !IS_VOID || !$app.can('sj-delivery-orders-void'),
               actions: () => {
                 VIEW.void(()=> init() )
               }
-            },
+            }
           ]"/>
       </div>
     </page-print>
@@ -120,9 +137,6 @@ export default {
         this.setView(data || {})
       })
     },
-    btnIcon (str) {
-      return !this.$q.screen.lt.sm ? str : ''
-    },
     print() {
       window.print()
     },
@@ -133,19 +147,23 @@ export default {
     setView(data) {
       this.rsView =  data
     },
-    routing() {
+    setRevision() {
+      this.$router.push(`${this.VIEW.resource.uri}/${this.ROUTE.params.id}/revision`)
+    },
+    setConfirmation() {
+      const submit = () => {
         this.VIEW.show = false
         this.VIEW.loading = true
-        let url = this.VIEW.resource.api +'/'+ this.ROUTE.params.id + '?mode=view'
-        this.$axios.get(url)
+        let url = `${this.VIEW.resource.api}/${this.ROUTE.params.id}?mode=confirmation&nodata=true`
+        this.$axios.put(url)
           .then((response) => {
             // console.warn('response->', response.data)
             const data = response.data
-            this.setRsView(data)
+            this.setView(data)
           })
           .catch(error => {
-            console.warn('[FORM:routing()]', error)
-            this.VIEW.onCatch(error.response, 'Load form')
+            // this.VIEW.onCatch(error.response, 'FORM REVISION')
+            this.$app.response.error(error.response, 'FORM REVISION')
           })
           .finally(()=>{
             this.VIEW.show = true
@@ -153,7 +171,26 @@ export default {
               this.VIEW.loading = false
             }, 1000);
           })
-    },
+      }
+
+      this.$validator.validate().then(result => {
+        if (!result) {
+          return this.$q.notify({
+            color:'negative', icon:'error', position:'top-right', timeout: 3000,
+            message:this.$tc('messages.to_complete_form')
+          });
+        }
+
+        this.$q.dialog({
+          title: this.$tc('form.confirm'),
+          message: this.$tc('messages.to_sure', 1, {v: this.$tc('form.validation')}),
+          cancel: true,
+          persistent: true
+        }).onOk(() => {
+          submit()
+        })
+      })
+    }
   }
 }
 </script>

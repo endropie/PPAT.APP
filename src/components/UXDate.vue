@@ -7,7 +7,7 @@
     >
 
       <template v-slot:append v-if="!$attrs.disable && !$attrs.readonly">
-        <q-icon name="event" class="cursor-pointer">
+        <q-icon name="event" class="self-end q-mb-sm cursor-pointer">
           <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
             <q-date :mask="valueFormat"
               v-model="value"

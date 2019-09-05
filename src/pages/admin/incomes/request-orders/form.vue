@@ -52,7 +52,8 @@
             :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
             @input="(val)=>{ setCustomerReference(val) }"
             :error="errors.has('customer')"
-            :error-message="errors.first('customer')" >
+            :error-message="errors.first('customer')"
+            :loading="SHEET['customers'].loading">
             <q-tooltip v-if="IssetItemDetails" :offset="[0, 10]">To change: Please delete Part items first!</q-tooltip>
           </ux-select-filter>
           <q-input name="reference_number" class="col-12"
@@ -65,25 +66,6 @@
 
         </div>
       </div>
-      <!-- <div class="col-12">
-        <div class="row q-col-gutter-x-md" v-if="rsForm.order_mode !== 'PO'">
-          <q-input name="begin-date" type="date" class="col-6"
-            stack-label label="Begin date"
-            v-model="rsForm.begin_date"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('begin-date')"
-            :error-message="errors.first('begin-date')"/>
-
-          <q-input name="until-date" class="col-6"
-            stack-label label="Until date"
-            v-model="rsForm.until_date" type="date"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
-            :error="errors.has('until-date')"
-            :error-message="errors.first('until-date')"/>
-        </div>
-      </div> -->
     </q-card-section>
     <!-- COLUMN::2th Incoming Items lists -->
     <q-card-section class="row q-col-gutter-sm q-col-gutter-x-md">
@@ -95,7 +77,8 @@
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'prefix', label: '',  align: 'left'},
-            { name: 'item_id', label: $tc('label.part'), align: 'left'},
+            { name: 'item_id', label: $tc('items.part_name'), align: 'left'},
+            { name: 'part_number', label: $tc('items.part_number'), align: 'left'},
             { name: 'quantity', label: 'Qty', align: 'center'},
             { name: 'unit_id', label: $tc('label.unit'), align: 'center'},
             { name: 'price', label: 'Price', align: 'center'},
@@ -108,7 +91,7 @@
               <q-td key="prefix" :rsItem="rsItem" style="width:50px">
                 <q-btn dense  icon="delete" color="blue-grey-5" @click="removeItem(rsItem.row.__index)"/>
               </q-td>
-              <q-td key="item_id" :rsItem="rsItem" width="30%">
+              <q-td key="item_id" :rsItem="rsItem" width="30%" style="min-width:150px">
                 <ux-select-filter :name="`request_orders_items.${rsItem.row.__index}.item_id`"
                   v-model="rsItem.row.item_id"
                   v-validate="'required'"
@@ -117,9 +100,16 @@
                   :readonly="!IssetCustomerID"
                   :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
                   :error="errors.has(`request_orders_items.${rsItem.row.__index}.item_id`)"
+                  :loading="SHEET['items'].loading"
                   @input="(val)=>{ setItemReference(rsItem.row.__index, val) }"
                 />
                 <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
+              </q-td>
+              <q-td key="part_number" width="30%" style="min-width:150px">
+                <q-input readonly
+                  :value="rsItem.row.item ? rsItem.row.item.part_number : null"
+                  outlined dense hide-bottom-space color="blue-grey-5"
+                  :dark="LAYOUT.isDark" />
               </q-td>
               <q-td key="quantity" :rsItem="rsItem" width="10%">
                 <q-input :name="`request_orders_items.${rsItem.row.__index}.quantity`"
@@ -164,27 +154,6 @@
                 />
               </q-td>
             </q-tr>
-            <!-- Item detail Description -->
-            <!-- <q-tr  class="" :rsItem="rsItem">
-              <q-td></q-td>
-              <q-td >
-                <div class="text-left">
-                  <table class="table-description full-width">
-                    <tr><td>No Plate    </td><td>{{ rsItem.row.item.part_number }}</td></tr>
-                    <tr><td>Plate name  </td><td>{{ rsItem.row.item.part_name }}</td></tr>
-                  </table>
-                </div>
-              </q-td>
-                <q-td colspan="2">
-                <div class="text-left" >
-                  <table class="table-description full-width">
-                    <tr><td>Quantity    </td><td>{{ formatNumber(Number(rsItem.row.quantity) * Number(rsItem.row.unit_rate)) }} {{ (rsItem.row.item.unit ? rsItem.row.item.unit.name : '') }}</td></tr>
-                    <tr><td>FG #alias    </td><td>{{ (rsItem.row.item.part_alias || '') }}</td></tr>
-                  </table>
-                </div>
-              </q-td>
-              <q-td colspan="100%"> </q-td>
-            </q-tr> -->
           </template>
 
           <q-tr slot="bottom-row" slot-scope="rsItem" :rsItem="rsItem">
@@ -229,11 +198,11 @@ export default {
   data () {
     return {
       SHEET: {
-        customers: {data:[], api:'/api/v1/incomes/customers?mode=all'},
-        brands: {data:[], api:'/api/v1/references/brands?mode=all'},
-        units: {data:[], api:'/api/v1/references/units?mode=all'},
-        vehicles: {data:[], api:'/api/v1/references/vehicles?mode=all'},
-        items: {data:[], api:'/api/v1/common/items?mode=all'}
+        customers: {api:'/api/v1/incomes/customers?mode=all'},
+        brands: {api:'/api/v1/references/brands?mode=all'},
+        units: {api:'/api/v1/references/units?mode=all'},
+        vehicles: {api:'/api/v1/references/vehicles?mode=all'},
+        items: {autoload:false, api:'/api/v1/common/items?mode=all'}
       },
       FORM: {
         resource: {
@@ -251,6 +220,7 @@ export default {
           customer_id: null,
           date: null,
           reference_number: null,
+          transaction: 'REGULER',
           order_mode: null,
           description: null,
 
@@ -385,6 +355,8 @@ export default {
       else {
         this.rsForm.customer = this.MAPINGKEY['customers'][val];
         this.rsForm.order_mode = this.MAPINGKEY['customers'][val].order_mode;
+
+        this.SHEET.load('items', `customer_id=${val}`)
 
         if(this.rsForm.order_mode == 'PO') {
           this.rsForm.begin_date == null

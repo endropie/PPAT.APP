@@ -50,12 +50,12 @@
               v-model="rsForm.quantity" type="number" :min="0"
               outlined dense hide-bottom-space no-error-icon align="center"
               :dark="LAYOUT.isDark" color="blue-grey-5"
-              v-validate="`required|gt_value:0|max_value: ${ItemStock.MAX / rsForm.unit_rate}`"
+              v-validate="`required|gt_value:0|max_value: ${ITEMSTOCK.MAX / rsForm.unit_rate}`"
               :error="errors.has(`quantity`)"
               :error-message="errors.first(`quantity`)" >
 
               <span slot="append" class="text-body2" v-show="rsForm.item_id">
-                {{`/ ${$app.number_format(ItemStock.PDO / rsForm.unit_rate)}`}}
+                {{`/ ${$app.number_format(ITEMSTOCK.PRE / rsForm.unit_rate)}`}}
               </span>
             </q-input>
           </td>
@@ -64,7 +64,7 @@
           <th>{{$tc('label.available')}}</th>
           <td>
             <q-chip square class="text-weight-medium">
-              {{$app.number_format(ItemStock.AVA / rsForm.unit_rate)}}
+              {{$app.number_format(ITEMSTOCK.AVA / rsForm.unit_rate)}}
             </q-chip>
           </td>
         </tr>
@@ -77,7 +77,6 @@
       <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()" :loading="FORM.loading" />
     </q-card-actions>
   </q-card>
-  {{rsForm.pre_delivery_item}}
   <q-inner-loading :showing="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
 </q-page>
 </template>
@@ -142,23 +141,38 @@ export default {
         return this.rsForm.item.item_units.some(s => s.unit_id === unit.value)
       })
     },
-    ItemStock() {
+    ITEMSTOCK() {
       if(!this.rsForm.item) return {}
 
-      const maxi = (sto, pdo) => {
-        if(Number(sto) >= Number(pdo)) return Number(pdo)
+      const maxi = (sto, verify) => {
+        if(Number(sto) >= Number(verify)) return Number(verify)
         return Number(sto)
       }
+
+      const PdoItem = Object.assign({}, this.rsForm.pre_delivery_item)
+      const PreItem = Number(PdoItem.unit_amount || 0)
+                    - Number(PdoItem.amount_verification)
+                    + Number(this.FORM.data.unit_amount)
 
       let totals = this.rsForm.item.totals
       totals.AVA = Number(totals['FG']) - Number(totals['VDO'])
 
       if (Number(this.FORM.data.unit_amount) > 0) {
-        totals['PDO'] += this.FORM.data.unit_amount
         totals['AVA'] += this.FORM.data.unit_amount
         totals['VDO'] -= this.FORM.data.unit_amount
       }
-      return {...totals, MAX:maxi(totals.AVA, totals['PDO'])}
+
+      console.warn('STOCK', PdoItem, {
+        ...totals,
+        PRE: PreItem,
+        MAX: maxi(totals.AVA, PreItem)
+      })
+
+      return {
+          ...totals,
+          PRE: PreItem,
+          MAX: maxi(totals.AVA, PreItem)
+        }
     }
   },
   watch:{

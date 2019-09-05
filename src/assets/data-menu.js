@@ -10,7 +10,7 @@ const common = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'items-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'items-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'items-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'items-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'items-read' } }
     ]
   },
   {
@@ -21,7 +21,8 @@ const common = [
     resources: [
       { page: 'index', path: '', icon: 'mdi-account-group', meta: { permission: 'employees-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'employees-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'employees-update' } }
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'employees-update' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'items-read' } }
     ]
   }
 ]
@@ -36,7 +37,7 @@ const incomes = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'items-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'customers-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'customers-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'customers-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'customers-read' } }
     ]
   },
   {
@@ -48,7 +49,7 @@ const incomes = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'forecasts-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'forecasts-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'forecasts-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'forecasts-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'forecasts-read' } }
     ]
   },
   {
@@ -60,7 +61,7 @@ const incomes = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'request-orders-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'request-orders-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'request-orders-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'request-orders-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'request-orders-read' } }
     ]
   }
 ]
@@ -75,7 +76,7 @@ const expenses = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'purchase-orders-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'purchase-orders-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'purchase-orders-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'purchase-orders-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'purchase-orders-read' } }
     ]
   },
   {
@@ -87,7 +88,7 @@ const expenses = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'purchase-delivery-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'purchase-delivery-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'purchase-delivery-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'purchase-delivery-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'purchase-delivery-read' } }
     ]
   },
   {
@@ -99,7 +100,7 @@ const expenses = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'purchase-bills-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'purchase-bills-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'purchase-bills-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'purchase-bills-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'purchase-bills-read' } }
     ]
   }
 ]
@@ -116,7 +117,8 @@ const warehouses = [
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'incoming-goods-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'incoming-goods-update' } },
       { page: 'validation', path: ':id/validation', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
-      { page: 'view', path: ':id', meta: { permission: 'incoming-goods-read' } }
+      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'incoming-goods-read' } }
     ]
   }
 ]
@@ -131,7 +133,7 @@ const deliveries = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'pre-deliveries-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'pre-deliveries-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'pre-deliveries-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'pre-deliveries-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'pre-deliveries-read' } }
     ]
   },
   {
@@ -144,7 +146,7 @@ const deliveries = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-verifications-read' } },
       { page: 'create', path: 'create', meta: { mode: 'create', permission: 'outgoing-verifications-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'outgoing-verifications-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'outgoing-verifications-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'outgoing-verifications-read' } }
     ]
   },
   {
@@ -157,7 +159,7 @@ const deliveries = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-goods-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'outgoing-goods-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'outgoing-goods-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'outgoing-goods-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'outgoing-goods-read' } }
     ]
   },
   {
@@ -169,7 +171,7 @@ const deliveries = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'sj-delivery-orders-read' } },
       // {page: 'form', path: 'create', meta: {mode: 'create', permission: 'delivery-orders-create'}},
       // {page: 'form', path: ':id/edit', meta: {mode: 'edit', permission: 'delivery-orders-update'}},
-      { page: 'reform', path: ':id/revision', meta: { mode: 'revision', permission: 'sj-delivery-orders-update' } },
+      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'sj-delivery-orders-update' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'sj-delivery-orders-read' } }
     ]
   }
@@ -185,7 +187,8 @@ const factories = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'work-orders-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'work-orders-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-orders-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'work-orders-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'work-orders-read' } },
+      { page: 'view-prelines', path: ':id/prelines', meta: { mode: 'view', permission: 'work-orders-read' } }
     ]
   },
   {
@@ -197,7 +200,7 @@ const factories = [
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'work-process-read' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-process-confirm' } },
-      { page: 'view', path: ':id', meta: { permission: 'work-process-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'work-process-read' } }
     ]
   },
   {
@@ -209,7 +212,7 @@ const factories = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'productions-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'productions-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'productions-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'productions-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'productions-read' } }
     ]
   },
   {
@@ -221,7 +224,7 @@ const factories = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'packings-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'packings-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'packings-update' } },
-      { page: 'view', path: ':id', meta: { permission: 'packings-read' } }
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'packings-read' } }
     ]
   }
 ]

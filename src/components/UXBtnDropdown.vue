@@ -11,7 +11,7 @@
     </template>
 
     <q-list style="min-width:200px">
-      <template v-for="(item, index) in options">
+      <template v-for="(item, index) in OPTIONS">
       <q-item :key="index"
         v-if="!item.hidden && index !== 0"
         clickable
@@ -44,15 +44,18 @@ export default {
     }
   },
   computed:{
+    OPTIONS() {
+      if(!this.options) return []
+      return this.options.filter(x => !x.hidden)
+    },
     FIRST() {
       let find = {}
-      if(this.options) find = this.options.find(x => !x.hidden)
+      if(this.OPTIONS) find = this.OPTIONS.find(x => !x.hidden)
 
       return find
     },
     EMPTY() {
-      if(this.required) return true
-      return this.options.filter(x=> x.hidden !== true).length === 0
+      return (!this.OPTIONS.length)
     },
   },
   methods: {

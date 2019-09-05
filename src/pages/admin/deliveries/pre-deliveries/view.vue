@@ -2,6 +2,11 @@
   <q-page padding class="row justify-center"  style="min-width:210mm;">
     <page-print v-if="VIEW.show" :class="{'header-minimaze':$q.screen.lt.sm}" style="max-width:210mm;">
       <div slot="header-title">PPA - Pre Delivery </div>
+      <template slot="header-tags">
+        <q-chip square outline color="blue-grey" text-color="white"
+          label="RETURN" v-if="rsView.transaction === 'RETURN'" />
+        <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
+      </template>
 
       <div class="row justify-between q-col-gutter-y-sm" >
         <div class="profile">
@@ -22,11 +27,15 @@
             :data="rsView.pre_delivery_items"
             no-data-label = "No Production"
             :columns="[
-              { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code},
+              { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code, hidden: true},
               { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
               { name: 'part_number', label: this.$tc('label.number', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_number},
               { name: 'quantity', label: $tc('label.quantity'), align: 'right', field: (v)=> v.quantity},
               { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
+              { name: 'amount_verification', label: 'Verify', align: 'right',
+                field: (v)=> Number(v.amount_verification),
+                format: (v) => Boolean(v) ? $app.number_format(v) : '',
+              }
             ]"
           >
 

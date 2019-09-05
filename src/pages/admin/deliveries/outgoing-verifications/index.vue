@@ -100,16 +100,16 @@
           <q-btn v-if="isCanDelete && isEditRow(rs.row)" dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)"/>
         </q-td>
 
-        <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px">
-          <q-badge dense class="q-px-sm q-py-xs"
-            :label="rs.row.outgoing_good_id ? 'Verificated' : 'Wait'"
-            :color="rs.row.outgoing_good_id ? 'green-10' : 'faded'"
-            text-color="white" />
+        <q-td slot="body-cell-outgoing_good_id" slot-scope="rs" :props="rs" style="width:35px">
+          <span v-if="rs.row.outgoing_good" v-text=" rs.row.outgoing_good.number" />
+          <q-badge v-else dense
+            class="q-px-sm q-py-xs"
+            label="Wait"
+            color="faded" text-color="white" />
         </q-td>
 
         <q-td slot="body-cell-quantity" slot-scope="rs" :props="rs" style="width:35px">
           <span :class="{'text-weight-light highlight-and-fade':!rs.row.outgoing_good_id}">{{ rs.row.quantity }}</span>
-
         </q-td>
 
       </q-table>
@@ -155,13 +155,12 @@ export default {
         columns: [
           { name: 'prefix', label:''},
           { name: 'id',  label: '#', field:'id', format:(v)=> `${v}`},
-          { name: 'status', label: 'Status', field: 'status', align: 'center', sortable: true},
-          { name: 'part_code', label: this.$tc('label.code', 1, {v:this.$tc('label.part')}), field:(v)=> v.item.code, align: 'left', sortable: true },
-          { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), field: (v)=> v.item.part_name, align: 'left', sortable: true },
+          { name: 'outgoing_good_id', label: 'Outgoing', field: 'outgoing_good_id', align: 'left', sortable: true},
+          { name: 'part_name', label: this.$tc('items.part_name'), field: (v)=> v.item.part_name, align: 'left', sortable: true },
+          { name: 'part_number', label: this.$tc('items.part_number'), field:(v)=> v.item.part_number, align: 'left', sortable: true },
           { name: 'quantity', label: this.$tc('label.quantity'), field: 'quantity', align: 'center', sortable: true },
           { name: 'unit_id', label: this.$tc('label.unit'), field: (v) => v.unit.code, align: 'left', sortable: true},
           { name: 'pre_delivery_number', label: 'No. PDO', field: 'pre_delivery_number', align: 'left', sortable: true },
-
         ]
       },
       rsForm: {

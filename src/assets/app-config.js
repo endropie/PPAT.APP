@@ -5,6 +5,16 @@ const config = {
     baseURL: 'http://ppa.virmata.com' // 'http://laravel.ppa'
   },
   options: {
+    state_colors: {
+      OPEN: 'blue',
+      VALIDATED: 'green',
+      PROCESSED: 'indigo',
+      CONFIRMED: 'green-10',
+      CLOSED: 'red',
+      REVISED: 'red-9',
+      VOID: 'red-10',
+      DELETED: 'dark'
+    },
     prefix_intervals: [
       { value: '', label: '-' },
       { value: '{Y}', label: `YYYY`, digit: `${moment().format('YYYY')}` },

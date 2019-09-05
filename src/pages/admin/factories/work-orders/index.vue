@@ -129,13 +129,9 @@
 
 <script>
 import MixIndex from '@/mixins/mix-index.vue'
-import filterable from './filterable.vue'
 
 export default {
   mixins: [MixIndex],
-  components: {
-    filterable
-  },
   data () {
     return {
       SHEET: {

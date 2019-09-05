@@ -21,7 +21,7 @@
       <ux-select-filter class="col-12 col-sm-6"
         name="pre_delivery_id"
         v-model="rsForm.pre_delivery_id"
-        stack-label :label="$tc('general.customer')"
+        stack-label label="No. PDO"
         :options="PreDeliveryOptions" clearable
         @input="setPreDelivery"
         v-validate="'required'"
@@ -43,7 +43,7 @@
           { name: 'AVA', label: this.$tc('label.available'), field:'AVA', align: 'right'},
         ]"
         :pagination="{ rowsPerPage: 0}"
-        :loading="SHEET.items.loading"
+        :loading="SHEET['pre_deliveries'].loading"
         :loading-label="$tc('messages.to_waiting')">
 
         <q-tr slot="body" slot-scope="rsItem" :scope="rsItem" >
@@ -67,19 +67,15 @@
               outlined dense hide-bottom-space color="blue-grey-5"
               :dark="LAYOUT.isDark"
               @input="(val) => setUnitReference(rsItem.row.__index, val)" />
-            <!-- <q-input readonly
-              :value="rsItem.row.unit ? rsItem.row.unit.code : null"
-              outlined dense hide-bottom-space color="blue-grey-5"
-              :dark="LAYOUT.isDark" /> -->
           </q-td>
           <q-td key="quantity" width="25%">
             <q-input :name="`outgoing_good_verifications.${rsItem.row.__index}.quantity`"
               style="min-width:120px"
               v-model="rsItem.row.quantity" type="number" :min="0"
-              outlined dense hide-bottom-space align="center"
+              outlined dense hide-bottom-space no-error-icon align="center"
               :dark="LAYOUT.isDark" color="blue-grey-5"
               :suffix="rsItem.row.item_id ? `/ ${$app.number_format(rsItem.row.maximum / rsItem.row.unit_rate)}` : ''"
-              v-validate="`gt_value:0|max_value: ${rsItem.row.maximum / rsItem.row.unit_rate}`"
+              v-validate="`gt_value:0|max_value: ${maximality(rsItem.row.maximum, STOCKS[rsItem.row.__index]) / rsItem.row.unit_rate}`"
               :error="errors.has(`outgoing_good_verifications.${rsItem.row.__index}.quantity`)"
             />
           </q-td>
@@ -91,8 +87,7 @@
         </q-tr>
         <q-tr slot="bottom-row" slot-scope="prop" :scope="prop">
           <q-td colspan="100%" class="text-center" v-if="AllDetail && AllDetail.length == 0">
-            <div v-show="!SHEET.items.loading" class="q-pa-sm">{{$tc('messages.no_details')}}</div>
-            <div v-show="SHEET.items.loading" class="q-pa-sm">{{$tc('messages.to_waiting')}}</div>
+            <div v-show="!Boolean(rsForm.outgoing_good_verifications.length)" class="q-pa-sm">{{$tc('messages.no_details')}}</div>
           </q-td>
         </q-tr>
       </q-table>
@@ -159,7 +154,7 @@ export default {
       return (this.rsForm.customer_id ? true : false)
     },
     PreDeliveryOptions() {
-      return (this.SHEET.pre_deliveries.data.map(item => ({label: item.number, value: item.id})) || [])
+      return (this.SHEET.pre_deliveries.data.map(item => ({label: item.number, value: item.id, stamp:item.transaction === 'RETURN' ? 'RET' : undefined})) || [])
     },
     CustomerOptions() {
       return (this.SHEET.customers.data.map(item => ({label: [item.code, item.name].join(' - '), value: item.id})) || [])
@@ -248,6 +243,10 @@ export default {
         this.setForm(data || this.setDefault())
       })
     },
+    maximality (maximal, available) {
+      if (maximal > available) return available
+      return maximal
+    },
     setPreDelivery(val) {
       this.rsForm.outgoing_good_verifications = []
       if(val) {
@@ -264,7 +263,7 @@ export default {
                 unit_id: detail.unit_id,
                 unit_rate: detail.unit_rate,
                 quantity: null,
-                maximum: Number(detail.unit_amount) - Number(detail.total_verification),
+                maximum: Number(detail.unit_amount) - Number(detail.amount_verification),
                 item: detail.item,
                 unit: detail.unit,
                 pre_delivery_item_id: detail.id
@@ -284,7 +283,7 @@ export default {
       this.rsForm.outgoing_good_verifications = []
 
       if(this.rsForm.customer_id) {
-        this.SHEET.load('pre_deliveries', 'customer_id='+ val)
+        this.SHEET.load('pre_deliveries', `customer_id=${val}&available_outgoing_verification=true`)
         this.rsForm.outgoing_good_verifications = this.AllDetail
       }
     },

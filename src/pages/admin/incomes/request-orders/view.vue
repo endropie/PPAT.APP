@@ -2,8 +2,6 @@
   <q-page padding class="row justify-center" >
     <page-print v-if="VIEW.show" class="q-pa-md q-pr-lg shadow-2" style="max-width:210mm;">
       <div slot="header-tags">
-        <q-chip tag outline small color="negative" icon="assignment" label="Revised"
-          v-if="rsView.revise_id" />
         <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
       </div>
       <div class="row justify-around q-col-gutter-y-sm" >

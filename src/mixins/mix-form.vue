@@ -36,6 +36,8 @@ export default {
         void: () => this.FORM__void(),
         delete: () => this.FORM__delete(),
         reset: (data) => this.FORM__reset(data),
+        ifCreate: (val, defined) => this.ROUTE.meta.mode === 'create' ? val : defined,
+        ifEdit: (val, defined) => this.ROUTE.meta.mode === 'edit' ? val : defined,
         response: {
           relationship: (values) => this.FORM__response_relationship(values),
           fields: (ErrRes = {}, form) => this.FORM__response_fields(ErrRes, form),
@@ -319,27 +321,17 @@ export default {
 
     FORM__toIndex () {
       setTimeout(() => {
-        this.$router.push(`${this.FORM.resource.uri}?return=first`)
+        this.$router.replace(`${this.FORM.resource.uri}?return=first`)
       }, 500)
     },
 
     FORM__toView (id) { // Back history page with 1 step
-      if (!this.FORM.resource.uri) {
-        console.warn('[] WARNING - Property "FORM.resource.uri" is not undefined!')
-        return
-      }
-
       setTimeout(() => {
-        this.$router.push(`${this.FORM.resource.uri}/${id}`)
+        this.$router.replace(`${this.FORM.resource.uri}/${id}`)
       }, 500)
     },
 
     FORM__toBack () { // Back history page with 1 step
-      if (!this.FORM.resource.uri) {
-        console.warn('[] WARNING - Property "FORM.resource.uri" is not undefined!')
-        return
-      }
-
       setTimeout(() => {
         this.$router.push(this.FORM.resource.uri + '?return')
       }, 500)

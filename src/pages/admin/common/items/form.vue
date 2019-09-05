@@ -16,22 +16,15 @@
         <div class="column">
           <ux-select-filter
             name="customer_id"
-            v-model="rsForm.customer_id"
             :label="$tc('general.customer')"
-            v-validate="'required'"
-            :dark="LAYOUT.isDark"
+            :data-vv-as="$tc('general.customer')"
+            v-model="rsForm.customer_id" options-cover clearable
+            :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
             :options="CustomerOptions"
-            @input="setCode"
-            ux-select-filter
-            options-cover
-            clearable
-            use-input
-            fill-input
-            hide-selected
-            map-options emit-value
+            v-validate="'required'"
             :error="errors.has('customer_id')"
-            :error-message="errors.first('customer_id')"
-          />
+            :error-message="errors.first('customer_id')"/>
+
           <ux-select-filter
             name="brand_id"
             :label="$tc('general.brand')"
@@ -39,11 +32,10 @@
             v-validate="'required'"
             :dark="LAYOUT.isDark"
             :options="BrandOptions"
-            @input="setCode"
             input-debounce="0"
             :error="errors.has('brand_id')"
-            :error-message="errors.first('brand_id')"
-          />
+            :error-message="errors.first('brand_id')" />
+
           <ux-select-filter
             name="specification_id"
             v-model="rsForm.specification_id"
@@ -51,23 +43,19 @@
             v-validate="'required'"
             :dark="LAYOUT.isDark"
             :options="SpecificationOptions"
-            @input="setCode"
             :error="errors.has('specification_id')"
-            :error-message="errors.first('specification_id')"
-          />
+            :error-message="errors.first('specification_id')" />
         </div>
       </div>
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm">
-          <q-input
+          <q-input class="col-12"
             name="code"
-            label="Intern Code"
-            v-model="rsForm.code"
-            v-validate="'required'"
-            disable
+            :placeholder="FORM.ifCreate('[Auto Generate]','')"
+            :label="$tc('label.code_intern')"
             :dark="LAYOUT.isDark"
-            class="col-12"
-            icon="code"
+            v-model="rsForm.code"
+            v-validate="FORM.ifCreate('','required')"
             :error="errors.has('code')"
             :error-message="errors.first('code')" >
             <q-toggle slot="after" class="bordered rounded-borders q-pa-xs no-margin"

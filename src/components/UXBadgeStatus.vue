@@ -6,7 +6,7 @@
 </template>
 
 <script>
-
+import { mapGetters } from 'vuex'
 export default {
   name : 'ux-badge-status',
     props: {
@@ -28,14 +28,19 @@ export default {
           VALIDATED: 'green',
           PROCESSED: 'indigo',
           CLOSED: 'red',
+          REVISED: 'red-9',
           VOID: 'red-10',
           DELETED: 'dark'
         }
       }
     },
     computed:{
+      ...mapGetters('admin', ['CONFIG']),
+      Colors() {
+        return this.CONFIG.options['state_colors']
+      },
       Value() {
-        if(this.row['deleted_at'] && this.row['status'] !== 'VOID') {
+        if(this.row['deleted_at'] && !['VOID','REVISED'].find(x => x === this.row['status'])) {
           return 'DELETED'
         }
         return this.row[this.name]
@@ -50,13 +55,11 @@ export default {
         if(this.colorOptions && this.colorOptions[this.Value]) {
           return this.colorOptions[this.Value]
         }
-        if(this.colors && this.colors[this.Value]) {
-          return this.colors[this.Value]
+        if(this.Colors && this.Colors[this.Value]) {
+          return this.Colors[this.Value]
         }
         return 'lime'
       }
-    },
-    methods: {
     }
 }
 </script>

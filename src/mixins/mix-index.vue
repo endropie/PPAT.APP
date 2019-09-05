@@ -398,9 +398,10 @@ export default {
       let params = []
       const pagination = this.TABLE.pagination
       if (pagination.page > 1) params.push(`page=${pagination.page}`)
-      if (pagination.rowsPerPage) params.push(`limit=${pagination.rowsPerPage}`)
       if (pagination.sortBy) params.push(`sort=${pagination.sortBy}`)
       if (pagination.descending) params.push(`descending`)
+
+      if (pagination.hasOwnProperty('rowsPerPage')) params.push(`limit=${pagination.rowsPerPage}`)
 
       if (this.TABLE.mode === 'datagrid') {
         if (this.TABLE.filter) params.push(`search=${this.TABLE.filter}`)
@@ -408,7 +409,6 @@ export default {
       else {
         params = params.concat(this.FILTERABLE_getParams())
       }
-
       return params
     },
     FILTERABLE_getParams () {

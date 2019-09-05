@@ -42,7 +42,7 @@
             @input="(val) => setCustomerReference(val)">
             <q-badge slot="counter"
               :label="rsForm.order_mode"
-              v-show="Boolean(rsForm.customer_id)" />
+              v-show="Boolean(rsForm.customer_id)"/>
           </ux-select-filter>
 
           <ux-date name="date" type="date" class="col-8"
@@ -125,10 +125,10 @@
     <q-card-section class="row q-col-gutter-sm">
 
       <div class="col-12">
-        <q-table ref="table" class="main-box bordered no-shadow no-highlight th-uppercase"
-          :data="rsForm.incoming_good_items" dense
+        <q-table dense hide-bottom
+          class="main-box bordered no-shadow no-highlight th-uppercase"
+          :data="rsForm.incoming_good_items"
           :dark="LAYOUT.isDark"
-          :rows-per-page-options ="[0]" hide-bottom
           :columns="[
             { name: 'prefix', field: 'prefix', label: '',  align: 'left'},
             { name: 'item_id', field: 'item_id', label: $tc('items.part_name'), align: 'left'},
@@ -136,12 +136,13 @@
             { name: 'quantity', field: 'quantity', label: $tc('label.quantity'), align: 'center'},
             { name: 'unit_id', field: 'unit_id', label: $tc('label.unit'), align: 'center'},
           ]"
+          :rows-per-page-options ="[0]"
           :pagination="{ sortBy: null, descending: false, page: null, rowsPerPage: 0 }"
           >
 
             <template v-slot:body-cell-prefix="{row}">
               <q-td  style="width:50px">
-                <q-btn dense  @click="removeItem(row.__index)" icon="delete" color="negative"/>
+                <q-btn dense flat round icon="clear" color="red" @click="removeItem(row.__index)"/>
               </q-td>
             </template>
             <template v-slot:body-cell-item_id="{row}">
@@ -156,7 +157,7 @@
                   :options="ItemOptions" clearable
                   :options-dark="LAYOUT.isDark"
                   :dark="LAYOUT.isDark"
-                  :readonly="!Boolean(rsForm.customer_id)"
+                  :readonly="Boolean(row.request_order_item_id)"
                   @input="(val)=>{ setItemReference(row.__index, val) }"
                   :loading="SHEET['items'].loading"
                   :error="errors.has(`items.${row.__index}.item_id`)"
@@ -203,9 +204,25 @@
               </q-td>
             </template>
 
-          <q-tr slot="bottom-row" slot-scope="props" :props="props">
+          <q-tr slot="bottom-row" slot-scope="rsItem" :rsItem="rsItem">
             <q-td colspan="100%">
-              <strong><q-btn dense  @click="addNewItem()" icon="add" color="positive"/></strong>
+              <q-btn-dropdown split dense icon="add" color="green"
+                :label="$tc('form.add')"
+                :disable-dropdown="!Boolean(rsForm.exclude_items.length)"
+                @click="addNewItem()">
+                <q-list>
+                  <q-item v-for="(row, index) in rsForm.exclude_items" :key="index"
+                    clickable v-close-popup @click="includeItem(index)">
+                    <q-item-section>
+                      <q-item-label>{{row.item.part_number}}</q-item-label>
+                      <q-item-label caption>{{row.item.part_name}}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-badge :label="row.quantity" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
             </q-td>
           </q-tr>
         </q-table>
@@ -222,8 +239,7 @@
     <q-card-actions class="q-mx-lg">
       <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
       <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
-      <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()" v-if="IS_EDITABLE"
-        :loading="FORM.loading" />
+      <q-btn :label="$tc('form.revision')" icon="save" color="red" @click="onSave()" v-if="IS_REVISION" />
     </q-card-actions>
   </q-card>
   <q-inner-loading :showing="FORM.loading" :dark="LAYOUT.isDark"><q-spinner-dots size="70px" color="primary" /></q-inner-loading>
@@ -266,7 +282,7 @@ export default {
           vehicle_id: null,
           rit: null,
           description: null,
-
+          exclude_items: [],
           incoming_good_items:[
             {
               id:null,
@@ -288,10 +304,11 @@ export default {
 
   },
   computed: {
-    IS_EDITABLE() {
-      if (Object.keys(this.FORM.data.has_relationship || {}).length > 0) return false
+    IS_REVISION() {
+      if (this.FORM.data.deleted_at) return false
+      if (this.FORM.data.status === 'REVISED') return false
 
-      return this.$app.can('incoming-goods-update')
+      return this.$app.can('incoming-goods-validation')
     },
     IssetItemDetails() {
         let items = this.rsForm.incoming_good_items
@@ -383,18 +400,10 @@ export default {
       })
     },
     setForm(data) {
-      this.rsForm = JSON.parse(JSON.stringify(data))
+      this.rsForm = Object.assign(this.setDefault(), JSON.parse(JSON.stringify(data)))
 
       if(data.customer_id) this.SHEET.load('items', 'customer_id='+ data.customer_id)
 
-      if(data.hasOwnProperty('has_relationship') && Object.keys(data['has_relationship']).length > 0) {
-
-        this.FORM.response.relationship({
-          title: 'Incoming goods has relations!',
-          messages: data['has_relationship'],
-          then: () => this.$router.push(`${this.FORM.resource.uri}/${data.id}`)
-        })
-      }
     },
     setDateReference (val) {
       if (this.ROUTE.meta.mode === 'create') {
@@ -464,15 +473,22 @@ export default {
       }
     },
 
-    addNewItem(autofocus){
-      autofocus = autofocus || false
-      let newEntri = this.setDefault().incoming_good_items[0] // {id:null, item_id: null, quantity: null};
-
+    addNewItem(){
+      let newEntri = this.setDefault().incoming_good_items[0]
       this.rsForm.incoming_good_items.push(newEntri)
     },
     removeItem(index) {
+      if (this.rsForm.incoming_good_items[index].request_order_item_id) {
+        this.rsForm.exclude_items.push(Object.assign({},this.rsForm.incoming_good_items[index]))
+      }
       this.rsForm.incoming_good_items.splice(index, 1)
-      if(this.rsForm.incoming_good_items.length < 1) this.addNewItem()
+      // if (this.rsForm.incoming_good_items.length < 1) this.addNewItem()
+    },
+    includeItem(index) {
+      if (this.rsForm.exclude_items[index]) {
+        this.rsForm.incoming_good_items.push(Object.assign({},this.rsForm.exclude_items[index]))
+        this.rsForm.exclude_items.splice(index, 1)
+      }
     },
 
     onSave() {
@@ -487,6 +503,7 @@ export default {
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();
+        apiUrl += `?mode=revision`
         this.$axios.set(method, apiUrl, this.rsForm)
         .then((response) => {
           let message = response.data.number + ' - #' + response.data.id

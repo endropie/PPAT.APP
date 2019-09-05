@@ -16,7 +16,7 @@
               <q-markup-table class="super-dense no-shadow"
                 :dark="LAYOUT.isDark">
                 <tr>
-                  <th class="text-left">{{$tc('general.customer')}}</th><td>{{ rsView.line.name }}</td>
+                  <th class="text-left">{{$tc('general.line')}}</th><td>{{ rsView.line.name }}</td>
                 </tr>
                 <tr>
                   <th class="text-left">Material of</th><td>{{ getStockistFrom(rsView.stockist_from) }}</td>
@@ -69,7 +69,8 @@
         <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
           <q-btn :label="$tc('form.back')" icon="cancel" color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
           <q-btn :label="$tc('form.edit')" icon="edit" color="green" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
-          <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="print()" ></q-btn>
+          <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="$router.push(`${VIEW.resource.uri}/${ROUTE.params.id}/prelines`)" ></q-btn>
+
           <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
             :options="[
               { label: $tc('form.add_new'), color:'primary', icon: 'add',

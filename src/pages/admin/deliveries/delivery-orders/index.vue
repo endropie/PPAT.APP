@@ -81,17 +81,8 @@
           </table-header>
         </template>
 
-        <!-- <q-chips-input name="filterable" add-icon=" " :value="FILLABEL.search" :placeholder="`${$tc('form.search',2)}...`"  color="blue-grey-5"
-          @add="FILTERABLE.setCreate" @remove="FILTERABLE.setRemove">
-          <q-popover anchor="bottom right" self="top right" fit no-focus no-refocus >
-
-          </q-popover>
-        </q-chips-input> -->
-
-        <!-- slot name syntax: body-cell-<column_name> -->
         <template slot="body-cell-prefix" slot-scope="rs" :props="rs" style="width:35px">
           <q-btn dense flat color="light" icon="description" :to="`${TABLE.resource.uri}/${rs.row.id}`" />
-          <!-- <q-btn dense flat color="light" icon="delete" @click.native="TABLE.delete(rs.row)" :class="{'invisible': rs.row.is_relationship === true}" /> -->
         </template>
 
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
@@ -100,8 +91,13 @@
         </q-td>
 
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs">
-          <span v-if="rs.row.number" class="text-weight-medium" :class="{'text-strike text-faded': rs.row.revise_id}"> {{ rs.row.number }} {{ rs.row.numrev ? ' - REV.' + rs.row.numrev : '' }}</span>
+          <span v-if="rs.row.number" class="text-weight-medium" :class="{'text-strike text-faded': rs.row.revise_id}">
+            {{ rs.row.number }} {{ rs.row.revise_number ? ' - REV.' + rs.row.revise_number : '' }}</span>
           <span v-else>- undifined -</span>
+        </q-td>
+
+        <q-td slot="body-cell-status" slot-scope="rs" :props="rs" class="no-padding">
+          <ux-badge-status :row="rs.row" class="shadow-1"/>
         </q-td>
 
         <q-td slot="body-cell-operator_id" slot-scope="rs" :props="rs">
@@ -156,7 +152,7 @@ export default {
 
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
           { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
-          // { name: 'vehicle_id', label: 'Vehicle', field: 'vehicle_id', align: 'left', sortable: true },
+          { name: 'status', label: '', field: 'status', align: 'left', sortable: true },
           { name: 'operator_id', label: 'Operator', field: 'operator_id', align: 'left', sortable: true },
           { name: 'date', label: this.$tc('label.date'), field: 'date', align: 'left', sortable: true},
           { name: 'due_date', label: this.$tc('label.due_date'), field: 'due_date', align: 'left', sortable: true},

@@ -111,8 +111,9 @@
                   <div class="column">
                     <div class="text-subtitle2 q-mb-md">SJ-DELIVERY ORDER</div>
                     <template v-for="(link, index) in rs.row.delivery_orders">
-                      <q-btn dense color="secondary" icon="open_in_new" :key="index"
-                        :label="`${link.number} ${link.numrev ? ' - REV.' + link.numrev : ''}`"
+                      <q-btn dense class="q-ma-xs" :key="index"
+                        color="secondary" icon="open_in_new"
+                        :label="`${link.number} ${link.revise_number ? ' - REV.' + link.revise_number : ''}`"
                         @click="showDO(link.id)" />
                     </template>
                   </div>
@@ -148,7 +149,7 @@
             <q-td colspan="100%" class="group">
               <template v-for="(link, index) in rs.row.delivery_orders">
                 <q-btn dense color="secondary" icon="open_in_new" :to="TABLE.resource.delivery_orders +'/'+link.id" :key="index">
-                  {{link.number}} {{ link.numrev ? ' - REV.' + link.numrev : '' }}
+                  {{link.number}} {{ link.revise_number ? ' - REV.' + link.revise_number : '' }}
                 </q-btn>
               </template>
 

@@ -1,13 +1,33 @@
 <template>
   <q-layout view="lHh LpR lFf" :class="LAYOUT.isDark ? 'bg-grey-10 text-white' : 'bg-white text-dark'">
     <q-header class="header print-hide" elevated>
-      <admin-header :class="LAYOUT.isDark ? ' ': ''" />
+
+      <q-toolbar color="primary" >
+        <q-btn v-if="!NODRAWER"
+          icon="menu" flat round dense
+          aria-label="Menu" class="within-iframe-hide"
+          @click="LEFTDRAWER = !LEFTDRAWER" />
+        <q-btn v-else
+          icon="mdi-arrow-left" flat round dense
+          aria-label="Menu" class="within-iframe-hide"
+          @click.native="$router.go(-1)" />
+        <q-separator inset vertical spaced color="white" />
+        <q-btn class="cordova-only electron-only" icon="arrow_back" aria-label="Go back" flat rounded dense v-go-back.single="PAGEMETA.backRoute" />
+        <q-toolbar-title class="q-px-xs">
+          <!-- <q-avatar v-show="$route.meta.icon" :icon="$route.meta.icon" size="24px"  color="red" /> -->
+          <q-icon v-show="$route.meta.icon" style="font-size:larger; margin-right: 5px;" :name="$route.meta.icon" />
+          <span class="text-uppercase text-weight-reguler q-mx-sm" v-text="$route.meta.title" />
+        </q-toolbar-title>
+        <admin-header :class="LAYOUT.isDark ? ' ': ''" />
+        <!-- <q-btn v-show="false" aria-label="Menu" class="within-iframe-hide" icon="assignment" flat round dense @click="RIGHTDRAWER = !RIGHTDRAWER" /> -->
+
+      </q-toolbar>
     </q-header>
 
-    <q-drawer class="print-hide"
+    <q-drawer class="print-hide" bordered
+      content-class="bg-grey-2"
       v-model="LEFTDRAWER"
-      bordered
-      content-class="bg-grey-2">
+      v-if="!NODRAWER">
       <q-scroll-area :class="LAYOUT.isDark ? 'bg-black text-primary' : 'bg-white text-primary'" style="width: 100%; height: 100%;">
         <div class="row flex-center opacity-1" :class="LAYOUT.isDark ? 'bg-primary text-white' : 'bg-grey-2 text-primary'" style="height: 115px">
           <!-- <img alt="Quasar logo" src="~assets/quasar-logo.svg" style="height: 75px; width 75px;"> -->
@@ -25,9 +45,10 @@
       </q-scroll-area>
     </q-drawer>
     <q-drawer class="hidden print-hide " side="right"
+      content-class="bg-lime-2"
       v-model="RIGHTDRAWER"
-      bordered
-      :width="300" content-class="bg-lime-2">
+      :width="300" bordered
+      v-if="!NODRAWER" >
     </q-drawer>
 
     <q-page-container>
@@ -75,7 +96,10 @@ export default {
       'PAGEMETA',
       'AUTH',
       'USER'
-    ])
+    ]),
+    NODRAWER() {
+      return ['view','print','edit','create'].some(x => x === this.$route.meta.mode)
+    }
   },
   methods: {
     openURL,
@@ -116,9 +140,13 @@ header.header
   background-image: linear-gradient(145deg, rgba(255,255,255,0) 10%,  rgba(0, 0, 0, 0.5) 90%)
 
   .q-toolbar
-    height 50px
+    // height 50px
 aside.q-drawer
   background #fff0
+
+@media print
+  .q-loading-bar
+    display none
 </style>
 
 
