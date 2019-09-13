@@ -94,9 +94,10 @@ export default {
       userlists: [
         'admin',
         'viewer',
+        'work.order',
+        'work.production',
+        'work.process',
         'packing',
-        'work-order',
-        'work-process',
         'marketing' ,
         'outgoing.verify' ,
         'outgoing.good' ,

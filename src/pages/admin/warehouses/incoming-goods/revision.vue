@@ -494,12 +494,10 @@ export default {
     onSave() {
       this.$validator.validate().then(result => {
         if (!result) {
-          this.$q.notify({
+          return this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
             message:this.$tc('messages.to_complete_form')
           });
-
-          return;
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta();

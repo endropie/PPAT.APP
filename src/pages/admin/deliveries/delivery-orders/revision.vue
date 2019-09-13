@@ -559,15 +559,7 @@ export default {
       }
     },
     onSave() {
-      this.$validator.validate().then(result => {
-        if (!result) {
-          this.$q.notify({
-            color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:this.$tc('messages.to_complete_form')
-          });
-
-          return;
-        }
+      const submit = () => {
         this.FORM.loading = true
         // const {method, mode, apiUrl} = this.FORM.meta();
         const method = 'PUT'
@@ -582,13 +574,28 @@ export default {
         .catch((error) => {
           this.FORM.response.fields(error.response)
           this.FORM.response.error(error.response || error, 'REVISION FAILED')
-
         })
         .finally(()=>{
           this.FORM.loading = false
         });
+      }
+      this.$validator.validate().then(result => {
+        if (!result) {
+          return this.$q.notify({
+            color:'negative', icon:'error', position:'top-right', timeout: 3000,
+            message:this.$tc('messages.to_complete_form')
+          })
+        }
 
-      });
+        this.$q.dialog({
+          title: this.$tc('form.confirm'),
+          message: this.$tc('messages.to_sure', 1, {v: this.$tc('form.revision')}),
+          cancel: true,
+          persistent: true
+        }).onOk(() => {
+          submit()
+        })
+      })
     },
   },
 }

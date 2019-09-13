@@ -7,7 +7,7 @@
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-section class="row q-col-gutter-x-sm">
-      <ux-select-filter class="col-12 col-sm-6"
+      <ux-select-filter class="col-12 col-sm-4"
         name="customer_id"
         v-model="rsForm.customer_id"
         stack-label :label="$tc('general.customer')"
@@ -18,7 +18,7 @@
         :error-message="errors.first('customer_id')"
         :loading="SHEET['customers'].loading"/>
 
-      <ux-select-filter class="col-12 col-sm-6"
+      <ux-select-filter class="col-12 col-sm-4"
         name="pre_delivery_id"
         v-model="rsForm.pre_delivery_id"
         stack-label label="No. PDO"
@@ -28,6 +28,16 @@
         :error="errors.has('pre_delivery_id')"
         :error-message="errors.first('pre_delivery_id')"
         :loading="SHEET['pre_deliveries'].loading"/>
+
+        <ux-date class="col-sm-4"
+          name="date" type="date"
+          stack-label :label="$tc('label.date')"
+          v-model="rsForm.date"
+          v-validate="`required|date_format:yyyy-MM-dd`"
+          :date-options="(date) => date <= $app.moment().format('YYYY/MM/DD')"
+          :dark="LAYOUT.isDark"
+          :error="errors.has('date')"
+          :error-message="errors.first('date')"/>
 
     </q-card-section>
     <q-card-section>
@@ -130,6 +140,7 @@ export default {
         return {
           customer_id: null,
           pre_delivery_id: null,
+          date: this.$app.moment().format('YYYY-MM-DD'),
           outgoing_good_verifications:[]
         }
       }

@@ -1,7 +1,7 @@
 <template>
   <q-page padding class="page-index" >
     <q-pull-to-refresh @refresh="TABLE.refresh" inline>
-      <q-table ref="table" inline class="table-index th-uppercase" color="primary" :dark="LAYOUT.isDark"
+      <q-table ref="table" dense class="table-index th-uppercase" color="primary" :dark="LAYOUT.isDark"
         :title="TABLE.getTitle()"
         :data="TABLE.rowData"
         :columns="TABLE.columns"
@@ -96,8 +96,14 @@
         </q-td>
 
         <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
-          <span> {{ rs.row.number }} </span>
-          <ux-badge-status :row="rs.row" class=" on-right shadow-0" />
+          <div :class="{'text-strike': Boolean(rs.row.revise_id)}">
+            {{ rs.row.number }}
+            <span v-text="'REV.'+rs.row.revise_number" v-if="Boolean(rs.row.revise_number)"/>
+          </div>
+        </q-td>
+
+        <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px" class="no-padding">
+          <ux-badge-status :row="rs.row" class="shadow-0" />
         </q-td>
 
         <q-td slot="body-cell-transaction" slot-scope="rs" :props="rs" style="width:35px">
@@ -157,9 +163,9 @@ export default {
         columns: [
           { name: 'prefix', label: '', align: 'left'},
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
+          { name: 'status', label: '', field: 'status', align: 'left'},
           { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
           { name: 'date', label: this.$tc('label.date'), field: 'date', format:(v) => this.$app.moment(v).format('DD/MM/YY'), align: 'center', sortable: true},
-          // { name: 'plan_until_date', label: this.$tc('label.until'), field: 'plan_until_date', format:(v) => this.$app.moment(v).format('DD/MM/YY'), align: 'center', sortable: true},
           { name: 'transaction', label: this.$tc('label.transaction'), field: 'transaction', align: 'center', sortable: true },
           { name: 'rit', label: 'RIT', field: 'rit', align: 'center' },
 

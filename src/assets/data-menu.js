@@ -133,6 +133,7 @@ const deliveries = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'pre-deliveries-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'pre-deliveries-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'pre-deliveries-update' } },
+      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'pre-deliveries-update' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'pre-deliveries-read' } }
     ]
   },
@@ -141,7 +142,7 @@ const deliveries = [
     icon: 'assignment_turned_in',
     path: 'outgoing-verifications',
     lang: 'general.outgoing_verification',
-    param: `?isWait=1`,
+    param: `?unvalidated=1`,
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-verifications-read' } },
       { page: 'create', path: 'create', meta: { mode: 'create', permission: 'outgoing-verifications-create' } },
@@ -204,15 +205,15 @@ const factories = [
     ]
   },
   {
-    name: 'Production',
+    name: 'Work Production',
     icon: 'gavel',
-    path: 'productions',
+    path: 'work-productions',
     lang: 'general.work_production',
     resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'productions-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'productions-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'productions-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'productions-read' } }
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'work-productions-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'work-productions-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-productions-update' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'work-productions-read' } }
     ]
   },
   {

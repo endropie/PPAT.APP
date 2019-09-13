@@ -26,6 +26,7 @@ export default {
         delete: () => this.VIEW__delete(),
         state:(mode, callback) => this.VIEW__state (mode, callback),
         void: (callback) => this.VIEW__void(callback),
+        print:() => window.print(),
         options: {},
         has_relationship: [],
         resource: {

@@ -29,7 +29,7 @@
               { label: $tc('general.delivery',2),
                 detail:  $tc('messages.show_delivered'),
                 shortcut: true,
-                icon: !Boolean(FILTERABLE.fill.isWait.value) ? 'mdi-eye' : 'mdi-eye-off',
+                icon: !Boolean(FILTERABLE.fill.unvalidated.value) ? 'mdi-eye' : 'mdi-eye-off',
                 closePopup: false,
                 outline: true,
                 actions:() => {
@@ -139,7 +139,7 @@ export default {
             type: 'integer',
             transform: (value) => { return null }
           },
-          isWait: {
+          unvalidated: {
             value: null,
             type: 'integer',
             transform: (value) => { return null }
@@ -155,7 +155,9 @@ export default {
         columns: [
           { name: 'prefix', label:''},
           { name: 'id',  label: '#', field:'id', format:(v)=> `${v}`},
-          { name: 'outgoing_good_id', label: 'Outgoing', field: 'outgoing_good_id', align: 'left', sortable: true},
+          { name: 'validated_at', label: 'Outgoing', field: 'validated_at', align: 'center', sortable: true,
+             format:(v)=> v ? `${v}` : '-'
+          },
           { name: 'part_name', label: this.$tc('items.part_name'), field: (v)=> v.item.part_name, align: 'left', sortable: true },
           { name: 'part_number', label: this.$tc('items.part_number'), field:(v)=> v.item.part_number, align: 'left', sortable: true },
           { name: 'quantity', label: this.$tc('label.quantity'), field: 'quantity', align: 'center', sortable: true },
@@ -192,7 +194,7 @@ export default {
   },
   methods: {
     toggleShow() {
-      this.FILTERABLE.fill.isWait.value = this.FILTERABLE.fill.isWait.value ? null : 1
+      this.FILTERABLE.fill.unvalidated.value = this.FILTERABLE.fill.unvalidated.value ? null : 1
     },
     isEditRow(row) {
       if (row.is_relationship) return false

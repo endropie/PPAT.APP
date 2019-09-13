@@ -48,7 +48,7 @@
         <div class="col-12 q-gutter-xs print-hide " style="padding-top:50px">
           <q-btn :label="$tc('form.back')" icon="cancel"  color="dark" :to="`${VIEW.resource.uri}?return`" />
           <q-btn :label="$tc('form.edit')" icon="edit" color="positive" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`"  v-if="IS_EDITABLE && $app.can('pre-deliveries-update')" />
-          <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="print()" />
+          <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="VIEW.print()" />
 
           <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
             :options="[
@@ -59,11 +59,18 @@
                   $router.push(`${VIEW.resource.uri}/create`)
                 }
               },
-              { label: 'Delete', color:'red', icon: 'delete',
+              { label: 'DELETE', color:'red', icon: 'delete',
                 detail: $tc('messages.process_delete'),
                 hidden: !IS_EDITABLE || !$app.can('pre-deliveries-delete'),
                 actions: () => {
                   VIEW.delete()
+                }
+              },
+              { label: $tc('form.revision').toUpperCase(), color:'red', icon: 'block',
+                detail: $tc('messages.process_revise'),
+                hidden: !IS_VOID || !$app.can('pre-deliveries-update'),
+                actions: () => {
+                  $router.push(`${VIEW.resource.uri}/${ROUTE.params.id}/revision`)
                 }
               },
               { label: 'VOID', color:'red', icon: 'block',
@@ -124,16 +131,6 @@ export default {
       this.VIEW.load((data) => {
         this.setView(data || {})
       })
-    },
-    btnIcon (str) {
-      return !this.$q.screen.lt.sm ? str : ''
-    },
-    print() {
-      window.print()
-    },
-    getBaseUnit(detail) {
-      if(detail.unit_rate == 1) return ''
-      return `(${detail.unit_amount} ${detail.item.unit.code})`
     },
     setView(data) {
       this.rsView =  data
