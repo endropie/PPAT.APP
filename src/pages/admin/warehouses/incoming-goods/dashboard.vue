@@ -1,6 +1,6 @@
 <template>
 <div>
-  <q-card dense class="main-box" :dark="LAYOUT.isDark" style="XXmin-width:200px">
+  <q-card dense class="main-box" :dark="LAYOUT.isDark" style="min-width:200px">
     <q-card-section class="bg-primary text-white" style="opacity: 0.85">
       <q-btn dense flat round
         class="float-right relative-position" style="top:-5px"

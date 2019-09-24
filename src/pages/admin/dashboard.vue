@@ -1,12 +1,8 @@
 <template>
   <q-page padding class="page-admin">
-    <div class="row content-stretch q-gutter-sm">
-      <incoming-good class="" style="min-width:200px" />
-      <incoming-good class="" style="min-width:200px"/>
-      <incoming-good class="" style="min-width:200px"/>
-      <incoming-good class="" style="min-width:200px"/>
-      <incoming-good class="" style="min-width:200px"/>
-      <incoming-good class="" style="min-width:200px"/>
+    <div class="row content-stretch">
+      <incoming-good class="col-12 col-md-auto q-pa-xs" style="min-width:50%" />
+      <incoming-good class="col-12 col-md-auto q-pa-xs" style="min-width:50%" />
     </div>
   </q-page>
 </template>
