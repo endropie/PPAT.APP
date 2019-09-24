@@ -302,17 +302,18 @@ export default {
         // console.warn('DELETE', this.ROUTE.params.id)
         this.$axios.delete(`${this.FORM.resource.api}/${this.ROUTE.params.id}`)
           .then((response) => {
-            // console.warn('then', response)
             if (response.data.success) {
+              const code = response.data.name || response.data.code || this.ROUTE.params.id
               this.$app.notify.success({
                 message: this.$tc('messages.success_deleted'),
-                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${this.ROUTE.params.id}`}),
+                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${code}`}),
               })
               this.FORM__toIndex()
             }
           })
           .catch(error => {
-            this.FORM.response.error(error.response || error)
+            const title = this.$tc('messages.fail', 1, {v:this.$tc('form.delete')})
+            this.$app.response.error(error.response || error, title)
           })
       }).onCancel(()=>{
         // DELETE CANCELED!

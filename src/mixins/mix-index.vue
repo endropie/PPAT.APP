@@ -368,15 +368,17 @@ export default {
         this.$axios.delete(`${this.TABLE.resource.api}/${row.id}`)
           .then((response) => {
             if (response.data.success) {
+              const code = response.data.name || response.data.code || row.id
               this.$app.notify.success({
                 message: this.$tc('messages.success_deleted'),
-                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${this.$route.params.id}`}),
+                detail: this.$tc('messages.form_has_deleted', 1, {v: `#${code}`}),
               })
               this.TABLE__refresh()
             }
           })
           .catch(error => {
-            this.$app.response.error(error.response, 'Delete')
+            const title = this.$tc('messages.fail', 1, {v:this.$tc('form.delete')})
+            this.$app.response.error(error.response || error, title)
           })
       })
     },
