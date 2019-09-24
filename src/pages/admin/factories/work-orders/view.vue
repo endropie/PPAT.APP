@@ -264,12 +264,10 @@ export default {
       let variables = {
         'lines': {},
         'units': {},
-        // 'items': {},
       }
-      console.warn(this.SHEET['lines'])
+
       this.SHEET['lines'].data.map(value => { variables['lines'][value.id] = value })
       this.SHEET['units'].data.map(value => { variables['units'][value.id] = value })
-      // this.SHEET['items'].data.map(value => { variables['items'][value.id] = value })
 
       return variables;
     }

@@ -7,10 +7,10 @@
         :subtitle="FORM.subtitle()"
         :menus="[
           { label: $tc('form.remove'),
-            detail: $tc('messages.form_remove'),
+            detail: $tc('messages.process_delete'),
             icon: 'add',
             hidden:!$app.can('customers-create'),
-            actions: `${TABLE.resource.uri}/create`
+            actions: `${FORM.resource.uri}/create`
           }
         ]">
         <template slot="menu-item">
