@@ -68,7 +68,7 @@
     </q-drawer> -->
 
     <q-page-container>
-      <transition enter-active-class="animated fadeInLeft" leave-active-class="animated fadeInRight"
+      <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeIn"
         :duration="1500" @leave="resetScroll">
         <router-view />
       </transition>
