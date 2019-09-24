@@ -22,7 +22,7 @@
       <ux-select-filter class="col-12 col-sm-6"
         name="line_id"
         v-model="rsForm.line_id" readonly
-        :label="$tc('label.line_production')"
+        :label="$tc('items.preline')"
         :dark="LAYOUT.isDark"
         v-validate="'required'"
         :options="LineOptions.filter(x => x.row.ismain)" hide-dropdown-icon
@@ -62,13 +62,14 @@
           :rows-per-page-options ="[0]"
           :columns="[
             { name: 'item_id', label: $tc('label.part'), align: 'left'},
+            { name: 'part_number', label: $tc('items.part_number'), align: 'left'},
             { name: 'unit_id', label: $tc('label.unit'), align: 'center'},
             { name: 'quantity', label: $tc('label.quantity'), align: 'center'},
           ]"
           :pagination=" {sortBy: null, descending: false, page: null, rowsPerPage: 0}">
           <template v-slot:body="{row}">
             <q-tr >
-              <q-td key="item_id" width="40%" >
+              <q-td key="item_id" width="35%" >
                 <ux-select-filter
                   :name="`work_order_items.${row.__index}.item_id`"
                   v-model="row.item_id" readonly
@@ -79,7 +80,12 @@
                   :error="errors.has(`work_order_items.${row.__index}.item_id`)"
                   :loading="SHEET['items'].loading">
                 </ux-select-filter>
-
+              </q-td>
+              <q-td key="part_number" width="35%" style="min-width:150px">
+                <q-input readonly
+                  :value="row.item ? row.item.part_number : null"
+                  outlined dense hide-bottom-space color="blue-grey-5"
+                  :dark="LAYOUT.isDark" />
               </q-td>
               <q-td key="unit_id"  width="15%">
                 <q-select

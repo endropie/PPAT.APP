@@ -1,7 +1,7 @@
 <template>
-  <q-page padding style="max-width:900px">
+  <q-page padding>
     <div class="row q-col-gutter-md">
-      <div class="col-12 col-md-6">
+      <div class="col-12">
         <q-list class="main-box " bordered :dark="LAYOUT.isDark">
           <q-item-label header>User Setting</q-item-label>
           <q-item>
@@ -61,12 +61,6 @@
 
         </q-list>
       </div>
-      <div class="col-12 col-md-6">
-        <q-list class="main-box " bordered :dark="LAYOUT.isDark">
-          <q-item-label header>System</q-item-label>
-
-        </q-list>
-      </div>
     </div>
   </q-page>
 </template>
@@ -101,7 +95,6 @@ export default {
     }
   },
   created() {
-    // Component Page Created!
     this.routing()
   },
   computed:{
@@ -116,20 +109,14 @@ export default {
       '$route' : 'init',
   },
   methods: {
-    test(){
-      console.log(this.FORM)
-    },
     routing() {
-      if(!this.$store.state.admin.AUTH) return
-
-      console.log('store', this.$store.state.admin.AUTH.user)
-      const user = this.$store.state.admin.AUTH.user
+      if(!this.$store.state.admin.USER) return
+      const user = this.$store.state.admin.USER
       this.rsUser = Object.assign(this.rsUser, JSON.parse(JSON.stringify({
         id: user.id,
         name: user.name,
         email: user.email,
       })))
-      console.log('user', this.rsUser)
       setTimeout(() => {
         this.FORM.loading = true
       }, 800);
@@ -150,7 +137,7 @@ export default {
         this.FORM.loading = true
         this.$axios.set('POST', `${this.FORM.resource.api}/change-password`, this.rsPass)
           .then((response) => {
-            this.FORM.response.success({ mode:'edit', label:'change password'})
+            this.FORM.response.success({ mode:'change password'})
             this.rsPass = {
               password:null,
               newpassword:null,
@@ -160,16 +147,13 @@ export default {
           })
           .catch((error) => {
 
-            this.FORM.response.fields(error.response)
-          this.FORM.response.error(error.response || error, 'Submit')
-            this.FORM.onError(error.response, 'form-pass')
+            this.FORM.response.fields(error.response,  'form-pass')
+            this.FORM.response.error(error.response || error, 'Change Password')
 
           })
           .finally(()=>{
             this.FORM.loading = false
           });
-
-          console.warn('$validator', this.$validator)
       });
     },
   },

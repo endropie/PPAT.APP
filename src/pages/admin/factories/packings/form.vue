@@ -55,14 +55,6 @@
             :error="errors.has('date')"
             :error-message="errors.first('date')">
 
-            <q-input slot="after" class="hidden no-padding"
-              :label="$tc('label.time')"
-              name="time"
-              v-model="rsForm.time" type="time"
-              :dark="LAYOUT.isDark"
-              v-validate="'required'"
-              :error="errors.has('time')"/>
-
             <q-select slot="after" class="no-padding" style="min-width:100px"
               name="shift_id"
               hide-dropdown-icon no-error-icon
@@ -114,9 +106,10 @@
             v-model="rsForm.packing_items.quantity" type="number" :min="0"
             :dark="LAYOUT.isDark"
             v-validate="`required|gt_value:0|max_value:${MaxUnit}`"
-            :suffix="rsForm.packing_items.item_id ? `/ (${$app.number_format(MaxUnit)})` : ''"
+            :suffix="rsForm.packing_items.item_id ? `/ ${$app.number_format(MaxUnit)}` : ''"
             :error="errors.has(`packing_items.quantity`)"
             :error-message="errors.first(`packing_items.quantity`)" >
+            <!-- <q-badge :label="$app.number_format(MaxUnit)" /> -->
             <q-select slot="after" class="no-padding" style="min-width:80px"
               name="packing_items.unit_id"
               :label="$tc('label.unit')" :data-vv-as="$tc('label.unit')"
@@ -242,7 +235,7 @@ export default {
         customers: {api:'/api/v1/incomes/customers?mode=all'},
         employees: {api:'/api/v1/common/employees?mode=all'},
         items: {autoload:false, api:'/api/v1/common/items?mode=all&enable=true'},
-        work_orders: {autoload:false, api:'/api/v1/factories/work-orders?mode=packings&has_amount_packing=true'},
+        work_orders: {autoload:false, api:'/api/v1/factories/work-orders?mode=all&has_amount_packing=true'},
       },
       FORM:{
         resource:{
@@ -260,7 +253,6 @@ export default {
           customer_id: null,
 
           date: this.$app.moment().format('YYYY-MM-DD'),
-          time: this.$app.moment().format('HH:mm'),
           shift_id: null,
           worktime: 'REGULER',
           description: null,
@@ -531,11 +523,11 @@ export default {
 
       this.$validator.validate().then(result => {
         if (!result) {
-          this.$q.notify({
+          console.warn(this.errors)
+          return this.$q.notify({
             color:'negative', icon:'error', position:'top-right', timeout: 3000,
             message: this.$tc('messages.to_complete_form')
-          });
-          return;
+          })
         }
         this.FORM.loading = true
         let {method, mode, apiUrl} = this.FORM.meta()

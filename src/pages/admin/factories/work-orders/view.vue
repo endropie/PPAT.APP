@@ -27,7 +27,10 @@
               <q-markup-table class="super-dense bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
                 <tr>
                   <th>{{$tc('label.number')}}</th>
-                  <td>{{rsView.number}}</td>
+                  <td>
+                    {{rsView.number}}
+                    <span v-text="'REV.'+rsView.revise_number" v-if="Boolean(rsView.revise_number)"/>
+                  </td>
                 </tr>
                 <tr>
                   <th>{{$tc('label.date')}}</th>
@@ -46,7 +49,7 @@
         <div class="col-12">
           <q-table class="no-highlight bordered no-shadow"
             color="secondary"
-            separator="vertical"
+            separator="cell"
             dense hide-bottom :dark="LAYOUT.isDark"
             :data="rsView.work_order_items"
             no-data-label = "No Production"
@@ -55,10 +58,98 @@
               { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
               { name: 'target', label: $tc('label.quantity'), align: 'right', field: (v)=> v.target},
               { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
-              { name: 'ngratio', label: 'NG Ratio', align: 'right', format:(v)=> v ? `${Number(v)}%` : '-', field: (v)=> v.ngratio},
+              { name: 'ngratio', label: 'NG', align: 'right', format:(v)=> v ? `${Number(v)}%` : '-', field: (v)=> v.ngratio},
               { name: 'total', label: 'Total', align: 'right', format:(v)=> `${Math.round(v)}`, field: (v)=> Number(v.quantity)},
-            ]"
-          />
+            ]">
+          <template slot="body" slot-scope="rsItem" :scope="rsItem">
+            <q-tr >
+              <q-td key="code">
+                {{rsItem.row.item.code}}
+              </q-td>
+              <q-td key="part_name" width="40%">
+                {{rsItem.row.item.code}}
+              </q-td>
+              <q-td key="target" class="text-right">
+                {{rsItem.row.target}}
+              </q-td>
+              <q-td key="unit_id" class="text-left">
+                {{rsItem.row.unit.code}}
+              </q-td>
+              <q-td key="ngratio" class="text-right">
+                {{rsItem.row.ngratio}}
+              </q-td>
+              <q-td key="quantity" class="text-right">
+                {{rsItem.row.quantity}}
+              </q-td>
+            </q-tr>
+            <q-tr v-if="show_preline">
+              <q-td colspan="100%" style="padding:2px">
+                <div class="row q-col-gutter-sm">
+                  <div class="col"  v-for="(itemLine, index) in rsItem.row.work_order_item_lines" :key="index">
+                    <q-expansion-item dense expand-separator :label="'Line: '+itemLine.line_id" class="bordered" header-class="bg-blue-grey-1">
+                      <div slot="header" class="q-item__section column q-item__section--main justify-center">
+                        <span v-if="MAPINGKEY['lines']" >
+                          {{MAPINGKEY['lines'][itemLine.line_id].name}}
+                          <q-badge v-if="itemLine.work_production_items"
+                            :label="`${persenLine(itemLine, rsItem.row)} %`"
+                            :color="validLine(itemLine, rsItem.row) ? 'primary' : 'red-10'"/>
+                        </span>
+                        <span v-else>
+                          {{itemLine.line_id}}
+                        </span>
+                      </div>
+                      <q-list dense separator v-if="itemLine.work_production_items">
+                        <q-item v-for="(itemProduction, key) in itemLine.work_production_items" :key="key">
+                          <q-item-section>
+                            <span v-if="itemProduction.work_production">
+                              {{itemProduction.work_production.number}}
+                              <q-badge color="blue-grey" :label="`#${itemProduction.id}`" />
+                            </span>
+                          </q-item-section>
+                          <q-item-section side>
+                            <span v-if="MAPINGKEY['units'][itemProduction.unit_id]" >
+                              {{$app.number_format(itemProduction.quantity)}}
+                              {{MAPINGKEY['units'][itemProduction.unit_id].code}}
+                            </span>
+                          </q-item-section>
+                        </q-item>
+                        <q-item-label header v-if="!Boolean(itemLine.work_production_items.length)" class="q-pa-sm text-italic text-center">No data</q-item-label>
+                      </q-list>
+                    </q-expansion-item>
+                  </div>
+                  <div class="col" v-if="Boolean(rsItem.row.item_id)">
+                    <q-expansion-item dense expand-separator :label="$tc('general.packing')" class="bordered" header-class="bg-blue-grey-1">
+                      <div slot="header" class="q-item__section column q-item__section--main justify-center">
+                        <span>
+                          {{$tc('general.packing')}}
+                          <q-badge :label="`${persenPacking(rsItem.row, )} %`"
+                            :color="0 > Math.round(persenPacking(rsItem.row)) || Math.round(persenPacking(rsItem.row)) > 100 ? 'red-10' : 'primary'"/>
+                        </span>
+                      </div>
+                      <q-list dense separator>
+                        <q-item v-for="(itemPacking, index) in rsItem.row.packing_items" :key="index">
+                          <q-item-section>
+                            <span v-if="itemPacking.packing">
+                              {{itemPacking.packing.number}}
+                            </span>
+                          </q-item-section>
+                          <q-item-section  side>
+                            <span v-if="MAPINGKEY['units'][itemPacking.unit_id]" >
+                              {{$app.number_format(itemPacking.unit_total / (itemPacking.unit_rate || 1))}}
+                              {{MAPINGKEY['units'][itemPacking.unit_id].code}}
+                            </span>
+                          </q-item-section>
+                        </q-item>
+                        <q-item-label header v-if="!Boolean(rsItem.row.packing_items.length)" class="q-pa-sm text-italic text-center">No data</q-item-label>
+                      </q-list>
+                    </q-expansion-item>
+                  </div>
+                </div>
+              </q-td>
+            </q-tr>
+          </template>
+          </q-table>
+           <q-toggle v-model="show_preline" :label="$tc('form.show',1,{v:$tc('items.preline')})"/>
         </div>
         <div class="col-12">
             <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
@@ -70,7 +161,6 @@
           <q-btn :label="$tc('form.back')" icon="cancel" color="dark" :to="`${VIEW.resource.uri}?return`"></q-btn>
           <q-btn :label="$tc('form.edit')" icon="edit" color="green" :to="`${VIEW.resource.uri}/${ROUTE.params.id}/edit`" v-if="IS_EDITABLE"></q-btn>
           <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="$router.push(`${VIEW.resource.uri}/${ROUTE.params.id}/prelines`)" ></q-btn>
-
           <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
             :options="[
               { label: $tc('form.add_new'), color:'primary', icon: 'add',
@@ -85,6 +175,12 @@
                 detail:$tc('messages.process_validation'),
                 actions: () => {
                   setValidation()
+                }
+              },
+              { label: $tc('form.revision'), color:'red', icon: 'check',
+                hidden: !IS_REVISE || !$app.can('work-orders-revision'),
+                actions: () => {
+                  setRevision()
                 }
               },
               { label: 'Delete', color:'red', icon: 'delete',
@@ -124,6 +220,11 @@ export default {
   components: { PagePrint, PagePrintBreak },
   data () {
     return {
+      show_preline: false,
+      SHEET: {
+        lines: {api:'/api/v1/references/lines?mode=all'},
+        units: {api:'/api/v1/references/units?mode=all'},
+      },
       VIEW: {
         resource:{
           api: '/api/v1/factories/work-orders',
@@ -145,6 +246,12 @@ export default {
       if (['VOID'].find(x => x === this.rsView.status)) return false
       return true
     },
+    IS_REVISE() {
+      if (this.IS_EDITABLE) return false
+      if (this.rsView.deleted_at) return false
+      if (['VOID','REVISED'].find(x => x === this.rsView.status)) return false
+      return true
+    },
     IS_EDITABLE() {
       if (this.rsView.deleted_at) return false
       if (this.rsView.status !== 'OPEN') return false
@@ -152,6 +259,20 @@ export default {
 
       return true
     },
+
+    MAPINGKEY() {
+      let variables = {
+        'lines': {},
+        'units': {},
+        // 'items': {},
+      }
+      console.warn(this.SHEET['lines'])
+      this.SHEET['lines'].data.map(value => { variables['lines'][value.id] = value })
+      this.SHEET['units'].data.map(value => { variables['units'][value.id] = value })
+      // this.SHEET['items'].data.map(value => { variables['items'][value.id] = value })
+
+      return variables;
+    }
   },
   methods: {
     init() {
@@ -175,9 +296,29 @@ export default {
     setValidation() {
       this.$router.push(`/admin/factories/work-process/${this.ROUTE.params.id}/edit`)
     },
+    setRevision () {
+      this.$router.push(`${this.VIEW.resource.uri}/${this.ROUTE.params.id}/revision`)
+    },
     setView(data) {
       this.rsView =  data
-    }
+    },
+
+    persenLine (itemLine, detail) {
+      const total = itemLine.work_production_items.reduce((total, item) => total += item.unit_amount, 0)
+      return Math.round(total / (detail.quantity || 0 * detail.unit_rate || 1) * 100)
+    },
+    validLine (itemLine, detail) {
+      const total = itemLine.work_production_items.reduce((total, item) => total += item.unit_amount, 0)
+      const amount = (detail.quantity || 0 * detail.unit_rate || 1)
+      return 0 <= Math.round(total) && Math.round(total) <= Math.round(amount)
+    },
+    persenPacking (detail) {
+      const total = detail.packing_items.reduce((total, item) => total += item.unit_total, 0)
+      return Math.round(total / (detail.quantity || 0 * detail.unit_rate || 1) * 100)
+    },
+    validPacking (detail) {
+      return 0 > (this.persenPacking(detail)) || (this.persenPacking(detail)) > 100
+    },
   }
 }
 </script>

@@ -35,8 +35,8 @@
               <ux-select-filter class="col-8 col-sm-4"
                 name="line_id"
                 v-model="FILTERABLE.fill.line_id.value" clearable
-                :label="$tc('label.line')" stack-label
-                :placeholder="$tc('form.select_a', null, {v:$tc('label.line')})"
+                :label="$tc('items.preline')" stack-label
+                :placeholder="$tc('form.select_a', null, {v:$tc('items.preline')})"
                 dense hide-bottom-space hide-dropdown-icon
                 standout="bg-blue-grey-5 text-white"
                 :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"

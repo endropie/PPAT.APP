@@ -6,7 +6,7 @@
         <td class="page-print-header">
           <slot name="header">
             <div class="header no-wrap row items-start" >
-              <div class="head-icon self-start">
+              <div class="head-icon self-center">
                 <slot name="'header-icon'">
                   <q-avatar color="transparent" text-color="primary" icon="widgets" rounded />
                   <!-- <div>
@@ -71,7 +71,7 @@ export default {
   .header
     .head-icon
       .q-icon
-        font-size 70px
+        font-size 50px
 
     .head-brand
       min-width calc(100% - 70px)

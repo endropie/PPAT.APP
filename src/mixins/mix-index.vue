@@ -391,8 +391,11 @@ export default {
       })
     },
     TABLE__getTitle () {
-      const head = this.TABLE.mode !== 'datagrid' ? 'LIST' : 'GRID'
-      return (head + ' - ' + (this.$route.meta.title || 'Data')).toUpperCase()
+      let  title = this.$route.meta.lang
+        ? this.$tc(this.$route.meta.lang)
+        : this.$route.meta.title
+
+      return this.$tc('label.list', 1, {v: title}).toUpperCase()
     },
     TABLE__getParams () {
       let params = []

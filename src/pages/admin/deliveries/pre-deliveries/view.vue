@@ -68,7 +68,7 @@
               },
               { label: $tc('form.revision').toUpperCase(), color:'red', icon: 'block',
                 detail: $tc('messages.process_revise'),
-                hidden: !IS_VOID || !$app.can('pre-deliveries-update'),
+                hidden: !IS_VOID || !$app.can('pre-deliveries-revision'),
                 actions: () => {
                   $router.push(`${VIEW.resource.uri}/${ROUTE.params.id}/revision`)
                 }

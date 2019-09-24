@@ -9,7 +9,8 @@
           dense outlined multiple use-chips
           :options="rsView.MAPLINES.map(x => ({label: x.name, value:x.id}))"
           map-options emit-value
-          :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark">
+          :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
+          v-if="rsView.MAPLINES">
           <q-btn slot="after" icon="print" color="grey" @click.native="print()" />
         </q-select>
       </div>
@@ -42,7 +43,10 @@
                 <q-markup-table class="super-dense bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
                   <tr>
                     <th>{{$tc('label.number')}}</th>
-                    <td>{{rsView.number}}</td>
+                    <td>
+                      {{rsView.number}}
+                      <span v-text="'REV.'+rsView.revise_number" v-if="Boolean(rsView.revise_number)"/>
+                    </td>
                   </tr>
                   <tr>
                     <th>{{$tc('label.date')}}</th>

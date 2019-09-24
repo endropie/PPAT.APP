@@ -7,7 +7,7 @@ export default {
   customer: 'Pelanggan',
   cust: 'PLG',
   employee: 'Karyawan',
-  item: 'Material Part',
+  item: 'Part Material',
   common: 'Data Utama',
   delivery: 'Pengiriman',
   warehouse: 'Gudang',

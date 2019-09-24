@@ -46,6 +46,7 @@ export default async ({ app, store, router, Vue }) => {
             position: 'top-right',
             timeout: 3000
           }
+          console.warn('errstatus', ErrRes.status)
           switch (ErrRes.status) {
             case 401:
               // mode.message = 'Ops, Authorization invalid!'

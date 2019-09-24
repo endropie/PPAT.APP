@@ -132,10 +132,6 @@
               >
               <q-td key="prefix"></q-td>
               <q-td colspan="2">
-                <!-- {{row}} -->
-                <!-- {{MaxTotal}} -->
-
-
                 <q-btn outline dense round icon="clear" size="xs" color="red-4"
                   class="float-right q-my-xs"
                   @click="removeVerify(rsItem.row.__index, index)" />
@@ -158,14 +154,7 @@
                   :suffix="' / ' + $app.number_format(MaxTotal[rsItem.row.__index][index])"
                   v-validate="`required|gt_value:0|max_value:${$app.number_format(MaxTotal[rsItem.row.__index][index])}`"
                   :error="errors.has(`pre_delivery_items.${rsItem.row.__index}.outgoing_verifications.${index}.quantity`)"
-                  >
-                  <q-btn slot="XX" outline dense round icon="clear" size="xs" color="red-4"
-                    class="float-right q-mt-xs"
-                    @click="removeVerify(rsItem.row.__index, index)" />
-                  <q-btn slot="XX" dense round icon="add" size="xs" color="green"
-                    :class="{'invisible': index+1 !==  rsItem.row.outgoing_verifications.length}"
-                    @click="addNewVerify(rsItem.row.__index)"></q-btn>
-                </q-input>
+                  />
               </q-td>
             </q-tr>
             <q-tr>

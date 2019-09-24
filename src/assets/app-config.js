@@ -2,7 +2,7 @@ import moment from 'moment'
 
 const config = {
   general: {
-    baseURL: 'http://ppa.virmata.com' // 'http://laravel.ppa'
+    baseURL: null // 'http://ppa.virmata.com' // 'http://laravel.ppa'
   },
   options: {
     state_colors: {

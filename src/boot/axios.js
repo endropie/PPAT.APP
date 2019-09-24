@@ -10,8 +10,8 @@ export default async ({ app, Vue }) => {
 
   if (CONFIG) {
     axios.defaults.baseURL = CONFIG.general.baseURL
-    if (process.env.DEV) {
-      axios.defaults.baseURL = 'http://localhost:8000'
+    if (!axios.defaults.baseURL) {
+      axios.defaults.baseURL = `${document.location.protocol}//${document.location.hostname}:8000`
     }
   }
 

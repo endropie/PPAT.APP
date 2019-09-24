@@ -9,7 +9,11 @@ import('./quasar.variables.styl')
 .main-box.q-card--dark
   background #00000070
 
-.slime-height.q-field
+.slim.q-field--auto-height
+  .q-field__control, .q-field__native
+    min-height unset
+
+.slim.q-field
   .q-field__control, .q-field__marginal
     height unset
 

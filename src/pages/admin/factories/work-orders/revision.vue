@@ -2,7 +2,7 @@
 <q-page padding class="form-page">
   <q-card inline class="main-box q-ma-sm" v-if="FORM.show" :dark="LAYOUT.isDark">
     <q-card-section>
-      <form-header :title="FORM.title()" :subtitle="FORM.subtitle()" >
+      <form-header :title="`${$tc('form.revision')} - ${$tc('general.work_order')}`.toUpperCase()" >
       </form-header>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
@@ -72,14 +72,15 @@
             { name: 'prefix', label: '',  align: 'left', visibility:false},
             { name: 'item_id', label: $tc('items.part_name'), align: 'left'},
             { name: 'part_number', label: $tc('items.part_number'), align: 'left'},
+            { name: 'ngratio', label: 'NG Ratio', align: 'center'},
             { name: 'target', label: $tc('label.quantity'), align: 'center'},
             { name: 'unit_id', label: $tc('label.unit'), align: 'center'},
-            { name: 'ngratio', label: 'NG Ratio', align: 'center'},
             { name: 'quantity', label: 'Total', align: 'center'},
+            { name: 'process', label: 'Total Process', align: 'center'},
           ]"
           :pagination=" {sortBy: null, descending: false, page: null, rowsPerPage: 0}">
           <template slot="body" slot-scope="rsItem">
-            <q-tr :rsItem="rsItem">
+            <q-tr>
               <q-td key="prefix" :rsItem="rsItem" style="width:50px">
                 <q-btn dense flat round icon="clear" size="md" color="negative" @click="removeItem(rsItem.row.__index)"/>
               </q-td>
@@ -106,6 +107,19 @@
                   outlined dense hide-bottom-space color="blue-grey-5"
                   :dark="LAYOUT.isDark" />
               </q-td>
+              <q-td key="ngratio"  width="15%">
+                <q-input  style="min-width:80px"
+                  v-model="rsItem.row.ngratio" type="number" min="0"
+                  outlined dense hide-bottom-space no-error-icon align="right" suffix="%"
+                  :dark="LAYOUT.isDark" color="blue-grey-4"
+                  v-validate="'required'"
+                  :name="`work_order_items.${rsItem.row.__index}.ngratio`" data-vv-as="ngratio"
+                  :error="errors.has(`work_order_items.${rsItem.row.__index}.ngratio`)"
+                  :error-message="errors.first(`work_order_items.${rsItem.row.__index}.ngratio`)"
+                  :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
+                  @input="() => { rsItem.row.quantity = setTotalQuantity(rsItem.row) }"
+                  />
+              </q-td>
               <q-td key="target"  width="15%">
                 <q-input style="min-width:70px"
                   :name="`work_order_items.${rsItem.row.__index}.target`"
@@ -115,7 +129,7 @@
                   outlined dense hide-bottom-space no-error-icon
                   v-validate="`required|gt_value:0|max_value:${MaxStock[rsItem.row.__index]}`"
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.target`)"
-                  @input="() => { rsItem.row.quantity = calcQuantity(rsItem.row)}"
+                  @input="() => { rsItem.row.quantity = setTotalQuantity(rsItem.row)}"
                 />
               </q-td>
               <q-td key="unit_id"  width="15%">
@@ -132,19 +146,6 @@
                   @input="(val) => setUnitReference(rsItem.row.__index, val)"
                 />
               </q-td>
-              <q-td key="ngratio"  width="15%">
-                <q-input  style="min-width:80px"
-                  v-model="rsItem.row.ngratio" type="number" min="0"
-                  outlined dense hide-bottom-space no-error-icon align="right" suffix="%"
-                  :dark="LAYOUT.isDark" color="blue-grey-4"
-                  v-validate="'required'"
-                  :name="`work_order_items.${rsItem.row.__index}.ngratio`" data-vv-as="ngratio"
-                  :error="errors.has(`work_order_items.${rsItem.row.__index}.ngratio`)"
-                  :error-message="errors.first(`work_order_items.${rsItem.row.__index}.ngratio`)"
-                  :disable="!rsForm.line_id || !rsForm.work_order_items[rsItem.row.__index].item_id"
-                  @input="() => { rsItem.row.quantity = calcQuantity(rsItem.row) }"
-                  />
-              </q-td>
               <q-td key="quantity"  width="15%">
                 <q-input style="min-width:120px"
                   :name="`work_order_items.${rsItem.row.__index}.quantity`" type="number"
@@ -155,6 +156,85 @@
                   :error="errors.has(`work_order_items.${rsItem.row.__index}.quantity`)"
                   :suffix="' / '+ convertStock(rsItem.row, MaxStock[rsItem.row.__index])"
                 />
+              </q-td>
+              <q-td key="process">
+                <q-input style="min-width:120px"
+                  :name="`work_order_items.${rsItem.row.__index}.process`" type="number"
+                  :dark="LAYOUT.isDark" color="blue-grey-6"
+                  v-model="rsItem.row.process"
+                  outlined dense hide-bottom-space no-error-icon align="right"
+                  data-vv-as="Total process"
+                  v-validate="`required|gt_value:0|max_value:${rsItem.row.quantity}`"
+                  :error="errors.has(`work_order_items.${rsItem.row.__index}.process`)"
+                  :error-message="errors.first(`work_order_items.${rsItem.row.__index}.process`)"
+                />
+              </q-td>
+            </q-tr>
+            <q-tr>
+              <q-td></q-td>
+              <q-td colspan="100%">
+                <div class="row q-col-gutter-sm">
+                  <div class="col"  v-for="(itemLine, index) in rsItem.row.work_order_item_lines" :key="index">
+                    <q-expansion-item dense expand-separator :label="'Line: '+itemLine.line_id" class="bordered" header-class="bg-blue-grey-1">
+                      <div slot="header" class="q-item__section column q-item__section--main justify-center">
+                        <span v-if="MAPINGKEY['lines'][itemLine.line_id]" >
+                          {{MAPINGKEY['lines'][itemLine.line_id].name}}
+                          <q-badge v-if="itemLine.work_production_items"
+                            :label="`${persenLine(itemLine, rsItem.row)} %`"
+                            :color="validLine(itemLine, rsItem.row) ? 'primary' : 'red-10'"/>
+                          <!-- {{itemLine.work_production_items.map(x => x.id)}} -->
+                        </span>
+                        <span v-else>
+                          {{itemLine.line_id}}
+                        </span>
+                      </div>
+                      <q-list dense separator v-if="itemLine.work_production_items">
+                        <q-item v-for="(itemProduction, key) in itemLine.work_production_items" :key="key">
+                          <q-item-section>
+                            <span v-if="itemProduction.work_production">
+                              {{itemProduction.work_production.number}}
+                              <q-badge color="blue-grey" :label="`#${itemProduction.id}`" />
+                            </span>
+                          </q-item-section>
+                          <q-item-section side>
+                            <span v-if="MAPINGKEY['units'][itemProduction.unit_id]" >
+                              {{$app.number_format(itemProduction.quantity)}}
+                              {{MAPINGKEY['units'][itemProduction.unit_id].code}}
+                            </span>
+                          </q-item-section>
+                        </q-item>
+                        <q-item-label header v-if="!Boolean(itemLine.work_production_items.length)" class="q-pa-sm text-italic text-center">No data</q-item-label>
+                      </q-list>
+                    </q-expansion-item>
+                  </div>
+                  <div class="col" v-if="Boolean(rsItem.row.item_id)">
+                    <q-expansion-item dense expand-separator :label="$tc('general.packing')" class="bordered" header-class="bg-blue-grey-1">
+                      <div slot="header" class="q-item__section column q-item__section--main justify-center">
+                        <span>
+                          {{$tc('general.packing')}}
+                          <q-badge :label="`${persenPacking(rsItem.row, )} %`"
+                            :color="0 > Math.round(persenPacking(rsItem.row)) || Math.round(persenPacking(rsItem.row)) > 100 ? 'red-10' : 'primary'"/>
+                        </span>
+                      </div>
+                      <q-list dense separator>
+                        <q-item v-for="(itemPacking, index) in rsItem.row.packing_items" :key="index">
+                          <q-item-section>
+                            <span v-if="itemPacking.packing">
+                              {{itemPacking.packing.number}}
+                            </span>
+                          </q-item-section>
+                          <q-item-section  side>
+                            <span v-if="MAPINGKEY['units'][itemPacking.unit_id]" >
+                              {{$app.number_format(itemPacking.unit_total / (itemPacking.unit_rate || 1))}}
+                              {{MAPINGKEY['units'][itemPacking.unit_id].code}}
+                            </span>
+                          </q-item-section>
+                        </q-item>
+                        <q-item-label header v-if="!Boolean(rsItem.row.packing_items.length)" class="q-pa-sm text-italic text-center">No data</q-item-label>
+                      </q-list>
+                    </q-expansion-item>
+                  </div>
+                </div>
               </q-td>
             </q-tr>
           </template>
@@ -179,7 +259,7 @@
     <q-card-actions >
       <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
       <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
-      <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()"
+      <q-btn :label="$tc('form.revision')" icon="save" color="red-10" @click="onSave()"
         :disabled="FORM.has_relationship.length > 0">
       </q-btn>
     </q-card-actions>
@@ -190,6 +270,7 @@
 
 <script>
 import MixForm from '@/mixins/mix-form.vue'
+import { match } from 'minimatch'
 
 export default {
   mixins: [MixForm],
@@ -197,11 +278,10 @@ export default {
 
     return {
       SHEET:{
-        customers: {api:'/api/v1/incomes/customers?mode=all'},
         units: {api:'/api/v1/references/units?mode=all'},
-        items: {api:'/api/v1/common/items?mode=all', autoload:false},
         lines: {api:'/api/v1/references/lines?mode=all'},
-        shifts: {api:'/api/v1/references/shifts?mode=all'}
+        shifts: {api:'/api/v1/references/shifts?mode=all'},
+        items: {api:'/api/v1/common/items?mode=all', autoload:false},
       },
       FORM: {
         resource:{
@@ -305,6 +385,33 @@ export default {
       }
       return vars
     },
+    MinStock() {
+      if (!this.FORM.data.work_order_items) return []
+      return this.FORM.data.work_order_items.map(detail => {
+        let result = 0
+        if (detail.work_order_item_lines) {
+          detail.work_order_item_lines.map((line) => {
+            const total = line.work_production_items.reduce((calc, production) => {
+              return calc += production.unit_amount
+            }, 0)
+
+            if (total > result) result = total
+          })
+
+        }
+        if (detail.packing_items) {
+          let total_packing = 0
+          detail.packing_items.map((packing) => {
+            total_packing += packing.unit_amount
+            console.warn(packing, total_packing)
+          }, 0)
+
+          if(total_packing > result) result = 1000
+        }
+
+        return result
+      })
+    },
     MaxStock() {
       const stockist = this.rsForm.stockist_from
 
@@ -337,12 +444,11 @@ export default {
     },
     MAPINGKEY() {
       let variables = {
-        'customers' : {},
+        'lines': {},
         'units': {},
         'items': {},
       }
-
-      this.SHEET['customers'].data.map(value => { variables['customers'][value.id] = value })
+      this.SHEET['lines'].data.map(value => { variables['lines'][value.id] = value })
       this.SHEET['units'].data.map(value => { variables['units'][value.id] = value })
       this.SHEET['items'].data.map(value => { variables['items'][value.id] = value })
 
@@ -372,19 +478,31 @@ export default {
           ok: 'Direct to Detail Page',
           cancel: 'Continue'
         }).then(() => {
-          this.$router.push(`${this.FORM.resource.uri}/${data.id}`)
+          this.$router.replace(`${this.FORM.resource.uri}/${data.id}`)
         }).catch(() => {
           //
         })
       }
     },
+    persenLine (itemLine, detail) {
+      const total = itemLine.work_production_items.reduce((total, item) => total += item.unit_amount, 0)
+      return Math.round(total / (detail.quantity || 0 * detail.unit_rate || 1) * 100)
+    },
+    validLine (itemLine, detail) {
+      const total = itemLine.work_production_items.reduce((total, item) => total += item.unit_amount, 0)
+      const amount = (detail.quantity || 0 * detail.unit_rate || 1)
+      return 0 <= Math.round(total) && Math.round(total) <= Math.round(amount)
+    },
+    persenPacking (detail) {
+      const total = detail.packing_items.reduce((total, item) => total += item.unit_total, 0)
+      return Math.round(total / (detail.quantity || 0 * detail.unit_rate || 1) * 100)
+    },
+    validPacking (detail) {
+      return 0 > (this.persenPacking(detail)) || (this.persenPacking(detail)) > 100
+    },
     convertStock(row, val = 0) {
       if(val < 0) return '(-)'
       return this.$app.number_format(Number(val || 0) / Number(row.unit_rate || 1))
-    },
-    calcQuantity(row) {
-      // console.log(this.FORM)
-      return Math.ceil(Number(row.target) + (Number(row.target) * Number(row.ngratio) / 100))
     },
     loadItemOptions(data = this.FORM.data) {
       let params = ['has_stocks=FM,NG,RET']
@@ -399,22 +517,33 @@ export default {
       this.SHEET.load('items', params.join('&'))
     },
     setItemReference(index, val) {
+      this.rsForm.work_order_items[index].unit_id = null
+      this.rsForm.work_order_items[index].unit = {}
+      this.rsForm.work_order_items[index].item = {}
+      this.rsForm.work_order_items[index].work_order_item_lines = []
 
-       if(!val){
-        this.rsForm.work_order_items[index].unit_id = null
-        this.rsForm.work_order_items[index].unit = {}
-        this.rsForm.work_order_items[index].item = {}
+      if (!this.rsForm.work_order_items[index].packing_items) {
+        this.rsForm.work_order_items[index].packing_items = []
       }
-      else{
+
+      const old_item_lines = this.FORM.data.work_order_items[index]
+        ? this.FORM.data.work_order_items[index].work_order_item_lines || []
+        : []
+
+      if (val) {
         this.rsForm.work_order_items[index].item = this.MAPINGKEY['items'][val]
-        if(this.rsForm.work_order_items[index].item.item_prelines.length > 0) {
+        if (this.rsForm.work_order_items[index].item.item_prelines.length > 0) {
           const prelines = this.rsForm.work_order_items[index].item.item_prelines
           this.rsForm.work_order_items[index].work_order_item_lines = []
 
           for (let i = 0; i < prelines.length; i++) {
-            let ex = this.setDefault().work_order_items[0].work_order_item_lines[0]
-            ex.line_id = prelines[i].line_id;
-            this.rsForm.work_order_items[index].work_order_item_lines.push(ex)
+            let newLine = this.setDefault().work_order_items[0].work_order_item_lines[0]
+            newLine.line_id = prelines[i].line_id
+            newLine.work_production_items = []
+            if (find = old_item_lines.find(x => x.line_id == prelines[i].line_id)) {
+              newLine = find
+            }
+            this.rsForm.work_order_items[index].work_order_item_lines.push(newLine)
           }
         }
         let baseUnitID = this.MAPINGKEY['items'][val].unit_id
@@ -440,6 +569,10 @@ export default {
         }
       }
     },
+    setTotalQuantity(row) {
+      // console.log(this.FORM)
+      return Math.ceil(Number(row.target) + (Number(row.target) * Number(row.ngratio) / 100))
+    },
     addNewItem() {
       let newEntri = this.setDefault().work_order_items[0];
       newEntri.work_order_item_lines = []
@@ -447,33 +580,27 @@ export default {
       this.rsForm.work_order_items.push(newEntri)
     },
     removeItem(itemIndex) {
+      const remove = () => {
         this.rsForm.work_order_items.splice(itemIndex, 1)
         if(this.rsForm.work_order_items.length < 1) this.addNewItem()
-    },
-    addNewItemLine(itemIndex) {
-      let newEntri = this.setDefault().work_order_items[0].work_order_item_lines[0];
+      }
 
-      this.rsForm.work_order_items[itemIndex].work_order_item_lines.push(newEntri)
-    },
-    removeItemLine(itemIndex, lineIndex) {
-      this.rsForm.work_order_items[itemIndex].work_order_item_lines.splice(lineIndex, 1)
-      if(this.rsForm.work_order_items[itemIndex].work_order_item_lines.length < 1) this.addNewItemLine(itemIndex)
+      if(!this.rsForm.work_order_items[itemIndex].id) return remove()
+
+      this.$q.dialog({
+        title: this.$tc('form.confirm'),
+        message: this.$tc('messages.to_sure', 1, {v: this.$tc('form.delete')}),
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        remove()
+      })
     },
     onSave() {
-
-      this.$validator.validate().then(result => {
-        if (!result) {
-          this.$q.notify({
-            color:'negative', icon:'error', position:'top-right', timeout: 3000,
-            message:this.$tc('messages.to_complete_form')
-          })
-          return
-        }
-
-        // console.warn(this.rsForm)
-        // return;
+      const submit = () => {
         this.FORM.loading = true
-        let {method, mode, apiUrl} = this.FORM.meta();
+        let {method, mode, apiUrl} = this.FORM.meta()
+        apiUrl += `?mode=revision`
         this.$axios.set(method, apiUrl, this.rsForm)
         .then((response) => {
           let message = response.data.number + ' - #' + response.data.id
@@ -487,8 +614,25 @@ export default {
         .finally(()=>{
           this.FORM.loading = false
         });
+      }
+      this.$validator.validate().then(result => {
+        if (!result) {
+          return this.$q.notify({
+            color:'red', icon:'error', position:'top-right', timeout: 3000,
+            message:this.$tc('messages.to_complete_form')
+          })
+        }
 
-      });
+
+        this.$q.dialog({
+          title: this.$tc('form.confirm'),
+          message: this.$tc('messages.to_sure', 1, {v: this.$tc('form.revision')}),
+          cancel: true,
+          persistent: true
+        }).onOk(() => {
+          submit()
+        })
+      })
     },
   },
 }

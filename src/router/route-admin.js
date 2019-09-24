@@ -22,12 +22,13 @@ function parseMenuNode (node, __path) {
           AdminPages.push({
             path: hashres,
             meta: {
+              ...tab,
+              ...tabres.meta,
               title: tab.name,
               icon: tab.icon,
               hash: prefix,
               tabs: node.tabs || [],
-              iframeTabs: node.iframeTabs,
-              ...tabres.meta
+              iframeTabs: node.iframeTabs
             },
             component: () => import(`@/pages/${hash.substring(1)}/${tabres.page}`)
           })
@@ -36,12 +37,13 @@ function parseMenuNode (node, __path) {
         AdminPages.push({
           path: hash,
           meta: {
+            ...tab.meta,
             title: tab.name,
+            lang: tab.lang,
             icon: tab.icon,
             hash: prefix,
             tabs: node.tabs || [],
-            iframeTabs: node.iframeTabs,
-            ...tab.meta
+            iframeTabs: node.iframeTabs
           },
           component: () => import(`@/pages/${prefix.substring(1)}/${tab.path}`)
         })
@@ -59,10 +61,11 @@ function parseMenuNode (node, __path) {
       AdminPages.push({
         path: hash,
         meta: {
+          ...res.meta,
           title: node.name,
+          lang: node.lang,
           icon: node.icon,
-          hash: hash,
-          ...res.meta
+          hash: hash
         },
         component: () => import(`@/pages/${prefix.substring(1)}/${res.page}`)
       })
@@ -71,7 +74,9 @@ function parseMenuNode (node, __path) {
     AdminPages.push({
       path: prefix,
       meta: {
+        ...node.meta,
         title: node.name,
+        lang: node.lang,
         icon: node.icon,
         tabs: node.tabs || [],
         hash: prefix

@@ -50,7 +50,7 @@
             :data="[rsView.packing_items]"
             no-data-label = "No Production"
             :columns="[
-              { name: 'work_order_item', label: 'Work Order', align: 'left', field: (v)=> v.work_order_item.work_order.number},
+              { name: 'work_order_item', label: 'Work Order', align: 'left', field: (v)=> v.work_order_item ? v.work_order_item.work_order.number : null},
               { name: 'code', label: this.$tc('label.code', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.code},
               { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
               { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},

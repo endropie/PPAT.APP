@@ -105,7 +105,7 @@
               }
             },
             { label: $tc('form.revision').toUpperCase(), color:'teal', icon: 'check',
-              hidden: IS_EDITABLE || !this.$app.can('incoming-goods-read'),
+              hidden: IS_EDITABLE || !this.$app.can('incoming-goods-revision'),
               // detail:$tc('messages.process_validation'),
               actions: () => {
                 setRevision()

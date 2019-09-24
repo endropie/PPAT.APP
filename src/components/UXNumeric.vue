@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import VueAutonumeric from 'vue-autoNumeric/src/components/VueAutonumeric.vue'
+import VueAutonumeric from 'vue-autonumeric/src/components/VueAutonumeric.vue'
 
 export default {
   name : 'ux-numeric',

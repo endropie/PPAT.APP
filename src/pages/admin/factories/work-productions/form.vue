@@ -13,7 +13,7 @@
             <ux-select-filter class="col-12"
               name="line_id"
               v-model="rsForm.line_id"
-              :label="$tc('label.line_production')"
+              :label="$tc('items.preline')"
               :disable="IssetWorkProductionItems"
               :dark="LAYOUT.isDark"
               :options="LineOptions" clearable

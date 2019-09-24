@@ -8,5 +8,6 @@ export default {
   plate: 'Plate',
   thick: 'Ketebalan',
   white_spray: 'White Spray',
-  red_spray: 'Red Spray'
+  red_spray: 'Red Spray',
+  preline: 'Line Produksi'
 }

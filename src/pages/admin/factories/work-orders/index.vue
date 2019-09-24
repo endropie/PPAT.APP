@@ -41,8 +41,8 @@
               <ux-select-filter class="col-8 col-sm-4"
                 name="line_id"
                 v-model="FILTERABLE.fill.line_id.value" clearable
-                :label="$tc('label.line')" stack-label
-                :placeholder="$tc('form.select_a', null, {v:$tc('label.line')})"
+                :label="$tc('items.preline')" stack-label
+                :placeholder="$tc('form.select_a', null, {v:$tc('items.preline')})"
                 dense hide-bottom-space hide-dropdown-icon
                 standout="bg-blue-grey-5 text-white"
                 :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
@@ -104,6 +104,13 @@
           <q-btn v-if="isCanDelete(rs.row)" dense flat color="light"  icon="delete" @click.native="TABLE.delete(rs.row)" />
         </q-td>
 
+        <q-td slot="body-cell-number" slot-scope="rs" :props="rs" style="width:35px">
+          <div :class="{'text-strike': Boolean(rs.row.revise_id)}">
+            {{ rs.row.number }}
+            <span v-text="'REV.'+rs.row.revise_number" v-if="Boolean(rs.row.revise_number)"/>
+          </div>
+        </q-td>
+
         <q-td slot="body-cell-status" slot-scope="rs" :props="rs" class="no-padding">
           <ux-badge-status :row="rs.row" class="shadow-1"/>
         </q-td>
@@ -117,7 +124,7 @@
 
         <q-td slot="body-cell-date" slot-scope="rs" :props="rs">
           <!-- {{ rs.row.work_order_items }} -->
-          <span v-if="rs.row.work_order_items"> {{ $app.moment(rs.row.work_order_items.date).format('DD/MM/YY') }}</span>
+          <span v-if="rs.row.date"> {{ $app.moment(rs.row.date).format('DD/MM/YY') }}</span>
         </q-td>
 
       </q-table>

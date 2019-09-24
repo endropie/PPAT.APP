@@ -5,6 +5,7 @@ import auth from './auth'
 import label from './label'
 import form from './form'
 import messages from './messages'
+import customers from './customers'
 import factories from './factories'
 import warehouses from './warehouses'
 import incomes from './incomes'
@@ -17,6 +18,7 @@ export default {
   label: label,
   form: form,
   messages: messages,
+  customers: customers,
   warehouses: warehouses,
   incomes: incomes,
   factories: factories,

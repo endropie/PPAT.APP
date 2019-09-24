@@ -56,7 +56,7 @@
         </q-td>
 
         <q-td slot="body-cell-order_mode" slot-scope="rs" :props="rs">
-          <q-badge :label="rs.row.order_mode" class="text-caption" color="lime-10"/>
+          <q-badge :label="$tc(`customers.order_${rs.row.order_mode}`)" class="text-uppercase text-caption" color="lime-10"/>
         </q-td>
 
         <!-- <q-td slot="body-cell-enable" slot-scope="rs" :props="rs">

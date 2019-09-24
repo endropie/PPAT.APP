@@ -31,10 +31,10 @@
           class="q-mt-sm"
         />
 
-        <q-btn :label="`Server: ${BASEURL}`"
+        <q-btn :label="`Server: ${$axios.defaults.baseURL}`"
           flat rounded no-caps color="grey-7"
           class="absolute-bottom-right q-mt-sm"
-          @click.native="openSetURL()"
+          @XXclick.native="openSetURL()"
 
         />
 

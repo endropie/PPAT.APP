@@ -188,6 +188,7 @@ const factories = [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'work-orders-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'work-orders-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-orders-update' } },
+      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'work-orders-update' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'work-orders-read' } },
       { page: 'view-prelines', path: ':id/prelines', meta: { mode: 'view', permission: 'work-orders-read' } }
     ]
@@ -434,7 +435,7 @@ export default [
   },
   { // Dashboard
     name: 'Dashboard',
-    icon: 'widgets',
+    icon: 'apps',
     path: 'dashboard'
   },
   { // common
@@ -493,13 +494,13 @@ export default [
     path: 'configuration',
     lang: 'general.configuration',
     children: configuration
-  },
-  {
-    name: 'Documentation',
-    icon: 'chrome_reader_mode',
-    path: 'log',
-    lang: 'general.documentation',
-    file: 'README.md'
-    // fileType: '.md'
   }
+  // {
+  //   name: 'Documentation',
+  //   icon: 'chrome_reader_mode',
+  //   path: 'log',
+  //   lang: 'general.documentation',
+  //   file: 'README.md'
+  //   // fileType: '.md'
+  // }
 ]

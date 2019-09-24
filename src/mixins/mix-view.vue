@@ -88,6 +88,7 @@ export default {
           })
       }
 
+      this.SHEET.assign()
       this.SHEET.request(callBase)
     },
 
