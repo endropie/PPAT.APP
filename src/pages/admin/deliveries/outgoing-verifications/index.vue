@@ -198,7 +198,7 @@ export default {
     },
     isEditRow(row) {
       if (row.is_relationship) return false
-      return !Boolean(row.outgoing_good_id)
+      return true
     },
     cancelRow(val, initial) {
       val.quantity = initial.quantity

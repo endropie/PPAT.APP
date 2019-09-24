@@ -65,14 +65,14 @@
             },
             { label: $tc('form.confirm').toUpperCase(), color:'green', icon: 'block',
               detail: $tc('messages.process_confirm'),
-              hidden: !IS_VOID || !$app.can('sj-delivery-orders-read'),
+              hidden: !IS_VOID || !$app.can('sj-delivery-orders-confirm'),
               actions: () => {
                 setConfirmation()
               }
             },
             { label: $tc('form.revision').toUpperCase(), color:'red', icon: 'block',
               detail: $tc('messages.process_revise'),
-              hidden: !IS_VOID || !$app.can('sj-delivery-orders-read'),
+              hidden: !IS_VOID || !$app.can('sj-delivery-orders-revision'),
               actions: () => {
                 setRevision()
               }

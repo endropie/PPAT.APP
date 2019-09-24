@@ -239,7 +239,6 @@ export default {
     ItemOptions() {
       // if (this.MAPINGKEY['itemstocks'].length == 0) return []
       const STOCKIST = this.rsForm.transaction === 'RETURN' ? 'RDO.RET' : 'RDO.REG'
-      console.warn('STOCKIST', STOCKIST);
       let olditems = this.FORM.data.pre_delivery_items.map(x => x.item_id)
       let data = this.SHEET.items.data.filter((item) => {
         if (this.rsForm.transaction == this.FORM.data.transaction && olditems.some(x => x === item.id)) return true
