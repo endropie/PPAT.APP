@@ -20,7 +20,7 @@
               @click="$q.fullscreen.toggle()"
               :icon-right="$q.fullscreen.isActive ? 'fullscreen_exit' : 'fullscreen'" />
           </div>
-          <q-toggle left-label label="NIGHT MODE" class="text-weight-light text-subtitle" v-model="NIGHMODE" />
+          <q-toggle left-label label="NIGHT MODE" class="text-no-wrap text-weight-light text-subtitle" v-model="NIGHMODE" />
           <q-btn-dropdown
             :label="'Themes'"
             color="primary"

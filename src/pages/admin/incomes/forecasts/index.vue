@@ -23,7 +23,7 @@
                 detail: $tc('messages.form_new'),
                 icon: 'add',
                 shortcut: true,
-                hidden:!$app.can('incoming-goods-create'),
+                hidden:!$app.can('forecasts-create'),
                 to: `${TABLE.resource.uri}/create`
               },
               { label: $tc('label.trash'),
