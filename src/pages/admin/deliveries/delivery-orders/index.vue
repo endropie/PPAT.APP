@@ -33,7 +33,6 @@
               }
             ]">
 
-
             <div class="row q-col-gutter-xs" >
               <ux-select-filter class="col-12 col-sm-6"
                 v-model="FILTERABLE.fill.customer_id.value" clearable
@@ -45,24 +44,24 @@
                 :options="CustomerOptions"
                 @input="FILTERABLE.submit" />
 
-              <ux-date class="col-12 col-sm-3"
-                stack-label :label="$tc('label.begin')"
-                v-model="FILTERABLE.fill.begin_date.value" type="date"  clearable
+              <q-select class="col-4 col-sm-2 "
+                v-model="FILTERABLE.fill.status.value" clearable
+                :options="['OPEN', 'CONFIRMED']"
+                :label=" $tc('label.state')"
+                dense hide-bottom-space hide-dropdown-icon
+                standout="bg-blue-grey-5 text-white"
+                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
+                :dark="LAYOUT.isDark"
+                @input="FILTERABLE.submit" />
+
+              <ux-date class="col-8 col-sm-4"
+                stack-label :label="$tc('label.date')"
+                v-model="FILTERABLE.fill.date.value" type="date"  clearable
                 dense hide-bottom-space
                 standout="bg-blue-grey-5 text-white"
                 :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
                 :dark="LAYOUT.isDark"
                 @input="FILTERABLE.submit"/>
-
-              <ux-date class="col-12 col-sm-3"
-                stack-label :label="$tc('label.until')"
-                v-model="FILTERABLE.fill.until_date.value" type="date"  clearable
-                dense hide-bottom-space
-                standout="bg-blue-grey-5 text-white"
-                :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
-                :dark="LAYOUT.isDark"
-                @input="FILTERABLE.submit"/>
-
 
               <q-select class="col-12" autocomplete="off"
                 multiple use-chips use-input new-value-mode="add"
@@ -104,7 +103,6 @@
           <span v-if="rs.row.operator"> {{ rs.row.operator.name }}</span>
           <span v-else>- undifined -</span>
         </q-td>
-
       </q-table>
     </q-pull-to-refresh>
 
@@ -129,14 +127,13 @@ export default {
             type: 'integer',
             transform: (value) => { return null }
           },
-          begin_date: {
+          date: {
             value: null,
             type: 'date',
             transform: (value) => { return null }
           },
-          until_date: {
-            value: null,
-            type: 'date',
+          status: {
+            value: 'OPEN',
             transform: (value) => { return null }
           }
         }

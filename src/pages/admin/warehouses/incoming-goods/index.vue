@@ -50,8 +50,6 @@
                 :options="CustomerOptions"
                 @input="FILTERABLE.submit" />
 
-
-
               <q-select class="col-4 col-sm-2 "
                 v-model="FILTERABLE.fill.status.value" clearable
                 :options="['OPEN', 'VALIDATED','CLOSED']"
@@ -145,7 +143,6 @@ export default {
           },
           status: {
             value: 'OPEN',
-            type: 'date',
             transform: (value) => { return null }
           },
           date: {
