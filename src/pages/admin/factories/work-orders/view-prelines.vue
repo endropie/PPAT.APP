@@ -70,8 +70,9 @@
               :pagination="{ rowsPerPage: 0}"
               no-data-label = "No Production"
               :columns="[
-                { name: 'code', label: 'code', align: 'left', field: (v, i)=> v.id},
+                { name: 'cust', label: $tc('general.cust'), align: 'left', field: (v, i)=> v.item.customer_code},
                 { name: 'part_name', label: $tc('label.name', 1, {v: $tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
+                { name: 'part_number', label: $tc('label.no', 1, {v: $tc('label.part')}), align: 'left', field: (v)=> v.item.part_number},
                 { name: 'target', label: $tc('label.quantity'), align: 'right', field: (v)=> v.target},
                 { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
                 { name: 'ngratio', label: 'NG Ratio', align: 'right', format:(v)=> v ? `${Number(v)}%` : '-', field: (v)=> v.ngratio},

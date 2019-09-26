@@ -54,8 +54,9 @@
             :data="rsView.work_order_items"
             no-data-label = "No Production"
             :columns="[
-              { name: 'code', label: 'code', align: 'left', field: (v)=> v.item.code},
+              { name: 'cust', label: $tc('general.cust'), align: 'left', field: (v)=> v.item.code},
               { name: 'part_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
+              { name: 'part_number', label: this.$tc('label.no', 1, {v:this.$tc('label.part')}), align: 'left', field: (v)=> v.item.part_name},
               { name: 'target', label: $tc('label.quantity'), align: 'right', field: (v)=> v.target},
               { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
               { name: 'ngratio', label: 'NG', align: 'right', format:(v)=> v ? `${Number(v)}%` : '-', field: (v)=> v.ngratio},
@@ -64,10 +65,13 @@
           <template slot="body" slot-scope="rsItem" :scope="rsItem">
             <q-tr >
               <q-td key="code">
-                {{rsItem.row.item.code}}
+                {{rsItem.row.item.customer_code}}
               </q-td>
-              <q-td key="part_name" width="40%">
-                {{rsItem.row.item.code}}
+              <q-td key="part_name" width="30%">
+                {{rsItem.row.item.part_name}}
+              </q-td>
+              <q-td key="part_number" width="30%">
+                {{rsItem.row.item.part_number}}
               </q-td>
               <q-td key="target" class="text-right">
                 {{rsItem.row.target}}
