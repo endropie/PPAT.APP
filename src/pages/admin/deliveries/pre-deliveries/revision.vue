@@ -39,8 +39,7 @@
         :error="errors.has('customer')"
         :error-message="errors.first('customer')" >
         <q-badge slot="counter"
-          class="q-pa-xs shadow-1"
-          :label="`${rsForm.order_mode}`"
+          :label="String($tc(`customers.order_${rsForm.order_mode}`).toUpperCase())"
           v-if="rsForm.order_mode"  />
       </ux-select-filter>
       <ux-date class="col-6 col-sm-3"

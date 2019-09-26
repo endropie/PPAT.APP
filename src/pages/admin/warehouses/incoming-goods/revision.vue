@@ -41,7 +41,7 @@
             :error-message="errors.first('customer')"
             @input="(val) => setCustomerReference(val)">
             <q-badge slot="counter"
-              :label="rsForm.order_mode"
+              :label="String($tc(`customers.order_${rsForm.order_mode}`).toUpperCase())"
               v-show="Boolean(rsForm.customer_id)"/>
           </ux-select-filter>
 
