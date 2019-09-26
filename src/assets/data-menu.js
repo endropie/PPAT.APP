@@ -360,7 +360,8 @@ const configuration = [
     name: 'Application',
     icon: 'mdi-settings-outline',
     path: 'app',
-    lang: 'general.application'
+    lang: 'general.application',
+    meta: { permission: 'setting' }
   },
   { // Profile
     name: 'Profile',
@@ -368,7 +369,7 @@ const configuration = [
     path: 'profile',
     lang: 'general.profile',
     resources: [
-      { page: 'form', path: '', meta: { mode: 'edit', permission: 'profile-update' } }
+      { page: 'form', path: '', meta: { mode: 'edit', permission: 'profile' } }
     ]
   },
   {
