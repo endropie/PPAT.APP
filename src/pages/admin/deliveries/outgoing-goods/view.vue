@@ -16,7 +16,13 @@
             </div>
             <div class="info">
               <q-markup-table class="bordered super-dense no-highlight no-shadow" separator="cell">
-                <tr><td class="text-weight-light">No</td><td>{{ rsView.number }}</td></tr>
+                <tr>
+                  <td class="text-weight-light">No</td>
+                  <td>
+                    {{ rsView.number }}
+                    <span v-text="'REV.'+rsView.revise_number" v-if="Boolean(rsView.revise_number)"/>
+                  </td>
+                </tr>
                 <tr><td class="text-weight-light">{{$tc('label.date')}}</td><td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td></tr>
                  <tr><td class="text-weight-light">{{$tc('label.transaction')}}</td><td>{{ rsView.transaction }}</td></tr>
               </q-markup-table>

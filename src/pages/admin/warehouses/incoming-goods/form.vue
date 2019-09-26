@@ -42,7 +42,7 @@
             @input="(val) => setCustomerReference(val)">
             <q-badge slot="counter"
               :label="String($tc(`customers.order_${rsForm.order_mode}`).toUpperCase())"
-              v-show="Boolean(rsForm.customer_id)" />
+              v-if="Boolean(rsForm.customer_id)" />
           </ux-select-filter>
 
           <ux-date name="date" type="date" class="col-8"

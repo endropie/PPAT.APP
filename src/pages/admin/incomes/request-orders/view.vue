@@ -25,7 +25,10 @@
               <q-markup-table class="super-dense bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
                 <tr>
                   <th>{{$tc('label.number')}}</th>
-                  <td>{{rsView.number}}</td>
+                  <td>
+                    {{rsView.number}}
+                    <span v-text="'REV.'+rsView.revise_number" v-if="Boolean(rsView.revise_number)"/>
+                  </td>
                 </tr>
                 <tr>
                   <th>{{$tc('label.date')}}</th>
