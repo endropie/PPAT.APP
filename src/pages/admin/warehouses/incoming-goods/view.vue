@@ -107,11 +107,18 @@
                 setValidation()
               }
             },
-            { label: $tc('form.revision').toUpperCase(), color:'teal', icon: 'check',
-              hidden: IS_EDITABLE || !this.$app.can('incoming-goods-revision'),
-              // detail:$tc('messages.process_validation'),
+            { label: (`${$tc('form.revision')}`).toUpperCase(), color:'teal', icon: 'check',
+              hidden: !IS_REVISE || rsView.status !== 'VALIDATED' || !this.$app.can('incoming-goods-revision'),
+              // detail:$tc('messages.process_revision'),
               actions: () => {
                 setRevision()
+              }
+            },
+            { label: (`${$tc('form.revision')} [${rsView.status}]`).toUpperCase(), color:'teal', icon: 'check',
+              hidden: !IS_REVISE || rsView.status !== 'REJECTED' || !this.$app.can('incoming-goods-create'),
+              // detail:$tc('messages.process_revision'),
+              actions: () => {
+                setRestoration()
               }
             },
             { label: 'VOID', color:'red', icon: 'block',
@@ -169,7 +176,6 @@ export default {
     IS_REVISE() {
       if (this.IS_EDITABLE) return false
       if (this.rsView.deleted_at) return false
-      if (!this.$app.can('incoming-goods-void')) return false
       if (['VOID','OPEN'].find(x => x === this.rsView.status)) return false
       return true
     },
@@ -187,6 +193,9 @@ export default {
     },
   },
   methods: {
+    setRestoration () {
+      this.$router.push(`${this.VIEW.resource.uri}/${this.ROUTE.params.id}/restoration`)
+    },
     setRevision () {
       this.$router.push(`${this.VIEW.resource.uri}/${this.ROUTE.params.id}/revision`)
     },

@@ -32,7 +32,7 @@ export default {
         return this.CONFIG.options['state_colors']
       },
       Value() {
-        if(this.row['deleted_at'] && !['VOID','REVISED'].find(x => x === this.row['status'])) {
+        if(this.row['deleted_at'] && this.row['status'] === 'OPEN') {
           return 'DELETED'
         }
         return this.row[this.name]

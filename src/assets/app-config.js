@@ -11,6 +11,7 @@ const config = {
       PROCESSED: 'indigo',
       CONFIRMED: 'green-10',
       CLOSED: 'red',
+      REJECTED: 'red-9',
       REVISED: 'red-9',
       VOID: 'red-10',
       DELETED: 'dark'

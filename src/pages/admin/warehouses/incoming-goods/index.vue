@@ -52,7 +52,7 @@
 
               <q-select class="col-4 col-sm-2 "
                 v-model="FILTERABLE.fill.status.value" clearable
-                :options="['OPEN', 'VALIDATED','CLOSED']"
+                :options="['OPEN','REJECTED','VALIDATED','CLOSED']"
                 :label=" $tc('label.state')"
                 dense hide-bottom-space hide-dropdown-icon
                 standout="bg-blue-grey-5 text-white"
@@ -108,8 +108,8 @@
             <ux-badge-status :row="rs.row" class="shadow-1" />
             <q-badge label="RET" class="shadow-1 q-pa-xs"
               dense color="blue-grey" text-color="white"
-              v-if="rs.row.transaction == 'RETURN'"/>
-
+              v-if="rs.row.transaction == 'RETURN'"
+            />
           </div>
         </q-td>
 
@@ -142,12 +142,11 @@ export default {
             transform: (value) => { return null }
           },
           status: {
-            value: 'OPEN',
+            value: null,
             transform: (value) => { return null }
           },
           date: {
             value: null,
-            type: 'date',
             transform: (value) => { return null }
           }
         }

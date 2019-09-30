@@ -111,11 +111,12 @@ const warehouses = [
     icon: 'move_to_inbox',
     path: 'incoming-goods',
     lang: 'general.incoming_good',
-    // param: `?begin_date=${moment().format('YYYY-MM-DD')}`,
+    param: `?status=OPEN`,
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'incoming-goods-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'incoming-goods-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'incoming-goods-update' } },
+      { page: 'restoration', path: ':id/restoration', meta: { mode: 'edit', permission: 'incoming-goods-create' } },
       { page: 'validation', path: ':id/validation', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
       { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'incoming-goods-read' } }
