@@ -101,7 +101,7 @@
 
       </div>
     </div>
-    <div class="header-main">
+    <div class="header-main full-width">
       <slot></slot>
     </div>
   </div>

@@ -7,7 +7,7 @@
             <slot name="menu" >
               <q-list  :dark="LAYOUT.isDark" class="table-menu" style="min-width: 150px">
                 <slot name="menu-item" />
-                
+
               </q-list>
             </slot>
           </q-menu>
@@ -25,7 +25,7 @@
       </div>
 
     </div>
-    <div class="header-main"> 
+    <div class="header-main full-width">
       <slot />
     </div>
   </div>
