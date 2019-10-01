@@ -2,10 +2,7 @@
   <q-page padding class="row justify-center" >
     <page-print v-if="VIEW.show" class="q-pa-md q-pr-lg shadow-2">
       <div slot="header-tags">
-        <q-chip tag outline small color="negative" icon="assignment" label="Revised"
-          v-if="rsView.revise_id" />
-        <q-chip tag outline small color="negative" icon="bookmark" label="void"
-          v-if="rsView.status == 'VOID'" />
+        <ux-chip-status :row="rsView" tag outline small square icon='bookmark'/>
       </div>
       <div class="row justify-around q-gutter-y-sm" >
         <div class="text-center">
