@@ -21,8 +21,14 @@
                 <span v-text="'REV.'+rsView.revise_number" v-if="Boolean(rsView.revise_number)"/>
               </td>
             </tr>
-            <tr><th class="text-weight-light">{{$tc('label.date')}}</th><td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td></tr>
-            <tr><th class="text-weight-light">{{$tc('label.transaction')}}</th><td class="text-weight-medium">{{ rsView.transaction }}</td></tr>
+            <tr>
+              <th class="text-weight-light">{{$tc('label.date')}}</th>
+              <td>{{$app.date_format(rsView.date)}}</td>
+            </tr>
+            <tr>
+              <th class="text-weight-light">{{$tc('label.transaction')}}</th>
+              <td class="text-weight-medium">{{ rsView.transaction }}</td>
+            </tr>
           </q-markup-table>
         </div>
         <div class="col-12">

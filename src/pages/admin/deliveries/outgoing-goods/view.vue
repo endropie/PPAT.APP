@@ -9,12 +9,12 @@
       <div class="row q-col-gutter-sm" >
         <div class="col-12">
           <div class="row justify-between ">
-            <div class="profile">
+            <div class="col profile">
               <div class="text-weight-medium uppercase">To: {{rsView.customer_name}}</div>
               <address class="text-weight-light">{{rsView.customer_address}}</address>
               <div class="text-weight-light ">Phone: {{rsView.customer_phone}}</div>
             </div>
-            <div class="info">
+            <div class="col-auto info">
               <q-markup-table class="bordered super-dense no-highlight no-shadow" separator="cell">
                 <tr>
                   <td class="text-weight-light">No</td>
@@ -23,8 +23,14 @@
                     <span v-text="'REV.'+rsView.revise_number" v-if="Boolean(rsView.revise_number)"/>
                   </td>
                 </tr>
-                <tr><td class="text-weight-light">{{$tc('label.date')}}</td><td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td></tr>
-                 <tr><td class="text-weight-light">{{$tc('label.transaction')}}</td><td>{{ rsView.transaction }}</td></tr>
+                <tr>
+                  <td class="text-weight-light">{{$tc('label.date')}}</td>
+                  <td>{{$app.date_format(rsView.date)}}</td>
+                </tr>
+                 <tr>
+                  <td class="text-weight-light">{{$tc('label.transaction')}}</td>
+                  <td>{{ rsView.transaction }}</td>
+                </tr>
               </q-markup-table>
             </div>
           </div>

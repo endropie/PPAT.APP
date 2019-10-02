@@ -11,7 +11,8 @@
         <div class="text-center">
           <table class="q-table table table-bordered" style="width:300px">
             <tr class="bg-grey-3"><th> Number </th><th> Date</th></tr>
-            <tr><td> {{ rsView.number }} </td><td> {{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }} </td></tr>
+            <tr><td> {{ rsView.number }} </td>
+                <td> {{ $app.date_format(rsView.created_at) }} </td></tr>
           </table>
         </div>
         <div class="col-12">

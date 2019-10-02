@@ -14,11 +14,11 @@
                 <span class="text-h6">PACKING GOODS</span>
             </div>
             <div class="col q-pb-md">
-              <q-markup-table class="bordered no-shadow" separator="cell" dense :dark="LAYOUT.isDark">
+              <q-markup-table class="bordered no-shadow text-center" separator="cell" dense :dark="LAYOUT.isDark">
                 <tr><th>{{$tc('label.number')}}</th><th>{{$tc('label.date')}}</th></tr>
                 <tr>
                   <td>{{rsView.number}}</td>
-                  <td>{{$app.moment(rsView.date +' '+ rsView.time).format('DD/MM/YYYY hh:mm')}}</td>
+                  <td>{{$app.date_format(rsView.date)}}</td>
                 </tr>
               </q-markup-table>
             </div>

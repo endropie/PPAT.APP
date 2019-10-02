@@ -32,7 +32,7 @@
                 </tr>
                 <tr>
                   <th>{{$tc('label.date')}}</th>
-                  <td>{{ $app.moment(rsView.created_at).format('DD/MM/YYYY') }}</td>
+                  <td>{{ $app.date_format(rsView.created_at) }}</td>
                 </tr>
                 <tr>
                   <th>{{$tc('label.shift')}}</th>

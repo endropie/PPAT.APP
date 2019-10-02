@@ -22,7 +22,7 @@
             </tr>
             <tr>
               <th>{{$tc('label.date')}}</th>
-              <td>{{ rsView.date ? $app.moment(rsView.date).format('DD/MM/YYYY') : '-'}}</td>
+              <td>{{$app.date_format(rsView.date)}}</td>
             </tr>
             <tr>
               <th>SALE ORDER</th><td>{{ rsView.request_order ? rsView.request_order.number : '-' }}</td>

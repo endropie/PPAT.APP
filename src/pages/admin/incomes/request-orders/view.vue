@@ -32,7 +32,7 @@
                 </tr>
                 <tr>
                   <th>{{$tc('label.date')}}</th>
-                  <td>{{ $app.moment(rsView.date).format('DD/MM/YYYY') }}</td>
+                  <td>{{ $app.date_format(rsView.date) }}</td>
                 </tr>
               </q-markup-table>
             </div>
