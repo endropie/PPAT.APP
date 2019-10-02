@@ -102,7 +102,7 @@
         </q-td>
 
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
-          <div v-if="rs.row.customer"> {{ rs.row.customer.name }}</div>
+          <div v-if="rs.row.customer"> {{ rs.row.customer.code }}</div>
           <div v-else>- undefined -</div>
         </q-td>
         <q-td slot="body-cell-item_id" slot-scope="rs" :props="rs">
@@ -125,10 +125,6 @@
         </q-td> -->
         <q-td slot="body-cell-shift_id" slot-scope="rs" :props="rs">
           <div v-if="rs.row.shift"> {{ rs.row.shift.name }}</div>
-          <div v-else class="text-center">-</div>
-        </q-td>
-        <q-td slot="body-cell-type_fault_id" slot-scope="rs" :props="rs">
-          <div v-if="rs.row.type_fault"> {{ rs.row.type_fault.name }}</div>
           <div v-else class="text-center">-</div>
         </q-td>
         <q-td slot="body-cell-worktime" slot-scope="rs" :props="rs">
@@ -185,17 +181,14 @@ export default {
           { name: 'prefix', label: '', align: 'left',},
 
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
-          { name: 'item_id', label: this.$tc('label.code', 1, {v:this.$tc('label.part')}), align: 'left', sortable: false },
+          { name: 'customer_id', label: `${this.$tc('general.cust')}.`, field: 'customer_id', align: 'left', sortable: true },
           { name: 'item_name', label: this.$tc('label.name', 1, {v:this.$tc('label.part')}), align: 'left', sortable: true },
           { name: 'item_number', label: this.$tc('label.number', 1, {v:this.$tc('label.part')}), align: 'left', sortable: false },
           { name: 'work_order_id', label: 'Work-Order', align: 'left', sortable: false,
             field: (val) => val.packing_items.work_order_number || 'N/A' },
           { name: 'date', label: this.$tc('label.date'), field: 'date', align: 'left', sortable: true},
-          { name: 'time', label: 'Time', field: 'time', align: 'left', sortable: true},
           { name: 'shift_id', label: 'Shift', field: 'shift_id', align: 'left'},
           { name: 'worktime', label: 'Worktime', field: 'worktime', align: 'left', sortable: true },
-          // { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
-          // { name: 'type_fault_id', label: 'Fault type', field: 'type_fault_id', align: 'left', sortable: true },
         ]
       },
     }
