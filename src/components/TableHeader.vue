@@ -3,7 +3,7 @@
     v-bind="$attrs"
     v-on="$listeners"
   >
-    <div class="header-top q-pb-xs">
+    <div class="header-top q-pb-xs" style="display:inline-table">
       <div class="row no-wrap float-right">
         <slot name="menu-prepend"></slot>
         <template v-for="(menu, index) in menus">
