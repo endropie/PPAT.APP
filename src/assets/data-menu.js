@@ -225,7 +225,7 @@ const factories = [
     lang: 'general.packing',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'packings-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'packings-create' } },
+      { page: 'create', path: 'create', meta: { mode: 'create', permission: 'packings-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'packings-update' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'packings-read' } }
     ]
