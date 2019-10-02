@@ -160,6 +160,10 @@ export default async ({ app, store, router, Vue }) => {
       }
       return s.join(dec)
     },
+    date_format (date, format = undefined) {
+      if (!date) return ''
+      return moment(date).format(format || 'DD/MM/YYYY')
+    },
     moment: moment,
     date: date
   }
