@@ -2,7 +2,7 @@
 
 const common = [
   {
-    name: 'Good Items',
+    name: 'Part Items',
     path: 'items',
     icon: 'style',
     lang: 'general.item',
@@ -195,22 +195,11 @@ const factories = [
     ]
   },
   {
-    name: 'Work Process',
-    icon: 'work',
-    path: 'work-process',
-    param: `?status=OPEN`,
-    lang: 'general.work_process',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'work-process-read' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-process-confirm' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'work-process-read' } }
-    ]
-  },
-  {
     name: 'Work Production',
     icon: 'gavel',
     path: 'work-productions',
     lang: 'general.work_production',
+    param: '/create',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'work-productions-read' } },
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'work-productions-create' } },
@@ -223,6 +212,7 @@ const factories = [
     icon: 'move_to_inbox',
     path: 'packings',
     lang: 'general.packing',
+    param: '/create',
     resources: [
       { page: 'index', path: '', icon: 'list', meta: { permission: 'packings-read' } },
       { page: 'create', path: 'create', meta: { mode: 'create', permission: 'packings-create' } },

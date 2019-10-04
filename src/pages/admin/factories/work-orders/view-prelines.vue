@@ -130,7 +130,7 @@ export default {
     IS_EDITABLE() {
       if (this.rsView.deleted_at) return false
       if (this.rsView.status !== 'OPEN') return false
-      if (this.rsView.hasOwnProperty('has_relathinship') && this.rsView.has_relationship.length > 0) return false
+      if (this.rsView.hasOwnProperty('has_relationship') && this.rsView.has_relationship.length > 0) return false
 
       return true
     },

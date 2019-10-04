@@ -11,7 +11,7 @@
         <div class="col-12">
           <div class="row justify-between q-col-gutter-sm" >
             <div class="col-auto self-end">
-              <span class="text-h6 text-center q-pt-lg q-pl-sm">WORK ORDER</span>
+              <span class="text-h6 text-center q-pt-lg q-pl-sm">PRODUKSI</span>
 
               <q-markup-table class="super-dense no-shadow"
                 :dark="LAYOUT.isDark">
@@ -79,7 +79,14 @@
                   $router.push(`${VIEW.resource.uri}/create`)
                 }
               },
-              { label: 'Delete', color:'red', icon: 'delete',
+              { label: $tc('form.add_clone'), color:'primary', icon: 'add',
+                detail: $tc('messages.process_create'),
+                hidden: !$app.can('work-orders-create'),
+                actions: () => {
+                  $router.push(`${VIEW.resource.uri}/create?clone=${ROUTE.params.id}`)
+                }
+              },
+              { label: 'DELETE', color:'red', icon: 'delete',
                 detail: $tc('messages.process_delete'),
                 hidden: !IS_EDITABLE || !$app.can('work-orders-delete'),
                 actions: () => {
@@ -88,7 +95,7 @@
               },
               { label: 'VOID', color:'red', icon: 'block',
                 detail: $tc('messages.process_void'),
-                hidden: !IS_VOID || !$app.can('work-orders-void'),
+                hidden: !IS_EDITABLE || !$app.can('work-orders-void'),
                 actions: () => {
                   VIEW.void(()=> init() )
                 }
@@ -131,16 +138,10 @@ export default {
     this.init()
   },
   computed: {
-    IS_VOID() {
-      if (this.IS_EDITABLE) return false
-      if (this.rsView.deleted_at) return false
-      if (['VOID'].find(x => x === this.rsView.status)) return false
-      return true
-    },
     IS_EDITABLE() {
       if (this.rsView.deleted_at) return false
       if (this.rsView.status !== 'OPEN') return false
-      if (this.rsView.hasOwnProperty('has_relathinship') && this.rsView.has_relationship.length > 0) return false
+      if (Object.keys(this.rsView.has_relationship || {}).length > 0) return false
 
       return true
     },

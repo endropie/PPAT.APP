@@ -167,39 +167,35 @@
           <q-btn :label="$tc('form.print')" icon="print" color="grey" @click.native="$router.push(`${VIEW.resource.uri}/${ROUTE.params.id}/prelines`)" ></q-btn>
           <ux-btn-dropdown :label="$tc('label.others')" color="blue-grey" no-caps class="float-right"
             :options="[
-              { label: $tc('form.add_new'), color:'primary', icon: 'add',
+              {
+                label: String($tc('form.add_new')).toUpperCase(), color:'primary', icon: 'add',
                 detail: $tc('messages.process_create'),
                 hidden: !$app.can('work-orders-create'),
-                actions: () => {
-                  $router.push(`${VIEW.resource.uri}/create`)
-                }
+                actions: () => $router.push(`${VIEW.resource.uri}/create`)
               },
-              { label: $tc('form.confirm'), color:'teal', icon: 'check',
-                hidden: !IS_EDITABLE || !$app.can('work-process-confirm'),
-                detail:$tc('messages.process_validation'),
-                actions: () => {
-                  setValidation()
-                }
+              {
+                label: 'CLOSE', color:'green', icon: 'done_all',
+                detail: $tc('messages.process_close'),
+                hidden: !IS_CLOSE || !$app.can('work-orders-close'),
+                actions: () => setClosing()
               },
-              { label: $tc('form.revision'), color:'red', icon: 'check',
+              {
+                label: String($tc('form.revision')).toUpperCase(), color:'red-8', icon: 'cached',
+                detail: $tc('messages.process_revise'),
                 hidden: !IS_REVISE || !$app.can('work-orders-revision'),
-                actions: () => {
-                  setRevision()
-                }
+                actions: () => setRevision()
               },
-              { label: 'Delete', color:'red', icon: 'delete',
+              {
+                label: 'DELETE', color:'red-10', icon: 'delete',
                 detail: $tc('messages.process_delete'),
                 hidden: !IS_EDITABLE || !$app.can('work-orders-delete'),
-                actions: () => {
-                  VIEW.delete()
-                }
+                actions: () => VIEW.delete()
               },
-              { label: 'VOID', color:'red', icon: 'block',
+              {
+                label: 'VOID', color:'negative', icon: 'block',
                 detail: $tc('messages.process_void'),
                 hidden: !IS_VOID || !$app.can('work-orders-void'),
-                actions: () => {
-                  VIEW.void(()=> init() )
-                }
+                actions: () => VIEW.void(()=> init())
               },
             ]">
           </ux-btn-dropdown>
@@ -244,6 +240,11 @@ export default {
     this.init()
   },
   computed: {
+    IS_CLOSE() {
+      if (this.rsView.deleted_at) return false
+      if (['CLOSED'].find(x => x === this.rsView.status)) return false
+      return true
+    },
     IS_VOID() {
       if (this.IS_EDITABLE) return false
       if (this.rsView.deleted_at) return false
@@ -259,8 +260,7 @@ export default {
     IS_EDITABLE() {
       if (this.rsView.deleted_at) return false
       if (this.rsView.status !== 'OPEN') return false
-      if (this.rsView.hasOwnProperty('has_relathinship') && this.rsView.has_relationship.length > 0) return false
-
+      if (Object.keys(this.rsView.has_relationship || {}).length > 0) return false
       return true
     },
 
@@ -281,9 +281,6 @@ export default {
       this.VIEW.load((data) => {
         this.setView(data || {})
       })
-    },
-    print() {
-      window.print()
     },
     getStockistFrom(val) {
       const stockist = [
@@ -321,6 +318,40 @@ export default {
     validPacking (detail) {
       return 0 > (this.persenPacking(detail)) || (this.persenPacking(detail)) > 100
     },
+
+    setClosing () {
+      console.warn('CLOSING')
+      const submit = () => {
+        this.VIEW.show = false
+        this.VIEW.loading = true
+        let url = `${this.VIEW.resource.api}/${this.ROUTE.params.id}?mode=closed&nodata=true`
+        this.$axios.put(url)
+          .then((response) => {
+            // console.warn('response->', response.data)
+            const data = response.data
+            this.setView(data)
+          })
+          .catch(error => {
+            // this.VIEW.onCatch(error.response, 'FORM REVISION')
+            this.$app.response.error(error.response, 'FORM REVISION')
+          })
+          .finally(()=>{
+            this.VIEW.show = true
+            setTimeout(() => {
+              this.VIEW.loading = false
+            }, 1000);
+          })
+      }
+
+      this.$q.dialog({
+          title: this.$tc('form.confirm', 1, {v:'CLOSE'}),
+          message: this.$tc('messages.to_sure', 1, {v: this.$tc('messages.process_close')}),
+          cancel: true,
+          persistent: true
+        }).onOk(() => {
+          submit()
+        })
+    }
   }
 }
 </script>

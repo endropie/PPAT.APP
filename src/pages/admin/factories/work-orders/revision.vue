@@ -76,13 +76,12 @@
             { name: 'target', label: $tc('label.quantity'), align: 'center'},
             { name: 'unit_id', label: $tc('label.unit'), align: 'center'},
             { name: 'quantity', label: 'Total', align: 'center'},
-            { name: 'process', label: 'Total Process', align: 'center'},
           ]"
           :pagination=" {sortBy: null, descending: false, page: null, rowsPerPage: 0}">
           <template slot="body" slot-scope="rsItem">
             <q-tr>
               <q-td key="prefix" :rsItem="rsItem" style="width:50px">
-                <q-btn dense flat round icon="clear" size="md" color="negative" @click="removeItem(rsItem.row.__index)"/>
+                <q-btn dense flat round icon="clear" size="md" color="negative" tabindex="100" @click="removeItem(rsItem.row.__index)"/>
               </q-td>
               <q-td key="item_id" width="35%" >
                 <ux-select-filter autofocus
@@ -157,20 +156,9 @@
                   :suffix="' / '+ convertStock(rsItem.row, MaxStock[rsItem.row.__index])"
                 />
               </q-td>
-              <q-td key="process">
-                <q-input style="min-width:120px"
-                  :name="`work_order_items.${rsItem.row.__index}.process`" type="number"
-                  :dark="LAYOUT.isDark" color="blue-grey-6"
-                  v-model="rsItem.row.process"
-                  outlined dense hide-bottom-space no-error-icon align="right"
-                  data-vv-as="Total process"
-                  v-validate="`required|gt_value:0|max_value:${rsItem.row.quantity}`"
-                  :error="errors.has(`work_order_items.${rsItem.row.__index}.process`)"
-                  :error-message="errors.first(`work_order_items.${rsItem.row.__index}.process`)"
-                />
-              </q-td>
             </q-tr>
-            <q-tr>
+            <!-- Hidden detail Relationship production & Packing -->
+            <q-tr v-show="false">
               <q-td></q-td>
               <q-td colspan="100%">
                 <div class="row q-col-gutter-sm">
@@ -239,9 +227,13 @@
             </q-tr>
           </template>
           <q-tr slot="bottom-row" slot-scope="rsItem" :rsItem="rsItem">
-            <q-td colspan="100%">
-              <q-btn round dense @click="addNewItem()"  icon="add" color="positive"/>
+            <q-td></q-td>
+            <q-td>
+              <q-btn outline dense color="positive" class="full-width"
+                :label="$tc('form.add')" icon-right="add_circle_outline"
+                @click="addNewItem()" />
             </q-td>
+            <q-td colspan="100%"></q-td>
           </q-tr>
         </q-table>
       </div>

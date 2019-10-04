@@ -42,7 +42,7 @@
                 name="line_id"
                 v-model="FILTERABLE.fill.line_id.value" clearable
                 :label="$tc('items.preline')" stack-label
-                :placeholder="$tc('form.select_a', null, {v:$tc('items.preline')})"
+                :placeholder="$tc('form.select', 1, {v:$tc('items.preline')})"
                 dense hide-bottom-space hide-dropdown-icon
                 standout="bg-blue-grey-5 text-white"
                 :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
@@ -200,10 +200,14 @@ export default {
   },
   methods: {
     isCanUpdate(row){
-      return this.$app.can('work-orders-update') && ['OPEN'].indexOf(row.status) > -1
+      if (row.status != 'OPEN') return false
+      if (row.is_relationship) return false
+      return this.$app.can('work-orders-update')
     },
     isCanDelete(row){
-      return this.$app.can('work-orders-delete') && ['OPEN'].indexOf(row.status) > -1
+      if (row.status != 'OPEN') return false
+      if (row.is_relationship) return false
+      return this.$app.can('work-orders-delete')
     },
   },
 }

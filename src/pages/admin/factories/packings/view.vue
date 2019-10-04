@@ -92,7 +92,7 @@
             :options="[
               { label: $tc('form.add_new'), color:'green', icon: 'add',
                 detail: $tc('messages.process_create'),
-                hidden: !isCanCreate || !$app.can('packings-create'),
+                hidden: !IS_EDITABLE || !$app.can('packings-create'),
                 actions: () => {
                   $router.push(`${VIEW.resource.uri}/create`)
                 }
@@ -148,15 +148,6 @@ export default {
     this.init()
   },
   computed: {
-    isCanCreate() {
-      return this.$app.can('packings-create')
-    },
-    isCanUpdate() {
-      return this.$app.can('packings-update')
-    },
-    isCanDelete() {
-      return this.$app.can('packings-delete')
-    },
     IS_VOID() {
       if (this.IS_EDITABLE) return false
       if (this.rsView.deleted_at) return false

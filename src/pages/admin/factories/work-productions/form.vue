@@ -51,7 +51,7 @@
         <div class="col-12">
           <q-table dense hide-bottom
             class="bordered no-shadow th-uppercase no-highlight"
-            separator="none"
+            separator="vertical"
             :dark="LAYOUT.isDark"
             :data="rsForm.work_production_items"
             :rows-per-page-options ="[0]"
@@ -62,20 +62,13 @@
               { name: 'work_order_item_line_id', label: 'WO [#]', align: 'left'},
               { name: 'unit_id', label: $tc('label.unit'), align: 'center'},
               { name: 'quantity', label: $tc('label.quantity'), align: 'center'},
-              { name: 'suffix', label: '',  align: 'left'},
             ]"
             :pagination=" {sortBy: null, descending: false, page: null, rowsPerPage: 0}">
             <template slot="body" slot-scope="rsItem">
-
-              <q-tr :class="{'border-top': !Boolean(GroupDetails[rsItem.row.groupkey].findIndex(x => x.__index === rsItem.row.__index))}">
+              <q-tr>
                 <q-td key="prefix" style="width:50px">
-                  <!-- [{{rsItem.row.__index}}]=>{{rsItem.row.groupkey}}:{{GroupDetails[rsItem.row.groupkey].findIndex(x => x.__index === rsItem.row.__index)}} -->
-                  <q-btn dense flat round icon="file_copy" size="md" color="blue-grey"
-                    v-show="!Boolean(GroupDetails[rsItem.row.groupkey].findIndex(x => x.__index === rsItem.row.__index))"
-                    @click="cloneItem(rsItem.row.groupkey)"/>
-                  <q-btn dense flat round icon="clear" size="md" color="negative"
-                    v-show="!Boolean(GroupDetails[rsItem.row.groupkey].findIndex(x => x.__index === rsItem.row.__index))"
-                    @click="removeItem(rsItem.row.groupkey)"/>
+                  <q-btn dense flat round icon="clear" color="negative" tabindex="100"
+                    @click="removeItem(rsItem.row.__index)"/>
                 </q-td>
                 <q-td key="item_id" width="30%" >
                   <ux-select-filter autofocus
@@ -83,7 +76,8 @@
                     :dark="LAYOUT.isDark"
                     v-model="rsItem.row.item_id"
                     v-validate="'required'"
-                    outlined dense hide-bottom-space color="blue-grey-4"
+                    outlined dense color="blue-grey-4"
+                    hide-bottom-space hide-dropdown-icon
                     :disable="!rsForm.line_id"
                     :options="ItemOptions" clearable
                     @input="(val) => setItemReference(rsItem.row.__index, val)"
@@ -103,13 +97,14 @@
                     :dark="LAYOUT.isDark"
                     v-model="rsItem.row.work_order_item_line_id"
                     v-validate="'required'"
-                    outlined dense hide-bottom-space color="blue-grey-4"
-                    :disable="!rsForm.line_id" no-error-icon
+                    outlined dense color="blue-grey-4"
+                    no-error-icon hide-bottom-space hide-dropdown-icon
+                    :disable="!rsForm.line_id"
                     :options="WorkOrderItemLineOptions.filter(x => x.item_id === rsItem.row.item.id)" clearable
                     :error="errors.has(`work_production_items.${rsItem.row.__index}.work_order_item_line_id`)"
                     :loading="SHEET['work_orders'].loading"
                   >
-                    <q-badge slot="prepend" color="blue-grey"
+                    <q-badge slot="prepend" color="grey-5"
                       :label="'#'+rsItem.row.work_order_item_line_id"
                       v-show="Boolean(rsItem.row.work_order_item_line_id)" />
                   </ux-select-filter>
@@ -139,28 +134,16 @@
                     :error="errors.has(`work_production_items.${rsItem.row.__index}.quantity`)"
                     :suffix="' / '+ $app.number_format(MaxStock[rsItem.row.__index] / (rsItem.row.unit_rate||1))" />
                 </q-td>
-                <q-td key="suffix" width="60px" class="no-padding">
-                  <q-fab v-if="Boolean(GroupDetails[rsItem.row.groupkey].length-1 == GroupDetails[rsItem.row.groupkey].findIndex(x => x.__index === rsItem.row.__index))"
-                    class="suffix-floating"
-                    text-color="white" color="blue-grey"
-                    icon="more_vert"
-                    direction="left" >
-                    <q-fab-action dense icon="add" color="green-6"
-                      @click="addNewItemRow(rsItem.row.groupkey)" />
-                    <q-fab-action dense icon="remove" color="red"
-                      @click="removeItemRow(rsItem.row.__index, rsItem.row.groupkey)"  />
-                  </q-fab>
-                  <q-btn v-else
-                    dense round size="sm" icon="remove" color="red"
-                    @click="removeItemRow(rsItem.row.__index, rsItem.row.groupkey)" />
-
-                </q-td>
               </q-tr>
             </template>
             <q-tr slot="bottom-row" class="border-top">
-              <q-td colspan="100%">
-                <q-btn round dense @click="addNewItem()"  icon="add" color="positive"/>
-              </q-td>
+              <q-td> </q-td>
+              <q-td>
+                <q-btn outline dense color="positive" class="full-width"
+                  :label="$tc('form.add')" icon-right="add"
+                  @click="addNewItem()" />
+                </q-td>
+              <q-td colspan="100%"></q-td>
             </q-tr>
           </q-table>
         </div>
@@ -176,7 +159,7 @@
       </q-card-section>
       <q-separator :dark="LAYOUT.isDark" />
       <q-card-actions >
-        <q-btn :label="$tc('form.cancel')" icon="cancel" color="dark" @click="FORM.toBack()"></q-btn>
+        <q-btn :label="$tc('form.show', 1, {v:$tc('form.list')})" icon="list" color="dark" @click="FORM.toIndex()"></q-btn>
         <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
         <q-btn :label="$tc('form.save')" icon="save" color="positive" @click="onSave()"
           :disabled="FORM.has_relationship.length > 0">
@@ -227,8 +210,7 @@ export default {
               unit_rate: 1,
               ngratio: 0,
               item: {}, unit: {},
-              work_order_item_line_id: null,
-              groupkey: 0,
+              work_order_item_line_id: null
             }
           ]
         }
@@ -240,10 +222,6 @@ export default {
     this.init()
   },
   computed: {
-    GroupDetails() {
-      if(!this.rsForm.work_production_items.length) return []
-      return this.$_.groupBy(this.rsForm.work_production_items, 'groupkey')
-    },
     IssetWorkProductionItems() {
       if (this.rsForm.work_production_items) {
         return this.rsForm.work_production_items.some((item) => item.item_id)
@@ -279,7 +257,7 @@ export default {
         return ({
           label: detail.work_order_number,
           value: detail.id,
-          stamp: `#${detail.id}`,
+          stamp: this.$app.number_format(total),
           item_id: (detail.work_order_item.item_id || null),
           rowdata: detail
         })
@@ -456,41 +434,12 @@ export default {
       }
     },
     addNewItem() {
-      let newEntri = Object.assign(this.setDefault().work_production_items[0], {'groupkey': Object.keys(this.GroupDetails).length || 0})
+      let newEntri = Object.assign(this.setDefault().work_production_items[0])
       this.rsForm.work_production_items.push(newEntri)
     },
-    removeItem(groupkey) {
-      if(this.rsForm.work_production_items.filter(x => x.groupkey === groupkey).length) {
-        this.rsForm.work_production_items = this.rsForm.work_production_items.filter(x => x.groupkey !== groupkey)
-      }
-      if(this.rsForm.work_production_items.length < 1) this.addNewItem()
-      else {
-        this.rsForm.work_production_items.map(detail => {
-          if(detail.groupkey > groupkey) detail.groupkey--;
-          return detail
-        })
-      }
-    },
-    addNewItemRow(groupkey) {
-      const find = this.GroupDetails[groupkey].reverse().find(x => x.groupkey === groupkey)
-      const newIndex = (find.__index || 0) + 1
-      let newEntri = Object.assign(this.setDefault().work_production_items[0], {'groupkey': groupkey})
-      this.rsForm.work_production_items.splice(newIndex, 0, newEntri)
-    },
-    removeItemRow(index, groupkey) {
+    removeItem(index) {
       this.rsForm.work_production_items.splice(index, 1)
       if(this.rsForm.work_production_items.length < 1) this.addNewItem()
-      else if(!this.rsForm.work_production_items.filter(x => x.groupkey === groupkey).length) {
-        this.removeItem(groupkey)
-      }
-    },
-    cloneItem(groupkey) {
-      const newGroupKey = Object.keys(this.GroupDetails).length || 0
-      let newItems = this.rsForm.work_production_items.filter(x => x.groupkey === groupkey)
-      newItems.map(detail => {
-        let newEntri = Object.assign({}, detail, {'groupkey': newGroupKey})
-        this.rsForm.work_production_items.push(newEntri)
-      })
     },
     onSave() {
       const submit = () => {
