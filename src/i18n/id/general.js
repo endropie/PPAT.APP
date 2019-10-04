@@ -30,8 +30,8 @@ export default {
 
   work_order: 'SPK | Surat Perintah Kerja',
   work_process: 'SPK Konfirmasi | Konfirmasi Perintah Kerja',
-  work_production: 'Proses Produksi | Pengerjaan Produksi',
-  packing: 'Packing | Pengepakan Part',
+  work_production: 'Input Produksi | Pengerjaan Produksi',
+  packing: 'Input Packing | Pengepakan Part',
 
   forecast: 'Forecast',
   request_order: 'Sales Order | Pemesanan Penjualan',

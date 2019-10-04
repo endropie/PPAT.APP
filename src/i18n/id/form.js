@@ -1,14 +1,17 @@
 export default {
   add: 'Tambah',
   add_new: 'Tambah Baru',
+  add_clone: 'Tambah Clone',
   back: 'Kembali',
   cancel: 'Batal',
   create: 'Buat | Dibuat',
-  confirm: 'Konfirmasi {v} | {v} dikonfirmasi',
-  close: 'Tutup',
+  confirm: 'Konfirmasi {v}|{v} dikonfirmasi',
+  close: 'Tutup | Ditutup',
   delete: 'Hapus',
   delete_all: 'Hapus All',
   edit: 'Edit',
+  list: 'Data',
+  mark: 'Tandai {v}',
   new: 'Baru',
   reject: 'Tolak | Ditolak',
   remove: 'Hapus | Dihapus',
@@ -16,7 +19,7 @@ export default {
   restoration: 'Perbaikan',
   save: 'Simpan | Disimpan',
   search: 'Cari | Pencarian',
-  select: 'Pilih | Dipilih',
+  select: 'Pilih {v}|{v} Dipilih ',
   select_a: 'Pilih salah satu {v}',
   show: 'Tampilkan {v}',
   submit: 'Submit | Submit',
@@ -24,5 +27,5 @@ export default {
   revision: 'Revisi',
   update: 'Perubahan | dirubah',
   validation: 'Validasi {v}| Ter-validasi',
-  void: 'Batal'
+  void: 'Pembatal'
 }
