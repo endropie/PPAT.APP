@@ -50,7 +50,7 @@ export default {
         if(this.Colors && this.Colors[this.Value]) {
           return this.Colors[this.Value]
         }
-        return 'light'
+        return 'lime'
       }
     },
     methods: {
