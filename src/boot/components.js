@@ -6,6 +6,7 @@ import ListItem from '@/components/ListItem'
 
 import UXModalView from '@/components/UXModalView'
 import UXSelectFilter from '@/components/UXSelectFilter'
+import UXSelect from '@/components/UXSelect'
 import UXBtnSelect from '@/components/UXBtnSelect'
 import UXNumeric from '@/components/UXNumeric'
 import UXDate from '@/components/UXDate'
@@ -26,6 +27,7 @@ export default async ({ app, store, router, Vue }) => {
   // Vue.component('ux-modal-source', UXModalSource)
   Vue.component('ux-modal-view', UXModalView)
   Vue.component('ux-select-filter', UXSelectFilter)
+  Vue.component('ux-select', UXSelect)
   Vue.component('ux-btn-select', UXBtnSelect)
   Vue.component('ux-numeric', UXNumeric)
   Vue.component('ux-date', UXDate)
