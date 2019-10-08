@@ -60,38 +60,6 @@ export default {
       setTimeout(() => {
         this.$router.push('/auth')
       }, 100)
-    },
-    setLoginStore (response) {
-      if (response && response.data.valid === true) {
-        this.$axios.setHeader([
-          {key: 'Accept', value: 'application/json'},
-          {key: 'Authorization', value: `Bearer ${response.data.access.token}`}
-        ])
-
-        this.$store.commit('admin/setLogin', {
-          auth: {
-            token: response.data.access.token,
-            login_in: response.data.access.expires_in,
-            login_at: new Date()
-          },
-          user: {
-            permiss: response.data.user.all_permission,
-            name: response.data.user.name,
-            email: response.data.user.email,
-            id: response.data.user.id
-          }
-        })
-
-        this.$store.commit('admin/setSetting', response.data.settings)
-      }
-      else {
-        this.$axios.setHeader([
-          {key: 'Accept', value: 'application/json'},
-          {key: 'Authorization', value: null}
-        ])
-        this.$store.commit('admin/setLocked')
-        this.directToLogin()
-      }
     }
   }
 }

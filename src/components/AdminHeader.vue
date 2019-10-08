@@ -102,24 +102,20 @@ export default {
   },
   methods: {
     openURL,
-    ...mapActions( {
-      // setValue: 'admin/setValue',
-      // setAuthClear: 'admin/setLogoff',
-    }),
     resetScroll (el, done) {
       document.documentElement.scrollTop = 0
       document.body.scrollTop = 0
       done()
     },
     setLogout () {
-      this.$axios.setHeader([
-        {key: 'Accept', value: 'application/json'},
-        {key: 'Authorization', value: null}
-      ])
-      this.$store.commit('admin/setLogoff');
-      setTimeout(() => {
-        this.$router.push('/')
-      }, 500)
+      this.$axios.set('POST', '/api/v1/auth/logout')
+      .then(response => {
+        this.$store.commit('admin/setLogoff');
+        setTimeout(() => this.$router.push('/'), 500)
+      })
+      .catch(error => {
+        this.$app.response.error(error.response)
+      })
     }
   }
 }

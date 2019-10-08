@@ -149,6 +149,39 @@ export default {
       this.$router.push(redirUrl)
     },
     onLoginSubmit() {
+      const  setLoginStore = (response) => {
+        if (response && response.data.success === true) {
+          this.$axios.setHeader([
+            {key: 'Accept', value: 'application/json'},
+            {key: 'Authorization', value: `Bearer ${response.data.token}`}
+          ])
+
+          this.$store.commit('admin/setLogin', {
+            auth: {
+              token: response.data.token,
+              login_in: response.data.expires_in,
+              login_at: new Date()
+            },
+            user: {
+              permiss: response.data.user.all_permission,
+              name: response.data.user.name,
+              email: response.data.user.email,
+              id: response.data.user.id
+            }
+          })
+
+          this.$store.commit('admin/setSetting', response.data.settings)
+        }
+        else {
+          this.$axios.setHeader([
+            {key: 'Accept', value: 'application/json'},
+            {key: 'Authorization', value: null}
+          ])
+          this.$store.commit('admin/setLocked')
+          this.directToLogin()
+        }
+      }
+
       this.$validator.validate().then(result => {
         if (!result) {
           this.$q.notify({
@@ -161,10 +194,8 @@ export default {
         this.FORM.btnLoadingSubmit = true
         this.$axios.post('/api/v1/login', this.rsLogin)
         .then((response) => {
-          this.setLoginStore(response)
-          setTimeout(() => {
-            this.redirectToAdmin()
-          }, 800);
+          setLoginStore(response)
+          setTimeout(() => this.redirectToAdmin(), 800);
         })
         .catch(error => {
           this.$app.response.error(error.response)
