@@ -22,6 +22,9 @@ export default {
   documentation: 'Dokumentasi',
 
   incoming_good: 'Incoming Good | Kedatangan - Part Material',
+  opname_stocks: 'Stok Opname | Penyesuaian stock',
+  transfer_stocks: 'Migrasi Stok | Pemindahan stock',
+
   outgoing_good: 'Outgoing Good | Keberangkatan - Part',
   outgoing_verification: 'Outgoing Verification | Verifikasi Part Keluar',
 

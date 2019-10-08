@@ -10,7 +10,7 @@ export default {
   delete: 'Hapus',
   delete_all: 'Hapus All',
   edit: 'Edit',
-  list: 'Data',
+  list: 'List Data',
   mark: 'Tandai {v}',
   new: 'Baru',
   reject: 'Tolak | Ditolak',

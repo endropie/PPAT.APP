@@ -8,6 +8,9 @@ export default {
   form_has_updated: 'Form {v} Telah di-rubah!',
   form_has_deleted: 'Form {v} Telah di-hapus!',
   form_has_validated: 'Form {v} Telah di-validasi!',
+  form_has_void: 'Form {v} Telah di-void!',
+
+  input_min_character: 'Input minimal {v} karakter',
 
   no_results: 'Tidak ada hasil.',
   no_details: 'Tidak ada detail.',
@@ -27,7 +30,6 @@ export default {
 
   to_sure: 'Apakah anda Yakin untuk {v} ?',
   to_complete_form: 'Silahkan Lengkapi Form Terlebih Dahulu!',
-
   to_waiting: 'Mohon tunggu',
 
   process_create: 'Form Penambahan data.',
