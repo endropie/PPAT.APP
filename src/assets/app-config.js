@@ -21,7 +21,7 @@ const config = {
       { value: '', label: '-' },
       { value: '{Y}', label: `YYYY`, digit: `${moment().format('YYYY')}` },
       { value: '{y}', label: `YY`, digit: `${moment().format('YY')}` },
-      { value: '{m-Y}', label: `YYYY-MM`, digit: `${moment().format('YYYY-MM')}` }
+      { value: '{Y-m}', label: `YYYY-MM`, digit: `${moment().format('YYYY-MM')}` }
     ],
     transaction_mode: [
       { label: 'REGULER', value: 'REGULER' },

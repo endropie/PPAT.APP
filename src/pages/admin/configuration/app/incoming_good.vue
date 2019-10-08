@@ -4,7 +4,14 @@
         <span class="text-h4" header>{{$tc('general.incoming_good')}}</span>
       </q-card-section>
       <q-card-section class="row q-col-gutter-xs" v-if="FORM.show">
-        <q-input class="col-12 col-sm-6"
+        <div class="col-12 self-center">
+          <q-chip outline square color="primary" >
+            <q-badge :label="'NUMBER'" class="on-left"></q-badge>
+            {{EXAMP}}
+          </q-chip>
+        </div>
+
+        <q-input class="col-12 col-sm-4"
           name="number_prefix"
           :label="$tc('label.code', 1, {v:'prefix'})"
           v-model="rsForm.number_prefix"
@@ -13,14 +20,8 @@
           :error="errors.has('number_prefix')"
           :error-message="errors.first('number_prefix')" />
 
-        <div class="col-12- col-sm-6 self-center">
-          <q-chip outline square color="primary" >
-            <q-badge :label="'EXAMPLE'" class="on-left"></q-badge>
-            {{EXAMP}}
-          </q-chip>
-        </div>
 
-        <q-select class="col-12 col-sm-6"
+        <q-select class="col-12 col-sm-4"
           name="number_interval"
           label="Interval Prefix"
           v-model="rsForm.number_interval"
@@ -31,7 +32,7 @@
           :error="errors.has('number_interval')"
           :error-message="errors.first('number_interval')" />
 
-        <q-input class="col-12 col-sm-6"
+        <q-input class="col-12 col-sm-4"
           name="number_digit"
           :label="$tc('label.quantity', 1, {v: 'Digit'})"
           v-model="rsForm.number_digit"
@@ -39,6 +40,33 @@
           :dark="LAYOUT.isDark"
           :error="errors.has('number_digit')"
           :error-message="errors.first('number_digit')" />
+
+        <div class="col-12 self-center">
+          <q-chip outline square color="primary" >
+            <q-badge :label="'CUST INDEXED'" class="on-left"></q-badge>
+            {{INDEXED_EXAMP}}
+          </q-chip>
+        </div>
+
+        <q-select class="col-12 col-sm-6"
+          name="indexed_number_interval"
+          label="Cust. indexed Prefix"
+          v-model="rsForm.indexed_number_interval"
+          :options="CONFIG.options['prefix_intervals']"
+          emit-value map-options
+          v-validate="''"
+          :dark="LAYOUT.isDark"
+          :error="errors.has('indexed_number_interval')"
+          :error-message="errors.first('indexed_number_interval')" />
+
+        <q-input class="col-12 col-sm-6"
+          name="indexed_number_digit"
+          :label="$tc('label.quantity', 1, {v: 'Digit'})"
+          v-model="rsForm.indexed_number_digit"
+          v-validate="'max:191'"
+          :dark="LAYOUT.isDark"
+          :error="errors.has('indexed_number_digit')"
+          :error-message="errors.first('indexed_number_digit')" />
 
       </q-card-section>
       <q-card-actions class="q-gutter-sm" align="right">
@@ -93,6 +121,20 @@ export default {
       }
 
       return example + String(1).padStart(this.rsForm.number_digit || 5, '0')
+    },
+
+    INDEXED_EXAMP() {
+      const separator = this.SETTING.general.prefix_separator
+      let example = '[CODE CUST]' + separator
+
+      if (this.rsForm.indexed_number_interval) {
+        const find = this.CONFIG.options['prefix_intervals'].find(x => x.value === this.rsForm.indexed_number_interval)
+        if (find) {
+          example += find.digit + separator
+        }
+      }
+
+      return example + String(1).padStart(this.rsForm.indexed_number_digit || 5, '0')
     }
   },
   methods: {

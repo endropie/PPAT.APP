@@ -44,6 +44,10 @@
                   <th>{{$tc('warehouses.registration')}}</th>
                   <td>{{rsView.registration}}</td>
                 </tr>
+                <tr>
+                  <th>{{'No. Indexed'}}</th>
+                  <td>{{rsView.indexed_number}}</td>
+                </tr>
                 <tr v-if="rsView.request_order">
                   <th>{{$tc('general.request_order')}}</th>
                   <td>{{rsView.request_order.number}}</td>
