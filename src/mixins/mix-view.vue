@@ -160,7 +160,11 @@ export default {
 
     VIEW__toBack () {
       this.$router.go(-1)
-    }
+    },
+
+    print() {
+      window.print()
+    },
   }
 }
 </script>

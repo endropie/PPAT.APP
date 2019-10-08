@@ -278,8 +278,8 @@ export default {
             console.warn('then', response)
             if (response.data.success) {
               this.$app.notify.success({
-                message: this.$tc('messages.success_void'),
-                detail: this.$tc('messages.form_has_void', 1, {v: `#${this.ROUTE.params.id}`}),
+                message: this.$tc('messages.success', 1, 'VOID').toUpperCase(),
+                detail: this.$tc('messages.form_has_void', 1, {v: `[code: #${this.ROUTE.params.id}]`}),
               })
               this.FORM__toIndex()
             }
