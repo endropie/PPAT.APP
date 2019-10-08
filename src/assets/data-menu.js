@@ -121,6 +121,18 @@ const warehouses = [
       { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'incoming-goods-read' } }
     ]
+  },
+  {
+    name: 'Stock Opname',
+    icon: 'move_to_inbox',
+    path: 'opname-stocks',
+    lang: 'general.opname_stocks',
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'opname-stocks-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'opname-stocks-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'opname-stocks-update' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'opname-stocks-read' } }
+    ]
   }
 ]
 
