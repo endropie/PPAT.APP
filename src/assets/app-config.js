@@ -2,7 +2,8 @@ import moment from 'moment'
 
 const config = {
   general: {
-    baseURL: null // 'http://ppa.virmata.com' // 'http://laravel.ppa'
+    app_name: 'PPA TANGERANG',
+    baseURL: null
   },
   options: {
     state_colors: {

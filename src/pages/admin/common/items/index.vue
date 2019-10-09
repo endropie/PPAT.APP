@@ -89,14 +89,6 @@
           <q-btn v-if="isCanDelete" dense flat color="grey" icon="delete" @click.native="TABLE.delete(rs.row)" />
         </q-td>
 
-        <q-td slot="body-cell-PDOREG" slot-scope="rs" :props="rs">
-          <span class="col">{{rs.row.totals['PDO.REG'] === 0 ? '-' : rs.row.totals['PDO.REG']}}</span>
-        </q-td>
-
-        <q-td slot="body-cell-PDORET" slot-scope="rs" :props="rs">
-          <span class="col">{{rs.row.totals['PDO.RET'] === 0 ? '-' : rs.row.totals['PDO.RET']}}</span>
-        </q-td>
-
         <q-td slot="body-cell-customer" slot-scope="rs" :props="rs">
           <span v-if="rs.row.customer" v-text="rs.row.customer.code"/>
           <span v-else v-text="'-'" />
@@ -162,33 +154,15 @@ export default {
           // { name: 'enable', label:this.$tc('label.active'), field: 'enable', align: 'center', sortable: true },
 
           // Item stocks
-          { name: 'ALL', label: 'ALL', sortable: true, style:'text-weight-medium',
-            field: (item)=> (
-              Number(item.totals['FM'])
-              + Number(item.totals['WO'])
-              + Number(item.totals['WIP'])
-              + Number(item.totals['FG'])
-              + Number(item.totals['NG'])
-              + Number(item.totals['RET'])
-            )
+          { name: 'stock', label: this.$tc('label.stock'), sortable: true,
+            field: (item)=> item.totals['FM'],
+            format: (v) => this.$app.number_format(v)
           },
-          { name: 'FM', field: (item)=> item.totals['FM'] || '-', label: 'FM', sortable: true },
-          { name: 'WO', field: (item)=> item.totals['WO'] || '-', label: 'WO', sortable: true },
-          { name: 'WIP', field: (item)=> item.totals['WIP'] || '-', label: 'WIP', sortable: true },
-          { name: 'FG', field: (item)=> item.totals['FG'] || '-', label: 'FG', sortable: true },
-          { name: 'NG', field: (item)=> item.totals['NG'] || '-', label: 'NC', sortable: true },
-          { name: 'RET', field: (item)=> item.totals['RET'] || '-', label: 'NCR', sortable: true },
-
-          { name: 'RDOREG', field: (item)=> item.totals['RDO.REG'] || '-', label: 'RDO [REG]', hidden: !process.env.DEV },
-          { name: 'RDORET', field: (item)=> item.totals['RDO.RET'] || '-', label: 'RDO [RET]', hidden: !process.env.DEV },
-          { name: 'PDOREG', field: (item)=> item.totals['PDO.REG'] || '-', label: 'PDO [REG]', align: 'center', clases:'bg-faded', hidden:  !process.env.DEV },
-          { name: 'PDORET', field: (item)=> item.totals['PDO.RET'] || '-', label: 'PDO [RET]', align: 'center', clases:'bg-faded', hidden:  !process.env.DEV },
-          { name: 'VDO', field: (item)=> item.totals['VDO'] || '-', label: 'VDO', sortable: true, hidden:  !process.env.DEV },
 
           { name: 'price', label: 'Price', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },
           { name: 'price_dm', label: 'Price in DM', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },
           { name: 'price_brl', label: 'Price in BRL', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },
-          // { name: 'brand', label: this.$tc('general.brand'), field: 'bran_id', align: 'left', sortable: true},
+          { name: 'brand', label: this.$tc('general.brand'), field: 'bran_id', align: 'left', sortable: true},
           // { name: 'specification', label: 'Specification', field: 'specification_id', align: 'left', sortable: true},
           // { name: 'part_alias', label: 'Part alias', field: 'part_alias', sortable: true },
           { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true, required: true, },

@@ -6,6 +6,8 @@
     <vue-autonumeric
       :disabled="$attrs.disable"
       :readonly="$attrs.readonly"
+      :class="$attrs['input-class']"
+      :style="$attrs['input-style']"
       v-model="value"
       v-on="$listeners"
       class="ux-numeric q-field__native"
@@ -33,7 +35,7 @@ export default {
       VueAutonumeric,
     },
     props: {
-      options :{
+      options : {
         type: Object,
         default: ()=> {},
       }

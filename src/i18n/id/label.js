@@ -45,6 +45,7 @@ export default {
   shift: 'Shift',
   size: 'Ukuran',
   state: 'Status',
+  stock: 'Stok',
   summary: 'Total ',
   total: 'Total {v}',
   transaction: 'Transaksi',

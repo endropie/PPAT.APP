@@ -24,10 +24,7 @@ const common = [
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'employees-update' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'items-read' } }
     ]
-  }
-]
-
-const incomes = [
+  },
   {
     name: 'Customers',
     icon: 'group',
@@ -38,198 +35,6 @@ const incomes = [
       { page: 'form', path: 'create', meta: { mode: 'create', permission: 'customers-create' } },
       { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'customers-update' } },
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'customers-read' } }
-    ]
-  },
-  {
-    name: 'Forecasts',
-    icon: 'timeline',
-    path: 'forecasts',
-    lang: 'general.forecast',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'forecasts-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'forecasts-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'forecasts-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'forecasts-read' } }
-    ]
-  },
-  {
-    name: 'Sale Orders',
-    icon: 'shop',
-    path: 'request-orders',
-    lang: 'general.request_order',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'request-orders-read;pre-deliveries-create' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'request-orders-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'request-orders-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'request-orders-read;pre-deliveries-create' } }
-    ]
-  }
-]
-
-const expenses = [
-  {
-    hide: true,
-    name: 'Purchase Orders',
-    icon: 'shopping_basket',
-    path: 'purchase-orders',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'purchase-orders-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'purchase-orders-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'purchase-orders-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'purchase-orders-read' } }
-    ]
-  },
-  {
-    hide: true,
-    name: 'Purchase Deliveries',
-    icon: 'archive',
-    path: 'purchase-deliveries',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'purchase-delivery-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'purchase-delivery-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'purchase-delivery-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'purchase-delivery-read' } }
-    ]
-  },
-  {
-    hide: true,
-    name: 'Purchase bills',
-    icon: 'money',
-    path: 'purchase-bills',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'purchase-bills-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'purchase-bills-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'purchase-bills-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'purchase-bills-read' } }
-    ]
-  }
-]
-
-const warehouses = [
-  {
-    name: 'Incoming Good',
-    icon: 'move_to_inbox',
-    path: 'incoming-goods',
-    lang: 'general.incoming_good',
-    param: `?status=OPEN`,
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'incoming-goods-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'incoming-goods-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'incoming-goods-update' } },
-      { page: 'restoration', path: ':id/restoration', meta: { mode: 'edit', permission: 'incoming-goods-create' } },
-      { page: 'validation', path: ':id/validation', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
-      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'incoming-goods-read' } }
-    ]
-  },
-  {
-    name: 'Stock Opname',
-    icon: 'move_to_inbox',
-    path: 'opname-stocks',
-    lang: 'general.opname_stocks',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'opname-stocks-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'opname-stocks-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'opname-stocks-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'opname-stocks-read' } }
-    ]
-  }
-]
-
-const deliveries = [
-  {
-    name: 'Pre-Delivery Orders',
-    icon: 'assignment',
-    path: 'pre-deliveries',
-    lang: 'general.pre_delivery',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'pre-deliveries-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'pre-deliveries-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'pre-deliveries-update' } },
-      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'pre-deliveries-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'pre-deliveries-read' } }
-    ]
-  },
-  {
-    name: 'Outgoing Verification',
-    icon: 'assignment_turned_in',
-    path: 'outgoing-verifications',
-    lang: 'general.outgoing_verification',
-    param: `?unvalidated=1`,
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-verifications-read' } },
-      { page: 'create', path: 'create', meta: { mode: 'create', permission: 'outgoing-verifications-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'outgoing-verifications-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'outgoing-verifications-read' } }
-    ]
-  },
-  {
-    name: 'Outgoing Good',
-    icon: 'unarchive',
-    path: 'outgoing-goods',
-    lang: 'general.outgoing_good',
-    param: ``,
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-goods-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'outgoing-goods-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'outgoing-goods-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'outgoing-goods-read' } }
-    ]
-  },
-  {
-    name: 'SJ-Delivery Orders',
-    icon: 'local_offer',
-    path: 'delivery-orders',
-    lang: 'general.sj_delivery',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'sj-delivery-orders-read' } },
-      // {page: 'form', path: 'create', meta: {mode: 'create', permission: 'delivery-orders-create'}},
-      // {page: 'form', path: ':id/edit', meta: {mode: 'edit', permission: 'delivery-orders-update'}},
-      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'sj-delivery-orders-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'sj-delivery-orders-read' } }
-    ]
-  }
-]
-
-const factories = [
-  {
-    name: 'Work Order',
-    icon: 'work',
-    path: 'work-orders',
-    lang: 'general.work_order',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'work-orders-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'work-orders-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-orders-update' } },
-      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'work-orders-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'work-orders-read' } },
-      { page: 'view-prelines', path: ':id/prelines', meta: { mode: 'view', permission: 'work-orders-read' } }
-    ]
-  },
-  {
-    name: 'Work Production',
-    icon: 'gavel',
-    path: 'work-productions',
-    lang: 'general.work_production',
-    param: '/create',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'work-productions-read' } },
-      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'work-productions-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'work-productions-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'work-productions-read' } }
-    ]
-  },
-  {
-    name: 'Packing Goods',
-    icon: 'move_to_inbox',
-    path: 'packings',
-    lang: 'general.packing',
-    param: '/create',
-    resources: [
-      { page: 'index', path: '', icon: 'list', meta: { permission: 'packings-read' } },
-      { page: 'create', path: 'create', meta: { mode: 'create', permission: 'packings-create' } },
-      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'packings-update' } },
-      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'packings-read' } }
     ]
   }
 ]
@@ -449,41 +254,62 @@ export default [
     lang: 'general.common',
     children: common
   },
-  { // Warehouse
-    name: 'Warehouse',
-    icon: 'kitchen',
-    path: 'warehouses',
-    lang: 'general.warehouse',
-    children: warehouses
+  // Bussines process
+  {
+    name: 'Forecasts',
+    icon: 'pie_chart',
+    path: 'forecasts',
+    lang: 'general.forecast',
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'forecasts-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'forecasts-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'forecasts-update' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'forecasts-read' } }
+    ]
   },
-  { // Factory
-    name: 'Factories',
-    icon: 'group_work',
-    path: 'factories',
-    lang: 'general.factory',
-    children: factories
+  {
+    name: 'Incoming Good',
+    icon: 'move_to_inbox',
+    path: 'incoming-goods',
+    lang: 'general.incoming_good',
+    param: `?status=OPEN`,
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'incoming-goods-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'incoming-goods-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'incoming-goods-update' } },
+      { page: 'restoration', path: ':id/restoration', meta: { mode: 'edit', permission: 'incoming-goods-create' } },
+      { page: 'validation', path: ':id/validation', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
+      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'incoming-goods-validation' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'incoming-goods-read' } }
+    ]
   },
-  { // Incomes
-    name: 'Incomes',
-    icon: 'monetization_on',
-    path: 'incomes',
-    lang: 'general.income',
-    children: incomes
+  {
+    name: 'Outgoing Good',
+    icon: 'unarchive',
+    path: 'outgoing-goods',
+    lang: 'general.outgoing_good',
+    param: `?status=OPEN`,
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'outgoing-goods-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'outgoing-goods-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'outgoing-goods-update' } },
+      { page: 'restoration', path: ':id/restoration', meta: { mode: 'edit', permission: 'outgoing-goods-create' } },
+      { page: 'validation', path: ':id/validation', meta: { mode: 'edit', permission: 'outgoing-goods-validation' } },
+      { page: 'revision', path: ':id/revision', meta: { mode: 'edit', permission: 'outgoing-goods-validation' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'outgoing-goods-read' } }
+    ]
   },
-  { // Expenses
-    hide: true,
-    name: 'Expenses',
-    icon: 'shopping_cart',
-    path: 'expenses',
-    lang: 'general.expense',
-    children: expenses
-  },
-  { // Warehouse
-    name: 'Deliveries',
-    icon: 'local_shipping',
-    path: 'deliveries',
-    lang: 'general.delivery',
-    children: deliveries
+  {
+    name: 'Stock Opname',
+    icon: 'assignment_turned_in',
+    path: 'opname-stocks',
+    lang: 'general.opname_stocks',
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'opname-stocks-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'opname-stocks-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'opname-stocks-update' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'opname-stocks-read' } }
+    ]
   },
   { // References
     name: 'References',

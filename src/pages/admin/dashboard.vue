@@ -9,7 +9,7 @@
 
 <script>
 import MixPage from '@/mixins/mix-page.vue'
-import IncomingGood from '@/pages/admin/warehouses/incoming-goods/dashboard'
+import IncomingGood from '@/pages/admin/incoming-goods/dashboard'
 
 export default {
   mixins:[MixPage],
