@@ -68,7 +68,7 @@
             name="registration"
             :label="$tc('warehouses.registration')"
             v-model="rsForm.registration" readonly
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             :error="errors.has('registration')"
             :error-message="errors.first('registration')"/>
@@ -143,11 +143,10 @@
             <template v-slot:body="{row}">
             <q-tr>
               <q-td key="prefix" style="width:50px">
-                <!-- <q-btn dense flat icon="clear" color="red" @click="excludeItem(row, row.__index)" /> -->
                 <q-btn dense flat color="primary"
-                  @click="row.valid = row.valid ? 0 : row.quantity" >
+                  @click="row.is_valid = !Boolean(row.is_valid)" >
                   <q-tooltip  content-class="bg-primary">set valid</q-tooltip>
-                  <q-icon v-if="row.valid == row.quantity" name="done_all"/>
+                  <q-icon v-if="row.is_valid" name="done_all"/>
                   <q-icon v-else name="done_all" color="light"/>
                 </q-btn>
               </q-td>
@@ -240,7 +239,7 @@
       <q-btn :label="$tc('form.reset')" icon="refresh" color="light" @click="setForm(FORM.data)"></q-btn>
       <q-btn :label="$tc('form.reject')" icon="block" color="red-10" @click="onRejection()" v-if="IS_EDITABLE" :loading="FORM.loading" />
       <q-btn :label="$tc('form.validation')" icon="save" color="positive" @click="onSave()"
-        v-if="IS_EDITABLE && !rsForm.incoming_good_items.some(x => x.quantity !== x.valid)"
+        v-if="IS_EDITABLE && !rsForm.incoming_good_items.some(x => !Boolean(x.is_valid))"
         :loading="FORM.loading"
       />
     </q-card-actions>

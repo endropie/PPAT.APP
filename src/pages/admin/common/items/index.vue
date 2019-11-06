@@ -155,14 +155,17 @@ export default {
 
           // Item stocks
           { name: 'stock', label: this.$tc('label.stock'), sortable: true,
-            field: (item)=> item.totals['FM'],
+            field: (item)=> Number(item.totals['REG']) + Number(item.totals['RET']) + Number(item.totals['NG']),
             format: (v) => this.$app.number_format(v)
           },
+          { name: 'REG', label: 'REG', sortable: true, field: (item)=> Number(item.totals['REG']), format: (v) => this.$app.number_format(v), style:'width:50px'},
+          { name: 'RET', label: 'RET', sortable: true, field: (item)=> Number(item.totals['RET']), format: (v) => this.$app.number_format(v), style:'width:50px'},
+          { name: 'NG', label: 'NG', sortable: true, field: (item)=> Number(item.totals['NG']), format: (v) => this.$app.number_format(v), style:'width:50px'},
 
           { name: 'price', label: 'Price', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },
           { name: 'price_dm', label: 'Price in DM', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },
           { name: 'price_brl', label: 'Price in BRL', field: 'price', sortable: true, hidden: !this.$app.can('items.price') },
-          { name: 'brand', label: this.$tc('general.brand'), field: 'bran_id', align: 'left', sortable: true},
+          // { name: 'brand', label: this.$tc('general.brand'), field: 'bran_id', align: 'left', sortable: true},
           // { name: 'specification', label: 'Specification', field: 'specification_id', align: 'left', sortable: true},
           // { name: 'part_alias', label: 'Part alias', field: 'part_alias', sortable: true },
           { name: 'code', field: 'code', label: 'Intern code', align: 'left', sortable: true, required: true, },

@@ -14,7 +14,7 @@
       <!-- ROW::1st -->
       <div class="col-12 col-sm-6" >
         <div class="column">
-          <ux-select-filter
+          <ux-select-filter autofocus
             name="customer_id"
             :label="$tc('general.customer')"
             :data-vv-as="$tc('general.customer')"
@@ -29,7 +29,7 @@
             name="brand_id"
             :label="$tc('general.brand')"
             v-model="rsForm.brand_id"
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             :options="BrandOptions"
             input-debounce="0"
@@ -40,7 +40,7 @@
             name="specification_id"
             v-model="rsForm.specification_id"
             :label="$tc('items.specification')"
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             :options="SpecificationOptions"
             :error="errors.has('specification_id')"
@@ -149,7 +149,7 @@
             class="col-12"
             icon="timer"
             v-model="rsForm.packing_duration"
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             :error="errors.has('packing_duration')"
             :error-message="errors.first('packing_duration')"
@@ -160,7 +160,7 @@
             label="SA area"
             v-model="rsForm.sa_dm"
             type="number"
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             class="col-12"
             :error="errors.has('sa_dm')"
@@ -172,7 +172,7 @@
             label="Weight"
             v-model="rsForm.weight"
             type="number"
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             class="col-12"
             :error="errors.has('weight')"
@@ -196,19 +196,19 @@
 
           <q-select class="col-12"
             name="load_type"
-            :label="$tc('label.mode', 1, {v:'Load'})" stack-label
+            :label="$tc('label.mode', 1, {v:'Load'})"
             v-model="rsForm.load_type"
             :options="['HANGER', 'BAREL']"
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             :error="errors.has('load_type')" />
 
           <q-input class="col-12"
             name="load_capacity"
-            :label="$tc('label.capacity', 1, {v:'Load'})" stack-label
+            :label="$tc('label.capacity', 1, {v:'Load'})"
             type="number"
             v-model="rsForm.load_capacity"
-            v-validate="'required'"
+            v-validate="''"
             :dark="LAYOUT.isDark"
             :error="errors.has('load_capacity')" />
 
@@ -221,8 +221,7 @@
         v-model="rsForm.price"
         v-validate="'required'"
         standout filled dark
-        color="white"
-        bg-color="primary"
+        color="white" bg-color="primary"
         align="center"
         :error="errors.has('price')"
         :error-message="errors.first('price')"
@@ -232,8 +231,7 @@
         label="Price in DM"
         :value="price_area"
         standout filled dark
-        color="white"
-        bg-color="primary"
+        color="white" bg-color="primary"
         align="center"
         :error="errors.has('price_area')"
         :error-message="errors.first('price_area')"
@@ -244,8 +242,7 @@
         type="number" readonly
         :value="price_packaged"
         standout filled dark
-        color="white"
-        bg-color="primary"
+        color="white" bg-color="primary"
         align="center"
         :error="errors.has('price_packaged')"
         :error-message="errors.first('price_packaged')"
@@ -260,7 +257,7 @@
           <q-item-label header>Pre Line Production</q-item-label>
           <q-item v-for="(item, index) in rsForm.item_prelines" :key="index">
             <q-item-section>
-              <ux-select-filter
+              <ux-select-filter autofocus
                 :ref="`pre-line`"
                 :name="`pre-line-${index}`"
                 v-model="rsForm.item_prelines[index].line_id"
@@ -282,7 +279,7 @@
               </ux-select-filter>
             </q-item-section>
             <q-item-section side>
-              <q-btn :class="{'invisible':!index}" dense flat round icon="clear" color="red-5" @click="removeProduction(index)"/>
+              <q-btn dense flat round icon="clear" color="red-5" @click="removeProduction(index)"/>
             </q-item-section>
           </q-item>
           <q-item>
@@ -298,7 +295,7 @@
           <q-item-label header>Unit Convertion</q-item-label>
           <q-item v-for="(item, index) in rsForm.item_units" :key="index">
             <q-item-section>
-              <q-input
+              <q-input autofocus
                 :name="`unit-${index}`"
                 type="number"
                 v-model="rsForm.item_units[index].rate"
@@ -407,10 +404,10 @@ export default {
           unit_id: null,
 
           price: null,
-          item_prelines:[ {id:null, line_id: null, note: null} ],
-          item_units:[ {id:null, unit_id:null, rate:null} ],
+          item_prelines:[],
+          item_units:[],
           item_contacts:[ {id:null} ],
-          enable: true,
+          enable: 1,
           description:null,
         }
       }
@@ -512,19 +509,18 @@ export default {
       this.rsForm['code'] = [CUST.code, BRAND.code, SPEC.code].join('-')
     },
 
-    addNewProduction (autofocus = true) {
-      var newEntri =this.setDefault().item_prelines[0];
-
+    addNewProduction () {
+      var newEntri = Object.assign({id:null, line_id: null, note: null})
       this.rsForm.item_prelines.push(newEntri)
     },
 
     removeProduction (index) {
         this.rsForm.item_prelines.splice(index, 1)
-        if(this.rsForm.item_prelines.length < 1) this.addNewProduction()
+        // if(this.rsForm.item_prelines.length < 1) this.addNewProduction()
     },
 
-    addNewUnit (autofocus = true) {
-      var newEntri =this.setDefault().item_units[0];
+    addNewUnit () {
+      var newEntri = Object.assign({id:null, unit_id:null, rate:null});
 
       this.rsForm.item_units.push(newEntri)
     },

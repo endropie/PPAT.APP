@@ -63,19 +63,19 @@
             :error="errors.has('time')"
             :error-message="errors.first('time')" />
 
-          <q-input name="registration" class="col-12"
+          <!-- <q-input name="registration" class="col-12"
             :label="$tc('warehouses.registration')"
             v-model="rsForm.registration"
             v-validate="'required'"
             :dark="LAYOUT.isDark"
             :error="errors.has('registration')"
-            :error-message="errors.first('registration')"/>
+            :error-message="errors.first('registration')"/> -->
         </div>
       </div>
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm">
           <!--  -->
-          <q-input class="col-12"
+          <q-input class="col-12 col-sm-7"
             name="reference_number"
             stack-label :label="$tc('warehouses.reference_number')"
             v-model="rsForm.reference_number"
@@ -84,7 +84,7 @@
             :error="errors.has('reference_number')"
             :error-message="errors.first('reference_number')"/>
 
-          <ux-date class="col-12"
+          <ux-date class="col-12 col-sm-5"
             name="reference_date" type="date"
             stack-label :label="$tc('warehouses.reference_date')"
             v-model="rsForm.reference_date"
@@ -139,69 +139,59 @@
           :pagination="{ sortBy: null, descending: false, page: null, rowsPerPage: 0 }"
           >
 
-            <template v-slot:body-cell-prefix="{row}">
-              <q-td  style="width:50px">
-                <q-btn dense  @click="removeItem(row.__index)" icon="delete" color="negative"/>
-              </q-td>
-            </template>
-            <template v-slot:body-cell-item_id="{row}">
-              <q-td width="45%">
-                <ux-select-filter
-                  :name="`items.${row.__index}.item_id`"
-                  :data-vv-as="$tc('items.part_name')"
-                  dense outlined hide-bottom-space color="blue-grey-5"
-                  v-model="row.item_id"
-                  v-validate="'required'"
-                  map-options emit-value
-                  :options="ItemOptions" clearable
-                  :options-dark="LAYOUT.isDark"
-                  :dark="LAYOUT.isDark"
-                  :readonly="!Boolean(rsForm.customer_id)"
-                  @input="(val)=>{ setItemReference(row.__index, val) }"
-                  :loading="SHEET['items'].loading"
-                  :error="errors.has(`items.${row.__index}.item_id`)"
-                  :error-message="errors.first(`items.${row.__index}.item_id`)"
-                />
-                <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
+            <q-td slot="body-cell-prefix" slot-scope="rs" style="width:50px">
+              <q-btn dense flat icon="clear" color="negative" @click="removeItem(rs.row.__index)"/>
+            </q-td>
+            <q-td slot="body-cell-item_id" slot-scope="rs" width="45%">
+              <ux-select-filter
+                :name="`items.${rs.row.__index}.item_id`"
+                :data-vv-as="$tc('items.part_name')"
+                dense outlined hide-bottom-space color="blue-grey-5"
+                v-model="rs.row.item_id"
+                v-validate="'required'"
+                map-options emit-value
+                :options="ItemOptions" clearable
+                :options-dark="LAYOUT.isDark"
+                :dark="LAYOUT.isDark"
+                :readonly="!Boolean(rsForm.customer_id)"
+                @input="(val)=>{ setItemReference(rs.row.__index, val) }"
+                :loading="SHEET['items'].loading"
+                :error="errors.has(`items.${rs.row.__index}.item_id`)"
+                :error-message="errors.first(`items.${rs.row.__index}.item_id`)"
+              />
+              <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
+            </q-td>
 
-              </q-td>
-            </template>
-            <template v-slot:body-cell-part_name="{row}">
-              <q-td key="part_number" width="35%" style="min-width:150px">
-                <q-input readonly
-                  :value="row.item ? row.item.part_number : null"
-                  outlined dense hide-bottom-space color="blue-grey-5"
-                  :dark="LAYOUT.isDark" />
-              </q-td>
-            </template>
-            <template v-slot:body-cell-quantity="{row}">
-              <q-td width="25%">
-                <q-input type="number" min="0" style="min-width:120px"
-                  :name="`items.${row.__index}.quantity`"
-                  :data-vv-as="$tc('label.quantity')"
-                  v-model="row.quantity"
-                  v-validate="row.item_id ? 'required' : ''"
-                  dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
-                  :dark="LAYOUT.isDark"
-                  :error="errors.has(`items.${row.__index}.quantity`)"/>
-              </q-td>
-            </template>
-            <template v-slot:body-cell-unit_id="{row}">
-              <q-td width="25%">
-                <q-select style="min-width:100px"
-                  :name="`items.${row.__index}.unit_id`"
-                  :data-vv-as="$tc('label.unit')"
-                  v-model="row.unit_id"
-                  dense outlined hide-bottom-space color="blue-grey-5"
-                  @input="(val)=> { setUnitReference(row.__index, val) }"
-                  :options="ItemUnitOptions[row.__index]"
-                  map-options emit-value
-                  :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
-                  v-validate="row.item_id ? 'required' : ''"
-                  :error="errors.has(`items.${row.__index}.unit_id`)"/>
-                <q-input class="hidden" v-model="row.unit_rate" />
-              </q-td>
-            </template>
+            <q-td slot="body-cell-part_name" slot-scope="rs" width="35%" style="min-width:150px">
+              <q-input readonly
+                :value="rs.row.item ? rs.row.item.part_number : null"
+                outlined dense hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark" />
+            </q-td>
+            <q-td slot="body-cell-quantity" slot-scope="rs" width="25%">
+              <q-input type="number" min="0" style="min-width:120px"
+                :name="`items.${rs.row.__index}.quantity`"
+                :data-vv-as="$tc('label.quantity')"
+                v-model="rs.row.quantity"
+                v-validate="rs.row.item_id ? 'required' : ''"
+                dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
+                :dark="LAYOUT.isDark"
+                :error="errors.has(`items.${rs.row.__index}.quantity`)"/>
+            </q-td>
+            <q-td slot="body-cell-unit_id" slot-scope="rs"  width="25%">
+              <q-select style="min-width:100px"
+                :name="`items.${rs.row.__index}.unit_id`"
+                :data-vv-as="$tc('label.unit')"
+                v-model="rs.row.unit_id"
+                dense outlined hide-bottom-space color="blue-grey-5"
+                @input="(val)=> { setUnitReference(rs.row.__index, val) }"
+                :options="ItemUnitOptions[rs.row.__index]"
+                map-options emit-value
+                :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
+                v-validate="rs.row.item_id ? 'required' : ''"
+                :error="errors.has(`items.${rs.row.__index}.unit_id`)"/>
+              <q-input class="hidden" v-model="rs.row.unit_rate" />
+            </q-td>
 
           <q-tr slot="bottom-row" slot-scope="props" :props="props">
             <q-td colspan="100%">

@@ -105,11 +105,14 @@
         <q-td slot="body-cell-status" slot-scope="rs" :props="rs" style="width:35px">
           <div class="row q-gutter-xs no-wrap">
             <ux-badge-status :row="rs.row" class="shadow-1" />
-            <q-badge label="RET" class="shadow-1 q-pa-xs"
-              dense color="blue-grey" text-color="white"
-              v-if="rs.row.transaction == 'RETURN'"
-            />
           </div>
+        </q-td>
+
+        <q-td slot="body-cell-transaction" slot-scope="rs" :props="rs" style="width:35px">
+          <q-chip dense square class="shadow-1 q-pa-xs text-weight-bold"
+            :label="rs.row.transaction"
+            :outline="rs.row.transaction !== 'RETURN'"
+            color="blue-grey" text-color="white" />
         </q-td>
 
         <q-td slot="body-cell-customer_id" slot-scope="rs" :props="rs">
@@ -160,6 +163,7 @@ export default {
           { name: 'prefix', label: '', align: 'left'},
           { name: 'number', label: this.$tc('label.number'), field: 'number', align: 'left', sortable: true },
           { name: 'status', label: '', field: 'status', align: 'left'},
+          { name: 'transaction', label: this.$tc('label.transaction'), align: 'center'},
           { name: 'customer_id', label: this.$tc('general.customer'), field: 'customer_id', align: 'left', sortable: true },
           { name: 'date', label: this.$tc('label.date'), field: 'date', align: 'center', sortable: true},
           { name: 'reference_number', label: this.$tc('warehouses.reference_number'), field: 'reference_number', align: 'left', sortable: true },

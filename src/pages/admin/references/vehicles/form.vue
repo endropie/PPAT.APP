@@ -45,7 +45,7 @@
           v-model="rsForm.department_id"
           :options="DepartmentOptions"
           emit-value map-options
-          v-validate="'required'"
+          v-validate="''"
           :dark="LAYOUT.isDark"
           :error="errors.has('department_id')"
           :error-message="errors.first('department_id')"/>

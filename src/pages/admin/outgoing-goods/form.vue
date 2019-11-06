@@ -12,6 +12,23 @@
     <q-separator :dark="LAYOUT.isDark"></q-separator>
     <!-- COLUMN::1st Transaction details -->
     <q-card-section class="row q-col-gutter-x-md">
+      <q-field class="col-12"
+        borderless stack-label hide-bottom-space
+        :label="$tc('label.mode',1, {v:$tc('label.transaction')})"
+        :dark="LAYOUT.isDark"
+        :error="errors.has('transaction')">
+
+        <q-option-group slot="control"
+          name="transaction" type="radio" inline
+          v-model="rsForm.transaction"
+          v-validate="'required'"
+          :dark="LAYOUT.isDark"
+          :disable="Boolean(rsForm.id)"
+          :options="CONFIG.options['transaction_mode']"
+          @input="(val) => setTransactionReference(val)"/>
+
+      </q-field>
+
       <div class="col-12 col-sm-6" >
         <div class="row q-col-gutter-x-sm">
           <ux-select-filter name="customer" class="col-12"
@@ -104,7 +121,7 @@
 
             <template v-slot:body-cell-prefix="{row}">
               <q-td  style="width:50px">
-                <q-btn dense  @click="removeItem(row.__index)" icon="delete" color="negative"/>
+                <q-btn dense flat icon="clear" color="negative" @click="removeItem(row.__index)" />
               </q-td>
             </template>
             <template v-slot:body-cell-item_id="{row}">
@@ -215,6 +232,7 @@ export default {
       rsForm: {},
       setDefault:()=>{
         return {
+          transaction: null,
           number: null,
           date: this.$app.moment().format('YYYY-MM-DD'),
           time: this.$app.moment().format('HH:mm'),

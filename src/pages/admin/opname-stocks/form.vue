@@ -173,7 +173,7 @@ export default {
   mixins: [MixForm],
   data () {
     return {
-      StockistOptions: ['FM', 'WO', 'WIP', 'FG'],
+      StockistOptions: ['REG', 'RET', 'NG'],
       SHEET:{
         units: {api:'/api/v1/references/units?mode=all'},
       },

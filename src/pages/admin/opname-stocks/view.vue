@@ -2,7 +2,7 @@
   <q-page class="row justify-center" :dark="LAYOUT.isDark" style="min-width:210mm;">
     <page-print v-if="VIEW.show" class="q-ma-md q-pr-lg shadow-2" style="max-width:210mm;">
       <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
-      <span slot="header-subtitle" style="font-size:16px">Warehouses - Incoming Good</span>
+      <span slot="header-subtitle" style="font-size:16px">Warehouses - Stock Opname</span>
       <div slot="header-tags">
       <q-chip class="shadow-1" square outline
         color="blue-grey" text-color="white"
@@ -186,8 +186,38 @@ export default {
       this.$router.push(`${this.VIEW.resource.uri}/${this.ROUTE.params.id}/revision`)
     },
     setValidation () {
+      const submit = () => {
 
+        this.VIEW.loading = true
+        let apiUrl = this.VIEW.resource.api + '/' + this.ROUTE.params.id
+        apiUrl += '?mode=validation&nodata=true'
+        this.$axios.put(apiUrl, {})
+        .then((response) => {
+          this.$app.notify.success({
+            message: this.$tc('messages.success_validated').toUpperCase(),
+            detail: this.$tc('messages.form_has_validated',1, {v:response.data.number})
+          })
+          this.init()
+        })
+        .catch((error) => {
+          this.$app.response.error(error.response || error, 'VALIDATION FAILED');
+        })
+        .finally(()=>{
+          setTimeout(() => {
+            this.VIEW.loading = false
+          }, 1000)
 
+        });
+      }
+
+      this.$q.dialog({
+        title: this.$tc('form.confirm'),
+        message: this.$tc('messages.to_sure', 1, {v: this.$tc('form.validation')}),
+        cancel: true,
+        persistent: true
+      }).onOk(() => {
+        submit()
+      })
     },
     init() {
       this.VIEW.load((data) => {
