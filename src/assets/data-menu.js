@@ -311,6 +311,18 @@ export default [
       { page: 'view', path: ':id', meta: { mode: 'view', permission: 'opname-stocks-read' } }
     ]
   },
+  {
+    name: 'Transfer Stock',
+    icon: 'assignment_turned_in',
+    path: 'transfer-stocks',
+    lang: 'general.transfer_stocks',
+    resources: [
+      { page: 'index', path: '', icon: 'list', meta: { permission: 'transfer-stocks-read' } },
+      { page: 'form', path: 'create', meta: { mode: 'create', permission: 'transfer-stocks-create' } },
+      { page: 'form', path: ':id/edit', meta: { mode: 'edit', permission: 'transfer-stocks-update' } },
+      { page: 'view', path: ':id', meta: { mode: 'view', permission: 'transfer-stocks-read' } }
+    ]
+  },
   { // References
     name: 'References',
     icon: 'dashboard',

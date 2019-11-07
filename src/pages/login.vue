@@ -93,17 +93,6 @@ export default {
     return {
       userlists: [
         'admin',
-        'viewer',
-        'work.order',
-        'work.production',
-        'work.process',
-        'packing',
-        'marketing' ,
-        'outgoing.verify' ,
-        'outgoing.good' ,
-        'sj.delivery' ,
-        'pre.delivery' ,
-        'incoming.good'
       ],
       rsLogin: {
         email: null,
