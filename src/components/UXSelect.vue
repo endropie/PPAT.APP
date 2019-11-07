@@ -1,62 +1,59 @@
 <template>
   <q-select
     ref="QSelect"
-    class="ux-selet-filter"
+    class="ux-selet"
     v-model="value"
     v-bind="$attrs"
     v-on="$listeners"
     @filter="filterFunc"
     @input="inputFunction"
     :options="opt"
-    :use-input="useInput"
-    :fill-input="fillInput"
-    :emit-value="emitValue"
-    :map-options="mapOptions"
-    :hide-selected="hideSelected"
+    :use-input="PROP.useInput"
+    :fill-input="PROP.fillInput"
+    :hide-selected="PROP.hideSelected"
     :input-debounce="inputDebounce"
     autocomplete="off">
 
     <!--  -->
     <template v-slot:option="scope">
-      <q-item
-        v-bind="scope.itemProps"
-        v-on="scope.itemEvents"
-      >
-        <slot name="option-prepend" :option="scope.opt">
-          <q-item-section side v-if="scope.opt.icon">
-            <q-item-section avatar v-if="scope.opt.icon">
-              <q-icon :name="scope.opt.icon" />
+      <slot name="option" :scope="{...scope}">
+        <q-item v-bind="scope.itemProps" v-on="scope.itemEvents" >
+          <slot name="option-prepend" :option="{...scope}">
+            <q-item-section side v-if="scope.opt.icon">
+              <q-item-section avatar v-if="scope.opt.icon">
+                <q-icon :name="scope.opt.icon" />
+              </q-item-section>
             </q-item-section>
-          </q-item-section>
-        </slot>
-        <q-item-section>
-          <slot name="option-item" :option="scope.opt">
-          <!-- => {{scope}} -->
-            <q-item-label v-html="getOptionLabel(scope.opt)" />
-            <q-item-label caption>{{ getOptionSublabel(scope.opt) }}</q-item-label>
           </slot>
-        </q-item-section>
-        <slot name="option-append" :option="scope.opt">
-          <q-item-section side v-if="scope.opt.stamp || $attrs['option-stamp']">
-            <q-badge :label="scope.opt.stamp || $attrs['option-stamp']" />
+          <q-item-section>
+            <slot name="option-item" :option="{...scope}">
+              <q-item-label v-html="getOptionLabel(scope.opt)" />
+              <q-item-label caption>{{ getOptionSublabel(scope.opt) }}</q-item-label>
+            </slot>
           </q-item-section>
-          <q-item-section side v-if="scope.opt.disable">
-            <q-icon name="block" color="red"/>
-          </q-item-section>
-        </slot>
-      </q-item>
+          <slot name="option-append" :option="{...scope}">
+            <q-item-section side v-if="scope.opt.stamp || $attrs['option-stamp']">
+              <q-badge :label="scope.opt.stamp || $attrs['option-stamp']" />
+            </q-item-section>
+            <q-item-section side v-if="scope.opt.disable">
+              <q-icon name="block" color="red"/>
+            </q-item-section>
+          </slot>
+        </q-item>
+      </slot>
     </template>
+
     <template v-slot:no-option>
       <q-item>
         <q-item-section class="text-grey">
-          <span v-if="Boolean(isFilterSkip)" v-html="$tc('messages.input_min_character', 1, {v:filterSkip})"/>
+          <span v-if="Boolean(isFilterSkip)" v-html="$tc('messages.input_min_character', 1, {v:filterMin})"/>
           <span v-else v-html="$tc('messages.no_results')" />
         </q-item-section>
       </q-item>
     </template>
 
-    <template v-slot:selected-item="scope">
-      <slot name="selected-item" :scope="scope">
+    <template v-slot:selected-item="scope"  v-if="$attrs['use-chips'] === undefined">
+      <slot name="selected-item" :scope="{...scope}">
         {{getOptionLabel(scope.opt)}}
       </slot>
     </template>
@@ -78,55 +75,60 @@
 </template>
 <script>
 export default {
-  name: 'ux-select-filter',
+  name: 'ux-select',
   inheritAttrs: false,
   props: {
-    // initFilter: Function,
-    // injectFilter: Function,
     source: {type: String, default:null},
     sourceKeys: {type: Array, default: () => []},
-    filterSkip: {type: Number, default:3},
-    filterSelf: {type: Boolean, default: true },
-    useInput: {type: Boolean, default: false },
-    fillInput: {type: Boolean, default: false },
-    emitValue: {type: Boolean, default: false },
-    mapOptions: {type: Boolean, default: false },
-    hideSelected: {type: Boolean, default: false },
+    filter: {type: Boolean, default: false },
+    filterMin: {default:0},
+    useInput: {type: Boolean },
+    fillInput: {type: Boolean },
+    hideSelected: {type: Boolean },
     inputDebounce: {type: Number, default: 600 }
   },
   data () {
     return {
       value: this.$attrs.value,
       options: this.$attrs.options || [],
-      defaultOptions: [],
       isFilterSkip: false
     }
   },
   created() {
-    this.$nextTick(() => {
-      // this.init()
-    })
+
   },
   watch:{
     '$attrs.value': 'setValue',
     '$attrs.options': 'setOptions',
   },
-  methods: {
-    init() {
-      if (this.source && this.value) {
-        const separator = String(this.source).indexOf('?') < 0 ? '?' : '&'
-        const search = `${this.$attrs['option-value'] || 'label'}=${this.value}`
-        const apiUrl = this.source + separator + search
-        console.info(`[PLAY] Source GET: ${apiUrl}`);
-        return this.$axios.get(apiUrl)
-          .then(response => {
-            this.defaultOptions = response.data
-          })
-          .catch(error => {
-            console.error(error)
-          })
+  computed: {
+    PROP () {
+      let def = {
+        'use-input': this.filter,
+        'fill-input': this.filter,
+        'hide-selected': this.filter,
+      }
+
+      if (this.$attrs['multiple'] !== undefined) {
+        def['fill-input'] = false
+        def['hide-selected'] = false
+      }
+
+      return {
+        useInput: def['use-input'],
+        fillInput: def['fill-input'],
+        hideSelected: def['hide-selected'],
       }
     },
+    QSelect() {
+      return this.$refs.QSelect || null
+    },
+    opt () {
+      if (!this.filter) return this.$attrs.options
+      return this.options
+    }
+  },
+  methods: {
     setValue(v) {
       this.value = v
     },
@@ -160,21 +162,27 @@ export default {
       }
       return option[this.$attrs['option-sublabel']]
     },
-    // use this default filter function
     filterFn (val, update, abort) {
-      if (!this.filterSelf) {
+      if (this.$listeners['filter'] && typeof this.$listeners['filter'] === 'function') {
         this.$emit('filter', val, update, abort)
         return
       }
 
-      // if (abort) return update()
-
-      if (this.source) {
-        if (String(val).length < this.filterSkip) {
+      const min = Number(this.filterMin)
+      if (min) {
+        if (String(val).length < min) {
           this.isFilterSkip = true
           return update()
         }
         this.isFilterSkip = false
+      }
+
+      if (this.options.length && !String(val).length) {
+        update()
+        return
+      }
+
+      if (this.source) {
         const separator = String(this.source).indexOf('?') < 0 ? '?' : '&'
         const fields = this.sourceKeys || []
         const search = fields
@@ -187,25 +195,29 @@ export default {
             this.options = response.data
           })
           .catch(error => {
-            console.error(error)
+            console.error(error || error.response)
           })
           .finally(() => {
-            update()
+            return update()
           })
       }
 
       update(() => {
         const needle = val.toLowerCase()
-        let attrOptions = this.$attrs.options || []
-        this.options = attrOptions.filter(v => {
+        this.options = this.$attrs.options.filter(v => {
 
-          if(!v.hasOwnProperty('sublabel')) v.sublabel = ''
-          return String(v.label).toLowerCase().includes(needle) || String(v.sublabel).toLowerCase().includes(needle)
+          let needles = String(needle).split(' ')
+          for (let i = 0; i < needles.length; i++) {
+            if (needles[i] && !String(v.label + v.sublabel).toLowerCase().includes(needles[i])) return false
+          }
+          return true
         })
       })
     },
     filterFunc (v, u, a) {
-      this.filterSelf ? this.filterFn(v, u) : this.$emit('filter', v, u, a)
+      this.$listeners['filter'] && typeof this.$listeners['filter'] === 'function'
+        ? this.$emit('filter', v, u, a)
+        : this.filterFn(v, u)
     },
     inputFunction(v) {
       this.$nextTick(() => {
@@ -217,19 +229,8 @@ export default {
           }
         }
 
-        console.warn('emit::selected', this.value, innerValue)
         this.$emit('selected', this.value, innerValue)
       })
-    }
-  },
-  computed: {
-    QSelect() {
-      return this.$refs.QSelect || null
-    },
-    opt () {
-      if (this.source && !Boolean(this.options.length)) return this.defaultOptions
-      if (!this.filterSelf) return this.$attrs.options
-      return this.options
     }
   }
 }
