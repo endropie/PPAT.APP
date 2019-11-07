@@ -58,9 +58,9 @@
                     :name="`items.${rsItem.row.__index}.item_id`"
                     :data-vv-as="$tc('items.part_name')"
                     dense outlined hide-bottom-space color="blue-grey-5"
-                    v-model="rsItem.row.item_id" clearable
+                    v-model="rsItem.row.item_id" emit-value map-options clearable
                     v-validate="'required'"
-                    use-input emit-value map-options fill-input hide-selected
+                    filter filter-min="3"
                     source="api/v1/common/items?mode=all&--limit=50"
                     :source-keys="['part_name', 'part_number']"
                     option-value="id"
