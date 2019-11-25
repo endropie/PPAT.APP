@@ -133,6 +133,7 @@
             <q-th key="part_number">{{$tc('items.part_number')}}</q-th>
             <q-th key="quantity">{{$tc('label.quantity')}}</q-th>
             <q-th key="unit_id">{{$tc('label.unit')}}</q-th>
+            <q-th key="note">{{$tc('label.note')}}</q-th>
           </q-tr>
           <q-tr v-for="(row, index) in rsForm.incoming_good_items" :key="index">
             <q-td key="prefix" style="width:50px">
@@ -187,8 +188,15 @@
                 :error="errors.has(`items.${index}.unit_id`)"/>
               <q-input class="hidden" v-model="row.unit_rate" />
             </q-td>
+            <q-td key="note" width="30%">
+              <q-input style="min-width:200px"
+                :name="`outgoing_good_items.${index}.note`"
+                :data-vv-as="$tc('label.note')"
+                v-model="row.note"
+                dense outlined hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark" />
+            </q-td>
           </q-tr>
-
           <q-tr>
             <q-td></q-td>
             <q-td>
@@ -260,9 +268,9 @@ export default {
               id:null,
               item_id: null, item: {},
               quantity: null,
-
               unit_id: null,
               unit_rate: 1,
+              note: null,
             }
           ]
 

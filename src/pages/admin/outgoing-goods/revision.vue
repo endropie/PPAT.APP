@@ -92,7 +92,7 @@
           <q-tr>
             <q-th key="prefix"></q-th>
             <q-th key="item_id">{{$tc('items.part_name')}}</q-th>
-            <q-th key="part_number">{{$tc('items.part_number')}}</q-th>
+            <q-th key="part_number">{{$tc('general.incoming_good')}}</q-th>
             <q-th key="quantity">{{$tc('label.quantity')}}</q-th>
             <q-th key="unit_id">{{$tc('label.unit')}}</q-th>
           </q-tr>
@@ -102,7 +102,7 @@
             </q-td>
             <q-td width="45%">
               <ux-select-filter autofocus
-                :name="`items.${index}.item_id`"
+                :name="`outgoing_good_items.${index}.item_id`"
                 :data-vv-as="$tc('items.part_name')"
                 dense outlined hide-bottom-space color="blue-grey-5"
                 v-model="row.item_id"
@@ -114,31 +114,44 @@
                 :readonly="Boolean(row.request_order_item_id)"
                 @input="(val)=>{ setItemReference(index, val) }"
                 :loading="SHEET['items'].loading"
-                :error="errors.has(`items.${index}.item_id`)"
-                :error-message="errors.first(`items.${index}.item_id`)"
+                :error="errors.has(`outgoing_good_items.${index}.item_id`)"
+                :error-message="errors.first(`outgoing_good_items.${index}.item_id`)"
               />
               <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
 
             </q-td>
-            <q-td width="35%" style="min-width:150px">
-              <q-input readonly
-                :value="row.item ? row.item.part_number : null"
-                outlined dense hide-bottom-space color="blue-grey-5"
-                :dark="LAYOUT.isDark" />
+            <q-td key="incoming_good_item_id" width="35%" style="min-width:150px">
+              <ux-select-filter
+                :name="`outgoing_good_items.${index}.incoming_good_item_id`"
+                :data-vv-as="$tc('items.part_name')"
+                dense outlined hide-bottom-space color="blue-grey-5"
+                v-model="row.incoming_good_item_id"
+                v-validate="'required'"
+                map-options emit-value
+                :options="IncomingGoodItemOptions.filter(x => x.rowdata.item_id === row.item_id)" clearable
+                :options-dark="LAYOUT.isDark"
+                :dark="LAYOUT.isDark"
+                :readonly="!Boolean(row.item_id)"
+                :loading="SHEET['incoming_goods'].loading"
+                :error="errors.has(`outgoing_good_items.${index}.incoming_good_item_id`)"
+                :error-message="errors.first(`outgoing_good_items.${index}.incoming_good_item_id`)"
+              />
             </q-td>
             <q-td width="25%">
               <q-input type="number" min="0" style="min-width:120px"
-                :name="`items.${index}.quantity`"
+                :name="`outgoing_good_items.${index}.quantity`"
                 :data-vv-as="$tc('label.quantity')"
                 v-model="row.quantity"
-                v-validate="row.item_id ? 'required' : ''"
                 dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
                 :dark="LAYOUT.isDark"
-                :error="errors.has(`items.${index}.quantity`)"/>
+                v-validate="row.item_id ? `required|gt_value:0|max_value:${MaxStock[index] / (row.unit_rate||1)}` : ''"
+                :error="errors.has(`outgoing_good_items.${index}.quantity`)">
+                <span slot="append" v-if="Boolean(row.incoming_good_item_id)" class="text-subtitle2">/ {{$app.number_format(MaxStock[index] / (row.unit_rate||1))}}</span>
+              </q-input>
             </q-td>
             <q-td width="25%">
               <q-select style="min-width:100px"
-                :name="`items.${index}.unit_id`"
+                :name="`outgoing_good_items.${index}.unit_id`"
                 :data-vv-as="$tc('label.unit')"
                 v-model="row.unit_id"
                 dense outlined hide-bottom-space color="blue-grey-5"
@@ -147,14 +160,14 @@
                 map-options emit-value
                 :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
                 v-validate="row.item_id ? 'required' : ''"
-                :error="errors.has(`items.${index}.unit_id`)"/>
+                :error="errors.has(`outgoing_good_items.${index}.unit_id`)"/>
               <q-input class="hidden" v-model="row.unit_rate" />
             </q-td>
           </q-tr>
           <q-tr>
             <q-td></q-td>
             <q-td>
-              <q-btn class="full-width" dense icon-right="add_circle" color="positive" :label="$tc('form.add')" @click="addNewItem()"></q-btn>
+              <q-btn dense outline color="blue-grey" :label="$tc('form.add')" icon-right="add_circle" class="full-width" @click="addNewItem()"></q-btn>
             </q-td>
             <q-td colspan="100%"></q-td>
           </q-tr>
@@ -190,7 +203,8 @@ export default {
         units: {api:'/api/v1/references/units?mode=all'},
         customers: {api:'/api/v1/incomes/customers?mode=all'},
         vehicles: {api:'/api/v1/references/vehicles?mode=all'},
-        items: {autoload:false, api:'/api/v1/common/items?mode=all'}
+        items: {autoload:false, api:'/api/v1/common/items?mode=all'},
+        incoming_goods: {autoload:false, api:'/api/v1/warehouses/incoming-goods?mode=all'}
       },
       FORM:{
         resource:{
@@ -221,9 +235,9 @@ export default {
               id:null,
               item_id: null, item: {},
               quantity: null,
-
               unit_id: null,
               unit_rate: 1,
+              incoming_good_item_id: null
             }
           ]
 
@@ -256,6 +270,22 @@ export default {
     IssetCustomerID() {
       return (this.rsForm.customer_id ? true : false)
     },
+    IncomingGoodItemOptions() {
+      if (this.SHEET['incoming_goods'].data.length <= 0) return []
+      const incoming_goods = this.SHEET['incoming_goods'].data
+      let details = []
+      for (let i = 0; i < incoming_goods.length; i++) {
+        incoming_goods[i].incoming_good_items.map(x => {
+          details.push(Object.assign(x, {incoming_good_number:incoming_goods[i].full_number}))
+        })
+
+      }
+      return (details.map(item => ({
+        label: `${item.incoming_good_number} [#${item.id}]`,
+        value: item.id,
+        rowdata: item
+      })) || [])
+    },
     CustomerOptions() {
       // let label = [item.code, item.name].join('-')
       return (this.SHEET.customers.data.map(item => ({label: [item.code, item.name].join(' - '), value: item.id})) || [])
@@ -284,7 +314,7 @@ export default {
 
         return (Items.map(item => ({
           label: item.part_name,
-          sublabel: `[${item.code}] - No.${item.part_number}`,
+          sublabel: `[${item.customer_code}] - No.${item.part_number}`,
           disable: !item.enable,
           value: item.id}) || []))
     },
@@ -308,6 +338,39 @@ export default {
         }
       }
       return vars
+    },
+    MaxStock() {
+      let stockItem =  {}
+      let moveItem = {
+        set: function (id, val) {
+          if (!this.hasOwnProperty(id)) this[id] = 0
+            this[id] += Number(val)
+        },
+        get: function (id) {
+          return this.hasOwnProperty(id) ? this[id] : 0
+        }
+      }
+
+      this.IncomingGoodItemOptions.map(detail => {
+        stockItem[detail.rowdata.id] = Number(detail.rowdata.unit_amount) - Number(detail.rowdata.amount_outgoing)
+      })
+
+      if (this.FORM.data.outgoing_good_items) {
+          this.FORM.data.outgoing_good_items.map(detail => {
+            if (stockItem.hasOwnProperty(detail.incoming_good_item_id)) {
+              stockItem[detail.incoming_good_item_id] += Number(detail.unit_amount)
+          }
+        })
+      }
+
+      return this.rsForm.outgoing_good_items.map((detail, index) => {
+        let max = 0
+        if (detail.incoming_good_item_id) {
+          max = Number(stockItem[detail.incoming_good_item_id] || 0) - Number(moveItem.get(detail.incoming_good_item_id) || 0)
+          moveItem.set(detail.incoming_good_item_id, detail.quantity * detail.unit_rate)
+        }
+        return max
+      })
     },
     MAPINGKEY() {
       let variables = {
@@ -335,7 +398,11 @@ export default {
     setForm(data) {
       this.rsForm = Object.assign(this.setDefault(), JSON.parse(JSON.stringify(data)))
 
-      if(data.customer_id) this.SHEET.load('items', 'customer_id='+ data.customer_id)
+      if(data.customer_id) {
+        const or = data.outgoing_good_items.map(x => x.incoming_good_item_id)
+        this.SHEET.load('items', `customer_id=${data.customer_id}`)
+        this.SHEET.load('incoming_goods',`transaction=${data.transaction}&customer_id=${data.customer_id}&has_amount_outgoing=true&or_detail_ids=${or}`)
+      }
 
     },
     setDateReference (val) {
@@ -347,22 +414,16 @@ export default {
 
       }
     },
-    setTransactionReference(val) {
-      if (val == 'RETURN') {
-        this.rsForm.order_mode = 'NONE'
-        return false
-      }
-      else if (val == 'REGULER' && this.rsForm.customer_id) {
-        this.setCustomerReference(this.rsForm.customer_id)
-      }
-    },
     setCustomerReference(val) {
       if(!val){
         this.rsForm.order_mode = null
         return
       }
 
-      if(this.rsForm.customer_id) this.SHEET.load('items', 'customer_id='+ this.rsForm.customer_id)
+      if(this.rsForm.customer_id) {
+        this.SHEET.load('items', 'customer_id='+ this.rsForm.customer_id)
+        this.SHEET.load('incoming_goods',`transaction=${this.rsForm.transaction}&customer_id=${val}&has_amount_outgoing=true`)
+      }
 
       if (this.rsForm.transaction !== 'RETURN') {
         const customer = this.MAPINGKEY['customers'][val]
