@@ -8,7 +8,6 @@ module.exports = function (ctx) {
     // --> boot files are part of "main.js"
     boot: [
       'app',
-      // 'apollo',
       'axios',
       'components',
       'i18n',
@@ -24,8 +23,6 @@ module.exports = function (ctx) {
       'material-icons',
       'mdi-v3',
       'fontawesome-v5'
-      // 'ionicons-v4',
-      // 'eva-icons'
     ],
 
     framework: {
@@ -97,7 +94,7 @@ module.exports = function (ctx) {
     devServer: {
       // https: true,
       // port: 8080,
-      // open: true // opens browser window automatically
+      open: false // opens browser window automatically
     },
 
     animations: 'all', // --- includes all animations

@@ -100,7 +100,6 @@ export default {
   created() {
     this.$axios.validToken(
       (response) => {
-        // if(process.env.DEV) console.warn('$axios.validToken', (typeof response).toUpperCase(), response)
         if(response.status === 401) {
           this.setLogoff()
         }
