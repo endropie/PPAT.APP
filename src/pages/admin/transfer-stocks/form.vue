@@ -32,124 +32,118 @@
     <q-card-section class="row q-col-gutter-sm">
 
       <div class="col-12">
-        <q-table ref="table" class="main-box bordered no-shadow no-highlight th-uppercase"
-          :data="rsForm.transfer_stock_items" dense
-          :dark="LAYOUT.isDark"
-          :rows-per-page-options ="[0]" hide-bottom
-          :columns="[
-            { name: 'prefix', field: 'prefix', label: '',  align: 'left'},
-            { name: 'item_id', field: 'item_id', label: $tc('items.part_name'), align: 'left'},
-            { name: 'part_name', field: 'item_id', label: $tc('items.part_number'), align: 'left'},
-            { name: 'from', field: 'from', label: $tc('label.from'), align: 'center'},
-            { name: 'to', field: 'to', label: $tc('label.to'), align: 'center'},
-            { name: 'quantity', field: 'quantity', label: $tc('label.quantity'), align: 'left'},
-            { name: 'unit_id', field: 'unit_id', label: $tc('label.unit'), align: 'center'},
-          ]"
-          :pagination="{ sortBy: null, descending: false, page: null, rowsPerPage: 0 }"
-          >
+        <q-markup-table class="main-box bordered no-shadow no-highlight th-uppercase"
+          dense separator="horizontal"
+          :dark="LAYOUT.isDark">
+          <q-tr>
+            <q-th key="prefix"></q-th>
+            <q-th key="item_id">{{$tc('items.part_name')}}</q-th>
+            <q-th key="part_number">{{$tc('items.part_number')}}</q-th>
+            <q-th key="from">{{$tc('label.from')}}</q-th>
+            <q-th key="to">{{$tc('label.to')}}</q-th>
+            <q-th key="quantity">{{$tc('items.stock_final')}}</q-th>
+            <q-th key="unit_id">{{$tc('label.unit')}}</q-th>
+          </q-tr>
+          <q-tr v-for="(row, index) in rsForm.transfer_stock_items" :key="index" style="vertical-align:top">
+            <q-td  style="width:50px">
+              <q-btn dense flat round icon="clear" color="negative" tabindex="100" @click="removeItem(index)"/>
+            </q-td>
+            <q-td width="35%">
+              <ux-select autofocus
+                :name="`items.${index}.item_id`"
+                :data-vv-as="$tc('items.part_name')"
+                dense outlined hide-bottom-space color="blue-grey-5"
+                popup-content-class="options-striped"
+                v-model="row.item_id" emit-value map-options clearable
+                v-validate="'required'"
+                filter filter-min="3"
+                source="api/v1/common/items?mode=all&--limit=50"
+                :source-keys="['part_name', 'part_number']"
+                option-value="id"
+                :option-label="(item) => item.part_name || row.item.part_name"
+                :option-sublabel="(item) => `[${item.customer_code}] ${item.part_number}`"
+                :option-disable="(item) => !item.enable"
+                :options-dark="LAYOUT.isDark"
+                :dark="LAYOUT.isDark"
+                @selected="(val, opt)=>{ setItemReference(index, val, opt) }"
+                :error="errors.has(`items.${index}.item_id`)"
+                :error-message="errors.first(`items.${index}.item_id`)"
+              />
 
-            <template v-slot:body="rsItem">
-              <q-tr style="vertical-align:top">
-                <q-td  style="width:50px">
-                  <q-btn dense flat round icon="clear" color="negative" tabindex="100" @click="removeItem(rsItem.row.__index)"/>
-                </q-td>
-                <q-td width="35%">
-                  <ux-select autofocus
-                    :name="`items.${rsItem.row.__index}.item_id`"
-                    :data-vv-as="$tc('items.part_name')"
-                    dense outlined hide-bottom-space color="blue-grey-5"
-                    popup-content-class="options-striped"
-                    v-model="rsItem.row.item_id" emit-value map-options clearable
-                    v-validate="'required'"
-                    filter filter-min="3"
-                    source="api/v1/common/items?mode=all&--limit=50"
-                    :source-keys="['part_name', 'part_number']"
-                    option-value="id"
-                    :option-label="(item) => item.part_name || rsItem.row.item.part_name"
-                    :option-sublabel="(item) => `[${item.customer_code}] ${item.part_number}`"
-                    :option-disable="(item) => !item.enable"
-                    :options-dark="LAYOUT.isDark"
-                    :dark="LAYOUT.isDark"
-                    @selected="(val, opt)=>{ setItemReference(rsItem.row.__index, val, opt) }"
-                    :error="errors.has(`items.${rsItem.row.__index}.item_id`)"
-                    :error-message="errors.first(`items.${rsItem.row.__index}.item_id`)"
-                  />
+            </q-td>
+            <q-td width="35%" style="min-width:150px">
+              <q-input readonly
+                :value="row.item ? row.item.part_number : null"
+                outlined dense hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark" />
+            </q-td>
+            <q-td width="15%">
+              <q-select style="min-width:50px"
+                :name="`items.${index}.from`"
+                :data-vv-as="$tc('label.from')"
+                v-model="row.from" clearable
+                :disable="!Boolean(row.item_id)"
+                dense outlined color="blue-grey-5"
+                hide-bottom-space no-error-icon :hide-dropdown-icon="Boolean(row.from)"
+                :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
+                :options="StockistOptions"
+                v-validate="'required'"
+                :error="errors.has(`items.${index}.from`)"
+                :error-message="errors.first(`items.${index}.from`)" />
 
-                </q-td>
-                <q-td key="part_number" width="35%" style="min-width:150px">
-                  <q-input readonly
-                    :value="rsItem.row.item ? rsItem.row.item.part_number : null"
-                    outlined dense hide-bottom-space color="blue-grey-5"
-                    :dark="LAYOUT.isDark" />
-                </q-td>
-                <q-td width="15%">
-                  <q-select style="min-width:50px"
-                    :name="`items.${rsItem.row.__index}.from`"
-                    :data-vv-as="$tc('label.from')"
-                    v-model="rsItem.row.from" clearable
-                    :disable="!Boolean(rsItem.row.item_id)"
-                    dense outlined color="blue-grey-5"
-                    hide-bottom-space no-error-icon :hide-dropdown-icon="Boolean(rsItem.row.from)"
-                    :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
-                    :options="StockistOptions"
-                    v-validate="'required'"
-                    :error="errors.has(`items.${rsItem.row.__index}.from`)"
-                    :error-message="errors.first(`items.${rsItem.row.__index}.from`)" />
+              <q-input class="hidden" v-model="row.unit_rate" />
+            </q-td>
+            <q-td width="15%">
+              <q-select style="min-width:50px"
+                :name="`items.${index}.to`"
+                :data-vv-as="$tc('label.to')"
+                v-model="row.to" clearable
+                :disable="!Boolean(row.item_id)"
+                dense outlined color="blue-grey-5"
+                hide-bottom-space no-error-icon :hide-dropdown-icon="Boolean(row.to)"
+                :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
+                :options="StockistOptions.filter(x => x !== row.from)"
+                v-validate="`required|is_not:${row.from}`"
+                :error="errors.has(`items.${index}.to`)"
+                :error-message="errors.first(`items.${index}.to`)" />
 
-                  <q-input class="hidden" v-model="rsItem.row.unit_rate" />
-                </q-td>
-                <q-td width="15%">
-                  <q-select style="min-width:50px"
-                    :name="`items.${rsItem.row.__index}.to`"
-                    :data-vv-as="$tc('label.to')"
-                    v-model="rsItem.row.to" clearable
-                    :disable="!Boolean(rsItem.row.item_id)"
-                    dense outlined color="blue-grey-5"
-                    hide-bottom-space no-error-icon :hide-dropdown-icon="Boolean(rsItem.row.to)"
-                    :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
-                    :options="StockistOptions.filter(x => x !== rsItem.row.from)"
-                    v-validate="`required|is_not:${rsItem.row.from}`"
-                    :error="errors.has(`items.${rsItem.row.__index}.to`)"
-                    :error-message="errors.first(`items.${rsItem.row.__index}.to`)" />
+              <q-input class="hidden" v-model="row.unit_rate" />
+            </q-td>
+            <q-td width="25%">
+              <q-input type="number" style="min-width:120px"
+                :name="`items.${index}.quantity`"
+                :data-vv-as="$tc('items.stock_init')"
+                v-model="row.quantity"
+                v-validate="'required'"
+                dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
+                :dark="LAYOUT.isDark"
+                :error="errors.has(`items.${index}.quantity`)"
+                :error-message="errors.first(`items.${index}.quantity`)"/>
+            </q-td>
+            <q-td width="15%">
+              <q-select map-options emit-value style="min-width:100px"
+                :name="`items.${index}.unit_id`"
+                :data-vv-as="$tc('label.unit')"
+                v-model="row.unit_id" disable
+                dense outlined hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark"
+                :options="ItemUnitOptions[index]"
+                :options-dark="LAYOUT.isDark"
+                v-validate="row.item_id ? 'required' : ''"
+                :error="errors.has(`items.${index}.unit_id`)"
+                @input="(val)=> { setUnitReference(index, val) }"/>
+              <q-input class="hidden" v-model="row.unit_rate" />
+            </q-td>
+          </q-tr>
 
-                  <q-input class="hidden" v-model="rsItem.row.unit_rate" />
-                </q-td>
-                <q-td width="25%">
-                  <q-input type="number" style="min-width:120px"
-                    :name="`items.${rsItem.row.__index}.quantity`"
-                    :data-vv-as="$tc('items.stock_init')"
-                    v-model="rsItem.row.quantity"
-                    v-validate="'required'"
-                    dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
-                    :dark="LAYOUT.isDark"
-                    :error="errors.has(`items.${rsItem.row.__index}.quantity`)"
-                    :error-message="errors.first(`items.${rsItem.row.__index}.quantity`)"/>
-                </q-td>
-                <q-td width="15%">
-                  <q-select map-options emit-value style="min-width:100px"
-                    :name="`items.${rsItem.row.__index}.unit_id`"
-                    :data-vv-as="$tc('label.unit')"
-                    v-model="rsItem.row.unit_id" disable
-                    dense outlined hide-bottom-space color="blue-grey-5"
-                    :dark="LAYOUT.isDark"
-                    :options="ItemUnitOptions[rsItem.row.__index]"
-                    :options-dark="LAYOUT.isDark"
-                    v-validate="rsItem.row.item_id ? 'required' : ''"
-                    :error="errors.has(`items.${rsItem.row.__index}.unit_id`)"
-                    @input="(val)=> { setUnitReference(rsItem.row.__index, val) }"/>
-                  <q-input class="hidden" v-model="rsItem.row.unit_rate" />
-                </q-td>
-              </q-tr>
-            </template>
-
-          <q-tr slot="bottom-row" slot-scope="props" :props="props">
+          <q-tr>
             <q-td></q-td>
             <q-td>
               <q-btn dense color="positive" :label="$tc('form.add')" icon-right="add" class="full-width" @click="addNewItem()"/>
             </q-td>
             <q-td colspan="100%"></q-td>
           </q-tr>
-        </q-table>
+        </q-markup-table>
       </div>
       <!-- COLUMN::4th Description -->
       <q-input class="col-12"

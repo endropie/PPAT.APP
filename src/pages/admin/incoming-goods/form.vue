@@ -123,82 +123,80 @@
     <!-- COLUMN::2nd Request orders -->
     <q-separator inset spaced :dark="LAYOUT.isDark"></q-separator>
     <q-card-section class="row q-col-gutter-sm">
-
       <div class="col-12">
-        <q-table ref="table" class="main-box bordered no-shadow no-highlight th-uppercase"
-          :data="rsForm.incoming_good_items" dense
-          :dark="LAYOUT.isDark"
-          :rows-per-page-options ="[0]" hide-bottom
-          :columns="[
-            { name: 'prefix', field: 'prefix', label: '',  align: 'left'},
-            { name: 'item_id', field: 'item_id', label: $tc('items.part_name'), align: 'left'},
-            { name: 'part_name', field: 'item_id', label: $tc('items.part_number'), align: 'left'},
-            { name: 'quantity', field: 'quantity', label: $tc('label.quantity'), align: 'center'},
-            { name: 'unit_id', field: 'unit_id', label: $tc('label.unit'), align: 'center'},
-          ]"
-          :pagination="{ sortBy: null, descending: false, page: null, rowsPerPage: 0 }"
-          >
-
-            <q-td slot="body-cell-prefix" slot-scope="rs" style="width:50px">
-              <q-btn dense flat icon="clear" color="negative" @click="removeItem(rs.row.__index)"/>
+        <q-markup-table class="main-box bordered no-shadow no-highlight th-uppercase"
+          dense separator="horizontal"
+          :dark="LAYOUT.isDark">
+          <q-tr>
+            <q-th key="prefix"></q-th>
+            <q-th key="item_id">{{$tc('items.part_name')}}</q-th>
+            <q-th key="part_number">{{$tc('items.part_number')}}</q-th>
+            <q-th key="quantity">{{$tc('label.quantity')}}</q-th>
+            <q-th key="unit_id">{{$tc('label.unit')}}</q-th>
+          </q-tr>
+          <q-tr v-for="(row, index) in rsForm.incoming_good_items" :key="index">
+            <q-td key="prefix" style="width:50px">
+              <q-btn dense flat icon="clear" color="negative" @click="removeItem(index)"/>
             </q-td>
-            <q-td slot="body-cell-item_id" slot-scope="rs" width="45%">
+            <q-td key="item_id" width="45%">
               <ux-select-filter
-                :name="`items.${rs.row.__index}.item_id`"
+                :name="`items.${index}.item_id`"
                 :data-vv-as="$tc('items.part_name')"
                 dense outlined hide-bottom-space color="blue-grey-5"
-                v-model="rs.row.item_id"
+                v-model="row.item_id"
                 v-validate="'required'"
                 map-options emit-value
                 :options="ItemOptions" clearable
                 :options-dark="LAYOUT.isDark"
                 :dark="LAYOUT.isDark"
                 :readonly="!Boolean(rsForm.customer_id)"
-                @input="(val)=>{ setItemReference(rs.row.__index, val) }"
+                @input="(val)=>{ setItemReference(index, val) }"
                 :loading="SHEET['items'].loading"
-                :error="errors.has(`items.${rs.row.__index}.item_id`)"
-                :error-message="errors.first(`items.${rs.row.__index}.item_id`)"
+                :error="errors.has(`items.${index}.item_id`)"
+                :error-message="errors.first(`items.${index}.item_id`)"
               />
               <q-tooltip v-if="!IssetCustomerID" :offset="[0, 10]">Select a customer, first! </q-tooltip>
             </q-td>
-
-            <q-td slot="body-cell-part_name" slot-scope="rs" width="35%" style="min-width:150px">
+            <q-td key="part_name" width="35%" style="min-width:150px">
               <q-input readonly
-                :value="rs.row.item ? rs.row.item.part_number : null"
+                :value="row.item ? row.item.part_number : null"
                 outlined dense hide-bottom-space color="blue-grey-5"
                 :dark="LAYOUT.isDark" />
             </q-td>
-            <q-td slot="body-cell-quantity" slot-scope="rs" width="25%">
+            <q-td key="quantity" width="25%">
               <q-input type="number" min="0" style="min-width:120px"
-                :name="`items.${rs.row.__index}.quantity`"
+                :name="`items.${index}.quantity`"
                 :data-vv-as="$tc('label.quantity')"
-                v-model="rs.row.quantity"
-                v-validate="rs.row.item_id ? 'required' : ''"
+                v-model="row.quantity"
+                v-validate="row.item_id ? 'required' : ''"
                 dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
                 :dark="LAYOUT.isDark"
-                :error="errors.has(`items.${rs.row.__index}.quantity`)"/>
+                :error="errors.has(`items.${index}.quantity`)"/>
             </q-td>
-            <q-td slot="body-cell-unit_id" slot-scope="rs"  width="25%">
+            <q-td key="unit_id"  width="25%">
               <q-select style="min-width:100px"
-                :name="`items.${rs.row.__index}.unit_id`"
+                :name="`items.${index}.unit_id`"
                 :data-vv-as="$tc('label.unit')"
-                v-model="rs.row.unit_id"
+                v-model="row.unit_id"
                 dense outlined hide-bottom-space color="blue-grey-5"
-                @input="(val)=> { setUnitReference(rs.row.__index, val) }"
-                :options="ItemUnitOptions[rs.row.__index]"
+                @input="(val)=> { setUnitReference(index, val) }"
+                :options="ItemUnitOptions[index]"
                 map-options emit-value
                 :dark="LAYOUT.isDark" :options-dark="LAYOUT.isDark"
-                v-validate="rs.row.item_id ? 'required' : ''"
-                :error="errors.has(`items.${rs.row.__index}.unit_id`)"/>
-              <q-input class="hidden" v-model="rs.row.unit_rate" />
-            </q-td>
-
-          <q-tr slot="bottom-row" slot-scope="props" :props="props">
-            <q-td colspan="100%">
-              <strong><q-btn dense  @click="addNewItem()" icon="add" color="positive"/></strong>
+                v-validate="row.item_id ? 'required' : ''"
+                :error="errors.has(`items.${index}.unit_id`)"/>
+              <q-input class="hidden" v-model="row.unit_rate" />
             </q-td>
           </q-tr>
-        </q-table>
+
+          <q-tr>
+            <q-td></q-td>
+            <q-td>
+              <q-btn dense outline :label="$tc('form.add')" icon="add_circle_outline" color="blue-grey" class="full-width" @click="addNewItem()"/>
+            </q-td>
+            <q-td colspan="100%"></q-td>
+          </q-tr>
+        </q-markup-table>
       </div>
       <!-- COLUMN::4th Description -->
       <q-input class="col-12"

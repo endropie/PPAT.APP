@@ -126,71 +126,62 @@
     <q-card-section class="row q-col-gutter-sm">
 
       <div class="col-12">
-        <q-table ref="table" class="main-box bordered no-shadow no-highlight th-uppercase"
-          :data="rsForm.incoming_good_items" dense
-          :rows-per-page-options ="[0]" hide-bottom
-          :pagination="{ sortBy: null, descending: false, page: null, rowsPerPage: 0 }"
-          :columns="[
-            { name: 'prefix', field: 'prefix', label: '',  align: 'left'},
-            { name: 'item_id', field: 'item_id', label: $tc('items.part_name'), align: 'left'},
-            { name: 'part_number', field: 'item_id', label: $tc('items.part_number'), align: 'left'},
-            { name: 'unit_id', field: 'unit_id', label: $tc('label.unit'), align: 'center'},
-            { name: 'quantity', field: 'quantity', label: $tc('label.quantity'), align: 'center'},
-            { name: 'note', field: 'note', label: $tc('label.note'), align: 'left'},
-          ]"
+        <q-markup-table class="main-box bordered no-shadow no-highlight th-uppercase"
+          dense separator="horizontal"
           :dark="LAYOUT.isDark">
-
-            <template v-slot:body="{row}">
-            <q-tr>
-              <q-td key="prefix" style="width:50px">
-                <q-btn dense flat color="primary"
-                  @click="row.is_valid = !Boolean(row.is_valid)" >
-                  <q-tooltip  content-class="bg-primary">set valid</q-tooltip>
-                  <q-icon v-if="row.is_valid" name="done_all"/>
-                  <q-icon v-else name="done_all" color="light"/>
-                </q-btn>
-              </q-td>
-              <q-td key="item_id" width="35%">
-                <q-input readonly
-                  :value="row.item ? row.item.part_name : null"
-                  outlined dense hide-bottom-space color="blue-grey-5"
-                  :dark="LAYOUT.isDark" />
-              </q-td>
-              <q-td key="part_number" width="35%" style="min-width:150px">
-                <q-input readonly
-                  :value="row.item ? row.item.part_number : null"
-                  outlined dense hide-bottom-space color="blue-grey-5"
-                  :dark="LAYOUT.isDark" />
-              </q-td>
-
-              <q-td key="unit_id" width="15%">
-                 <q-input readonly input-style="min-width:50px"
-                  :value="row.unit ? row.unit.code : null"
-                  outlined dense hide-bottom-space color="blue-grey-5"
-                  :dark="LAYOUT.isDark" />
-                <q-input class="hidden" v-model="row.unit_rate" />
-              </q-td>
-
-              <q-td key="quantity" width="15%">
-                <q-input style="min-width:100px"
-                  :name="`items.${row.__index}.quantity`" type="number"
-                  v-model="row.quantity" readonly
-                  v-validate="row.item_id ? 'required' : ''"
-                  dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
-                  :dark="LAYOUT.isDark"
-                  :error="errors.has(`items.${row.__index}.quantity`)"/>
-              </q-td>
-
-              <q-td key="note" width="35%">
-                <q-input autogrow input-style="min-width:150px"
-                  v-model="row.note"
-                  outlined dense hide-bottom-space color="blue-grey-5"
-                  :dark="LAYOUT.isDark" />
-              </q-td>
-            </q-tr>
-            </template>
-
-          <q-tr slot="bottom-row"
+          <q-tr>
+            <q-th key="prefix"></q-th>
+            <q-th key="item_id">{{$tc('items.part_name')}}</q-th>
+            <q-th key="part_number">{{$tc('items.part_number')}}</q-th>
+            <q-th key="quantity">{{$tc('label.quantity')}}</q-th>
+            <q-th key="unit_id">{{$tc('label.unit')}}</q-th>
+            <q-th key="note">{{$tc('label.note')}}</q-th>
+          </q-tr>
+          <q-tr v-for="(row, index) in rsForm.incoming_good_items" :key="index">
+            <q-td key="prefix" style="width:50px">
+              <q-btn dense flat color="primary"
+                @click="row.is_valid = !Boolean(row.is_valid)" >
+                <q-tooltip  content-class="bg-primary">set valid</q-tooltip>
+                <q-icon v-if="row.is_valid" name="done_all"/>
+                <q-icon v-else name="done_all" color="light"/>
+              </q-btn>
+            </q-td>
+            <q-td key="item_id" width="35%">
+              <q-input readonly
+                :value="row.item ? row.item.part_name : null"
+                outlined dense hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark" />
+            </q-td>
+            <q-td key="part_number" width="35%" style="min-width:150px">
+              <q-input readonly
+                :value="row.item ? row.item.part_number : null"
+                outlined dense hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark" />
+            </q-td>
+            <q-td key="unit_id" width="15%">
+                <q-input readonly input-style="min-width:50px"
+                :value="row.unit ? row.unit.code : null"
+                outlined dense hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark" />
+              <q-input class="hidden" v-model="row.unit_rate" />
+            </q-td>
+            <q-td key="quantity" width="15%">
+              <q-input style="min-width:100px"
+                :name="`items.${index}.quantity`" type="number"
+                v-model="row.quantity" readonly
+                v-validate="row.item_id ? 'required' : ''"
+                dense outlined hide-bottom-space no-error-icon color="blue-grey-5"
+                :dark="LAYOUT.isDark"
+                :error="errors.has(`items.${index}.quantity`)"/>
+            </q-td>
+            <q-td key="note" width="35%">
+              <q-input autogrow input-style="min-width:150px"
+                v-model="row.note"
+                outlined dense hide-bottom-space color="blue-grey-5"
+                :dark="LAYOUT.isDark" />
+            </q-td>
+          </q-tr>
+          <q-tr
             v-for="(row, index) in (rsForm.exclude_items)" :key="index">
             <q-td key="prefix" style="width:50px">
                 <q-btn dense flat icon="add" color="blue-grey" @click="includeItem(row, index)" />
@@ -223,7 +214,7 @@
                   :dark="LAYOUT.isDark" />
               </q-td>
           </q-tr>
-        </q-table>
+        </q-markup-table>
       </div>
       <!-- COLUMN::4th Description -->
       <q-input class="col-12"
