@@ -3,8 +3,8 @@
     <page-print v-if="VIEW.show" class="q-ma-md q-pr-lg shadow-2" style="max-width:210mm;">
       <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
       <span slot="header-subtitle" style="font-size:16px">Warehouses - Incoming Good</span>
-      <div slot="header-tags">
-      <q-chip class="shadow-1" square outline
+      <div slot="header-tags" class="print-hide">
+      <q-chip square outline
         color="blue-grey" text-color="white"
         label="RET" v-if="rsView.transaction === 'RETURN'" />
         <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
@@ -40,10 +40,6 @@
                   <td>{{ $app.date_format(rsView.date) }}</td>
                 </tr>
                 <tr>
-                  <th>{{$tc('warehouses.registration')}}</th>
-                  <td>{{rsView.registration}}</td>
-                </tr>
-                <tr>
                   <th>{{'No. Indexed'}}</th>
                   <td>{{rsView.indexed_number}}</td>
                 </tr>
@@ -62,14 +58,12 @@
             :rows-per-page-options ="[0]"
             :pagination="{page: null, rowsPerPage: 0 }"
             :columns="[
-              { name: 'code', label:  this.$tc('label.code'), align: 'left', field: (v)=> v.item.code},
+              { name: 'code', label:  this.$tc('general.cust'), align: 'left', field: (v)=> v.item.customer_code},
               { name: 'part_name', label: this.$tc('items.part_name'), align: 'left', field: (v)=> v.item.part_name},
               { name: 'part_number', label: this.$tc('items.part_number'), align: 'left', field: (v)=> v.item.part_number},
               { name: 'unit_id', label: $tc('label.unit'), align: 'center', field: (v)=> v.unit.code},
               { name: 'quantity', label: $tc('label.quantity'), align: 'right',
                 field: (v)=> v.quantity, format: (v) => $app.number_format(v)},
-              { name: 'valid', label: $tc('label.qty', 1,{v:'Valid'}), align: 'right',
-                field: (v)=> v.valid, format: (v) => $app.number_format(v)},
               { name: 'note', label: $tc('label.note'), align: 'left', field: (v)=> v.note},
             ]"
           >

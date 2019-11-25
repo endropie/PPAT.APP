@@ -3,10 +3,7 @@
     <page-print v-if="VIEW.show" class="q-ma-md q-pr-lg shadow-2" style="max-width:210mm;">
       <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
       <span slot="header-subtitle" style="font-size:16px">Warehouses - Stock Opname</span>
-      <div slot="header-tags">
-      <q-chip class="shadow-1" square outline
-        color="blue-grey" text-color="white"
-        label="RET" v-if="rsView.transaction === 'RETURN'" />
+      <div slot="header-tags" class="print-hide">
         <ux-chip-status :row="rsView" tag outline small square icon='bookmark' />
       </div>
       <div class="row q-col-gutter-md" >
