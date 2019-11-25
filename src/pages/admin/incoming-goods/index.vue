@@ -76,10 +76,8 @@
                 :placeholder="`${$tc('form.search',2)}...`"
                 standout="bg-blue-grey-5 text-white"
                 :bg-color="LAYOUT.isDark ? 'blue-grey-9' : 'blue-grey-1'"
-                :dark="LAYOUT.isDark">
-
-                <template slot="before">
-                </template>
+                :dark="LAYOUT.isDark"
+                @input="FILTERABLE.submit">
                 <template slot="append">
                   <q-btn flat dense icon="search" dark-percentage color="fadded" @click="FILTERABLE.submit"/>
                 </template>
@@ -121,8 +119,6 @@
         </q-td>
       </q-table>
     </q-pull-to-refresh>
-
-
   </q-page>
 </template>
 
