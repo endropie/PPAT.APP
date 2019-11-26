@@ -6,11 +6,11 @@
         class="float-right relative-position" style="top:-5px"
         :icon="show ? 'arrow_drop_up' : 'arrow_drop_down'"
         @click="show = !show"/>
-      <div class="text-subtitle2 no-wrap">Validasi Incoming Good</div>
+      <div class="text-subtitle2 no-wrap">Validasi Outgoing Good</div>
     </q-card-section>
     <q-separator :dark="LAYOUT.isDark" />
     <q-card-section v-show="show" class="q-pa-sm">
-      <q-table dense class="no-shadow th-uppercase"
+      <q-table dense class="no-shadow"
         :data="rowData"
         :columns="columns"
         :loading="loading"
@@ -26,20 +26,21 @@
               {{ rs.row.customer.name }}
             </span>
           </q-td>
-          <q-td >
-            {{$app.moment(rs.row.date || undefined).format('D MMMM')}}<br/>
-            <span class="text-caption text-faded" v-if="rs.row.user">
-              {{ rs.row.user.name }}
+          <q-td class="text-right">
+            <q-icon name="mdi-account-circle" class="q-mr-xs"/>
+            <span v-if="rs.row.user_by">{{ rs.row.user_by.name }}</span>
+            <span v-else class="text-italic">undefined</span>
+            <br/>
+            <span class="text-caption text-faded">
+              {{$app.moment(rs.row.date || null).format('D MMM YYYY')}}
             </span>
           </q-td>
         </q-tr>
-
-
-
         <template v-slot:bottom>
-          {{TEXT_BOTTOM}}
+          <span>{{TEXT_BOTTOM}}</span>
+          <q-space/>
+          <q-btn flat dense size="sm" label="reload" icon-right="refresh" color="blue-grey" @click="reload()" />
         </template>
-
       </q-table>
     </q-card-section>
   </q-card>
@@ -49,8 +50,6 @@
 
 <script>
 import MixPage from '@/mixins/mix-page.vue'
-import { isError } from 'util';
-
 export default {
   mixins:[MixPage],
   data () {
@@ -65,13 +64,16 @@ export default {
         {
           name: 'number',
           required: true,
-          label: this.$tc('label.number'),
+          label: '', //this.$tc('label.number'),
           align: 'left',
           field: row => row.number,
           format: val => `${val}`,
-          sortable: true
         },
-        { name: 'date', align: 'center', label: this.$tc('label.date'), field: 'date', sortable: true,
+        {
+          name: 'date',
+          align: 'center',
+          label: '', //this.$tc('label.date'),
+          field: 'date',
           format: val => this.$app.moment(val || undefined).format('D MMMM'),
         },
       ],
@@ -94,9 +96,16 @@ export default {
     }
   },
   methods: {
+    reload() {
+      this.loading = true
+      setTimeout(() => {
+        this.init()
+      }, 500);
+    },
     init() {
       this.loading = true
-      let params = ['mode=all', '--with=customer', 'status=OPEN']
+      let params = ['mode=all', '--with=customer;user_by', 'status=OPEN']
+      console.warn("URL", `${this.resource.api}?${params.join('&')}`)
       this.$axios.get(`${this.resource.api}?${params.join('&')}`)
       .then((response) => {
         this.data = JSON.parse(JSON.stringify(response.data))

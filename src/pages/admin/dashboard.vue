@@ -1,8 +1,8 @@
 <template>
   <q-page padding class="page-admin">
     <div class="row content-stretch">
-      <incoming-good class="col-12 col-md-auto q-pa-xs" style="min-width:50%" />
-      <incoming-good class="col-12 col-md-auto q-pa-xs" style="min-width:50%" />
+      <incoming-good class="col-12 col-sm-auto q-pa-xs" style="min-width:50%" />
+      <outgoing-good class="col-12 col-sm-auto q-pa-xs" style="min-width:50%" />
     </div>
   </q-page>
 </template>
@@ -10,11 +10,13 @@
 <script>
 import MixPage from '@/mixins/mix-page.vue'
 import IncomingGood from '@/pages/admin/incoming-goods/dashboard'
+import OutgoingGood from '@/pages/admin/outgoing-goods/dashboard'
 
 export default {
   mixins:[MixPage],
   components: {
-    IncomingGood
+    IncomingGood,
+    OutgoingGood
   },
   data () {
     return {
