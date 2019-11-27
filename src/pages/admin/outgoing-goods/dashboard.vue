@@ -83,7 +83,6 @@ export default {
     }
   },
   created() {
-    // console.info('This component created!')
     this.init()
   },
   computed: {
@@ -105,7 +104,6 @@ export default {
     init() {
       this.loading = true
       let params = ['mode=all', '--with=customer;user_by', 'status=OPEN']
-      console.warn("URL", `${this.resource.api}?${params.join('&')}`)
       this.$axios.get(`${this.resource.api}?${params.join('&')}`)
       .then((response) => {
         this.data = JSON.parse(JSON.stringify(response.data))
