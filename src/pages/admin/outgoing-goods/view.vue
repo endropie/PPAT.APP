@@ -1,8 +1,8 @@
 <template>
   <q-page class="row justify-center" :dark="LAYOUT.isDark" style="min-width:210mm;">
-    <page-print v-if="VIEW.show" class="q-ma-md q-pr-lg shadow-2" style="max-width:210mm;">
-      <span slot="header-title" style="font-size:26px">Priuk Perkasa Abadi, PT</span>
-      <span slot="header-subtitle" style="font-size:16px">Warehouses - Outgoing Good</span>
+    <page-print v-if="VIEW.show" class="q-ma-md q-pr-lg shadow-2" style="max-width:210mm;" minimaze>
+      <span slot="header-title" style="">Priuk Perkasa Abadi, PT</span>
+      <span slot="header-subtitle" style="">Warehouses - Outgoing Good</span>
       <div slot="header-tags" class="print-hide">
       <q-chip square outline
         color="blue-grey" text-color="white"
@@ -13,9 +13,7 @@
         <div class="col-12">
           <div class="row justify-between q-gutter-sm" >
             <div class="items-end q-pt-lg">
-              <div class="text-h6">
-                OUTGOING GOOD
-              </div>
+              <div class="text-h6 print-hide">OUTGOING GOOD</div>
               <q-markup-table class="super-dense no-shadow" :dark="LAYOUT.isDark">
                 <tr>
                   <th class="text-left">{{$tc('general.customer')}}</th>
@@ -64,6 +62,28 @@
         <div class="col-12">
             <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
+        </div>
+        <div class="col-12 box">
+          <q-markup-table class="signature no-shadow">
+            <tr class="text-center">
+              <td width="21%">
+                <div class="sign-name">Diterima Oleh</div>
+                <div class="sign-tag">( . . . . . . . . . . . . . . )</div>
+              </td>
+              <td width="21%">
+                <div class="sign-name">Gudang Oleh</div>
+                <div class="sign-tag">( . . . . . . . . . . . . . . )</div>
+              </td>
+              <td width="21%">
+                <div class="sign-name">Security</div>
+                <div class="sign-tag">( . . . . . . . . . . . . . . )</div>
+              </td>
+              <td width="35%">
+                <div class="sign-name">Hormat Kami</div>
+                <div class="sign-tag">( . . . . . . . . . . . . . . )</div>
+              </td>
+            </tr>
+          </q-markup-table>
         </div>
       </div>
       <div class="q-gutter-xs print-hide" style="padding-top:50px">
@@ -236,3 +256,11 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus">
+.signature
+  table { page-break-inside:auto }
+  tr    { page-break-inside:avoid; page-break-after:auto }
+.sign-name
+  height 50px
+</style>

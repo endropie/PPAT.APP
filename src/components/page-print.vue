@@ -1,8 +1,8 @@
 <template>
   <div class="page-print shadow-2" >
-    <table style="width100%; max-width: calc(100vw - 20px);">
+    <table class="q" style="width100%; max-width: calc(100vw - 20px);">
     <thead>
-      <tr >
+      <tr>
         <td class="page-print-header">
           <slot name="header">
             <div class="header no-wrap row items-start" >
@@ -78,7 +78,7 @@ export default {
       padding 5px 0px
 
       .title
-        font-size 32px
+        font-size 26px
         line-height 100%
         span
           line-height 1.12
@@ -106,23 +106,6 @@ export default {
     padding-right: 8px
   th, td
     padding: 2px 6px
-
-.profile
-  font-size:14px
-  line-height 1.42857143
-  address
-    white-space: pre-wrap;
-    font-style normal
-.info
-  dl.horizontal dt
-    text-align left
-  dl.horizontal.right dt
-    text-align right
-
-.identity .q-item-main .q-item-label
-  text-weight bolder
-
-
 
 .page-print.right
   .header.row
