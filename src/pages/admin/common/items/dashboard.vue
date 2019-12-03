@@ -198,8 +198,8 @@ export default {
 
     onServe(callback, attrs) {
       this.loading = true
+
       const params = this.getReqestParams(attrs)
-      console.warn('LOAD', `${this.resource.api}?${params.join('&')}`)
       const data = this.$axios.get(`${this.resource.api}?${params.join('&')}`)
       .then((response) => {
         if (response.data.total) this.pagination.rowsNumber = Number(response.data.total)
@@ -250,7 +250,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus">
-
-</style>
