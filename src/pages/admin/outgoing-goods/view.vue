@@ -12,21 +12,24 @@
       <div class="row q-col-gutter-md" >
         <div class="col-12">
           <div class="row justify-between q-gutter-sm" >
-            <div class="items-end q-pt-lg">
-              <div class="text-h6 print-hide">OUTGOING GOOD</div>
+            <div class="items-end">
               <q-markup-table class="super-dense no-shadow" :dark="LAYOUT.isDark">
                 <tr>
                   <th class="text-left">{{$tc('general.customer')}}</th>
                   <td>{{ rsView.customer.name }}</td>
                 </tr>
                 <tr>
-                  <th class="text-left">{{$tc('warehouses.reference_number')}}</th>
-                  <td>{{ rsView.reference_number || '-'}}</td>
+                  <th class="text-left">{{$tc('label.phone')}}</th>
+                  <td>{{ rsView.customer_phone || '-'}}</td>
+                </tr>
+                <tr>
+                  <th class="text-left vertical-top" style="XXvertical-align:top">{{$tc('label.address')}}</th>
+                  <td><address class="address">{{ rsView.customer_address || '-'}}</address></td>
                 </tr>
               </q-markup-table>
             </div>
             <div>
-              <q-markup-table class="super-dense bordered no-shadow" separator="cell" :dark="LAYOUT.isDark">
+              <q-markup-table bordered class="super-dense no-shadow" separator="cell" :dark="LAYOUT.isDark">
                 <tr>
                   <th>{{$tc('label.number')}}</th>
                   <td>
@@ -63,7 +66,7 @@
             <div class="q-my-xs text-italic">{{$tc('label.description')}}:</div>
             <div class="q-my-xs text-weight-light" style="min-height:30px">{{ rsView.description }}</div>
         </div>
-        <div class="col-12 box">
+        <div class="col-12">
           <q-markup-table class="signature no-shadow">
             <tr class="text-center">
               <td width="21%">
@@ -263,4 +266,6 @@ export default {
   tr    { page-break-inside:avoid; page-break-after:auto }
 .sign-name
   height 50px
+.address
+  white-space: pre-line
 </style>
